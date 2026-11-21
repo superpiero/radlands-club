@@ -223,7 +223,9 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   }, [me, opp, spectator, state.mode]);
   useEffect(() => {
     if (!recap) return;
-    const t = setTimeout(() => setRecap(null), 20000);
+    // docked in the sidebar on desktop (can stay a while); floating over the table on small screens (short)
+    const floating = typeof matchMedia !== 'undefined' && matchMedia('(max-width: 860px), (max-height: 560px)').matches;
+    const t = setTimeout(() => setRecap(null), floating ? 7000 : 20000);
     return () => clearTimeout(t);
   }, [recap]);
   useEffect(() => {

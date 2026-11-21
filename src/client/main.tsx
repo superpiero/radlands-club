@@ -13,6 +13,7 @@ import '@fontsource/special-elite/latin-400.css';
 import '@fontsource/special-elite/latin-ext-400.css';
 import './styles.css';
 import './design.css';
+import './polish.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(<App />);

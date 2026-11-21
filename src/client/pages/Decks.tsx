@@ -22,6 +22,7 @@ export function Decks() {
   const [rar, setRar] = useState<Rarity | 'all'>('all');
   const [q, setQ] = useState('');
   const [ownedOnly, setOwnedOnly] = useState(true);
+  const [sheet, setSheet] = useState(false); // phones: deck panel as a bottom sheet
   const [msg, setMsg] = useState<string | null>(null);
   const [dirty, setDirty] = useState(false);
 
@@ -133,7 +134,11 @@ export function Decks() {
               {list.length === 0 && <p className="muted">Nic neodpovídá filtru.</p>}
             </div>
           </section>
-          <aside className="deck-panel panel">
+          <aside className={`deck-panel panel ${sheet ? 'open' : ''}`}>
+            <button className="sheet-handle" onClick={() => setSheet(!sheet)} aria-expanded={sheet}>
+              <span>Balíček <b className={size < DECK_MIN || size > DECK_MAX ? 'bad' : 'ok'}>{size}</b> / {DECK_MIN}–{DECK_MAX}</span>
+              <span className="sheet-cta">{sheet ? 'Skrýt ▼' : 'Upravit ▲'}</span>
+            </button>
             <div className="row">
               <select className="field" style={{ flex: 1 }} value={deckId ?? ''} onChange={(e) => {
                 if (dirty && !confirm('Neuložené změny se ztratí. Pokračovat?')) return;
@@ -147,7 +152,7 @@ export function Decks() {
             </div>
             <input className="field" value={name} maxLength={30} onChange={(e) => { setName(e.target.value); setDirty(true); }} />
             <div className="deck-stats">
-              <b className={size < DECK_MIN || size > DECK_MAX ? 'bad' : 'ok'}>{size} karet (min {DECK_MIN}, max {DECK_MAX})</b>
+              <span className="ds-count"><b className={size < DECK_MIN || size > DECK_MAX ? 'bad' : 'ok'}>{size}</b> karet <small className="muted">(povoleno {DECK_MIN}–{DECK_MAX})</small></span>
               <span className="muted">{nSurv} přeživších · {size - nSurv} operací</span>
             </div>
             <div className="curve" title="Rozložení cen (0–4+)">
