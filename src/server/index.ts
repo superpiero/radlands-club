@@ -10,10 +10,12 @@ import { fileURLToPath } from 'node:url';
 import { WebSocketServer } from 'ws';
 import type { ClientMsg } from '../shared/protocol';
 import { PROTOCOL_VERSION } from '../shared/protocol';
+import { Accounts } from './accounts';
 import { type Client, Lobby, send } from './rooms';
 
 const PORT = Number(process.env.PORT ?? 8080);
-const DATA_FILE = join(process.env.DATA_DIR ?? join(process.cwd(), 'data'), 'rooms.json');
+const DATA_DIR = process.env.DATA_DIR ?? join(process.cwd(), 'data');
+const DATA_FILE = join(DATA_DIR, 'rooms.json');
 const HOST = process.env.HOST ?? '0.0.0.0';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -26,12 +28,63 @@ const MIME: Record<string, string> = {
   '.woff2': 'font/woff2', '.woff': 'font/woff', '.webmanifest': 'application/manifest+json', '.mp3': 'audio/mpeg',
 };
 
-const lobby = new Lobby();
+const accounts = new Accounts(join(DATA_DIR, 'accounts.json'));
+const lobby = new Lobby(accounts);
 const restored = lobby.load(DATA_FILE);
 if (restored) console.log(`  Obnoveno ${restored} rozehraných stolů z ${DATA_FILE}`);
 
+function json(res: import('node:http').ServerResponse, code: number, body: unknown) {
+  res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
+  res.end(JSON.stringify(body));
+}
+
+const apiHits = new Map<string, number[]>();
+
+async function handleApi(req: import('node:http').IncomingMessage, res: import('node:http').ServerResponse, path: string) {
+  // tiny rate limit per IP
+  const ip = req.socket.remoteAddress ?? '?';
+  const now = Date.now();
+  const hits = (apiHits.get(ip) ?? []).filter((t) => now - t < 10_000);
+  hits.push(now);
+  apiHits.set(ip, hits);
+  if (hits.length > 40) return json(res, 429, { error: 'Příliš mnoho požadavků, zkus to za chvíli.' });
+
+  let body: any = {};
+  if (req.method === 'POST') {
+    const chunks: Buffer[] = [];
+    let size = 0;
+    for await (const ch of req) {
+      size += (ch as Buffer).length;
+      if (size > 64 * 1024) return json(res, 413, { error: 'Příliš velký požadavek.' });
+      chunks.push(ch as Buffer);
+    }
+    try { body = chunks.length ? JSON.parse(Buffer.concat(chunks).toString('utf8')) : {}; } catch { return json(res, 400, { error: 'Neplatný JSON.' }); }
+    if (typeof body !== 'object' || body === null) body = {};
+  }
+  const auth = String(req.headers.authorization ?? '').replace(/^Bearer\s+/i, '');
+  const user = accounts.userByToken(auth);
+  const need = () => { if (!user) { json(res, 401, { error: 'Nejsi přihlášen(a).' }); return false; } return true; };
+  const out = (r: any) => json(res, 'error' in r ? 400 : 200, r);
+
+  switch (`${req.method} ${path}`) {
+    case 'POST /api/register': return out(accounts.register(body.name, body.password));
+    case 'POST /api/login': return out(accounts.login(body.name, body.password));
+    case 'POST /api/logout': accounts.logout(auth); return json(res, 200, { ok: true });
+    case 'GET /api/me': if (!need()) return; return json(res, 200, { profile: accounts.profile(user!) });
+    case 'POST /api/booster/open': if (!need()) return; return out(accounts.openBooster(user!));
+    case 'POST /api/booster/buy': if (!need()) return; return out(accounts.buyBooster(user!));
+    case 'POST /api/deck/save': if (!need()) return; return out(accounts.saveDeck(user!, body));
+    case 'POST /api/deck/delete': if (!need()) return; return out(accounts.deleteDeck(user!, String(body.id ?? '')));
+    default: return json(res, 404, { error: 'Neznámý požadavek.' });
+  }
+}
+
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://x');
+  if (url.pathname.startsWith('/api/')) {
+    handleApi(req, res, url.pathname).catch((e) => { console.error(e); json(res, 500, { error: 'Chyba serveru.' }); });
+    return;
+  }
   if (url.pathname === '/health') {
     res.writeHead(200, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ ok: true, rooms: lobby.rooms.size }));
@@ -106,17 +159,26 @@ function cleanName(n: unknown): string {
 
 function handle(c: Client, msg: ClientMsg) {
   switch (msg.t) {
-    case 'hello':
+    case 'hello': {
       c.token = String(msg.token ?? '').slice(0, 64) || Math.random().toString(36).slice(2);
-      c.name = cleanName(msg.name);
+      const user = accounts.userByToken(msg.account ? String(msg.account) : null);
+      c.account = user ? user.name : null;
+      c.name = user ? user.name : cleanName(msg.name);
       return;
+    }
     case 'ping':
       return send(c, { t: 'pong', ts: msg.ts });
     case 'create': {
       if (!c.token) return send(c, { t: 'error', msg: 'Chybí identifikace.' });
       if (c.room) c.room.leave(c, true);
-      const room = lobby.create({ baseMode: msg.options?.baseMode === 'random' ? 'random' : 'draft' });
-      room.join(c);
+      const deckMode = msg.options?.deckMode === 'collection' ? 'collection' : 'classic';
+      if (deckMode === 'collection' && !c.account) return send(c, { t: 'error', msg: 'Sběratelský stůl může založit jen přihlášený hráč.' });
+      const room = lobby.create({ baseMode: msg.options?.baseMode === 'random' ? 'random' : 'draft', deckMode });
+      const err = room.join(c, false, msg.deckId ? String(msg.deckId) : undefined);
+      if (err) {
+        lobby.rooms.delete(room.code);
+        send(c, { t: 'error', msg: err });
+      }
       return;
     }
     case 'join': {
@@ -124,8 +186,8 @@ function handle(c: Client, msg: ClientMsg) {
       const room = lobby.get(String(msg.code ?? ''));
       if (!room) return send(c, { t: 'error', msg: `Stůl s kódem „${String(msg.code ?? '').toUpperCase()}“ neexistuje.` });
       if (c.room && c.room !== room) c.room.leave(c, true);
-      const err = room.join(c, !!msg.spectate);
-      if (err) send(c, { t: 'error', msg: err });
+      const err = room.join(c, !!msg.spectate, msg.deckId ? String(msg.deckId) : undefined);
+      if (err) send(c, { t: 'error', msg: err, });
       return;
     }
     case 'leave':
@@ -151,10 +213,12 @@ function handle(c: Client, msg: ClientMsg) {
 setInterval(() => lobby.sweep(), 60_000);
 setInterval(() => {
   try { lobby.save(DATA_FILE); } catch (e) { console.warn('Ukládání stolů selhalo:', e); }
+  try { accounts.save(); } catch (e) { console.warn('Ukládání účtů selhalo:', e); }
 }, 3000);
 for (const sig of ['SIGINT', 'SIGTERM'] as const) {
   process.on(sig, () => {
     try { lobby.save(DATA_FILE, true); } catch { /* ignore */ }
+    try { accounts.save(true); } catch { /* ignore */ }
     process.exit(0);
   });
 }

@@ -49,6 +49,10 @@ export interface CardDef {
   /** Hue used for the card art background. */
   hue: number;
   copies: number;
+  /** Collectible rarity (collection mode). */
+  rarity?: 'common' | 'uncommon' | 'rare' | 'legendary';
+  /** false = never in boosters/decks (special cards). */
+  collectible?: boolean;
   /** Short tags for the card browser / bot. */
   tags?: string[];
 }
@@ -237,7 +241,7 @@ export const SURVIVORS: CardDef[] = [
     flavor: 'Co jiní zahodí, ona zvedne.',
     abilities: [{
       cost: 2, text: 'Vezmi si do ruky vrchní kartu odhazovacího balíčku.',
-      canUse: (g) => g.state.discard.length > 0,
+      canUse: (g, c) => g.discardOf(c.p).length > 0,
       needs: 'Odhazovací balíček je prázdný.',
       *run(g, c) { g.takeTopDiscard(c.p); },
     }],
@@ -391,6 +395,87 @@ export const OPERATIONS: CardDef[] = [
     *resolve(g, c) { const n = yield* g.discardUpTo(c.p, 2, 'Výměnný obchod: odhoď až 2 karty'); g.draw(c.p, n + 1); },
   }),
 ];
+
+// ---------------------------------------------------------------------------
+// COLLECTION-ONLY CARDS (rare & legendary) – not in the classic shared deck
+// ---------------------------------------------------------------------------
+export const COLLECTION_SURVIVORS: CardDef[] = [
+  S({
+    id: 'honak', name: 'Honák Vítek', cost: 2, junk: 'raid', icon: 'cowboy-boot', hue: 28, copies: 0, rarity: 'rare',
+    flavor: 'Žene stádo motorek přes duny.',
+    abilities: [{ cost: 1, text: 'Nájezd: zahraj nebo posuň svůj Nájezd.', canUse: (g, c) => g.canRaid(c.p), needs: 'Nájezd nejde posunout.', *run(g, c) { yield* g.raid(c.p); } }],
+  }),
+  S({
+    id: 'doktorka', name: 'Doktorka Iva', cost: 3, junk: 'restore', icon: 'stethoscope', hue: 150, copies: 0, rarity: 'rare',
+    flavor: 'Diplom spálila. Ruce si nechala.',
+    abilities: [{
+      cost: 2, text: 'Oprav až 2 své poškozené karty.',
+      canUse: (g, c) => g.restoreTargets(c.p, {}).length > 0,
+      *run(g, c) { yield* g.restoreChoose(c, {}); if (g.restoreTargets(c.p, {}).length) yield* g.restoreChoose(c, { optional: true }); },
+    }],
+  }),
+  S({
+    id: 'strazce', name: 'Strážce studny', cost: 2, junk: 'water', icon: 'guarded-tower', hue: 205, copies: 0, rarity: 'rare',
+    flavor: 'Kdo chce vodu, musí přes něj.',
+    trait: 'Dokud je Strážce nepoškozený, základnu v jeho sloupci nelze poškodit Nájezdem.',
+    abilities: [],
+  }),
+  S({
+    id: 'baron', name: 'Vodní baron', cost: 3, junk: 'water', icon: 'crowned-heart', hue: 195, copies: 0, rarity: 'legendary',
+    flavor: 'Vlastní poslední čerpadlo. A ví to.',
+    trait: 'Na začátku tvého tahu získáš 1 vodu navíc.',
+    abilities: [{ cost: 2, text: 'Lízni 2 karty.', *run(g, c) { g.draw(c.p, 2); } }],
+  }),
+  S({
+    id: 'matka', name: 'Matka Prachu', cost: 3, junk: 'drifter', icon: 'hood', hue: 35, copies: 0, rarity: 'legendary',
+    flavor: 'Každý ztracený má u ní místo.',
+    trait: 'Tvoji tuláci vydrží dvě poškození (první je jen poškodí).',
+    abilities: [{
+      cost: 2, text: 'Naverbuj 2 tuláky.',
+      canUse: (g, c) => g.hasFreeSlot(c.p), needs: 'Nemáš volné místo.',
+      *run(g, c) { yield* g.gainDrifter(c.p); yield* g.gainDrifter(c.p); },
+    }],
+  }),
+  S({
+    id: 'prorok', name: 'Prorok Bouře', cost: 4, junk: 'injure', icon: 'lightning-storm', hue: 260, copies: 0, rarity: 'legendary',
+    flavor: '„Nebe vám to spočítá.“',
+    abilities: [{
+      cost: 3, text: 'Poškoď každou nekrytou soupeřovu kartu (přeživší i základny).',
+      canUse: (g, c) => g.hasDamageTarget(c.p, 'damage'),
+      *run(g, c) { yield* g.stormSweep(c); },
+    }],
+  }),
+  S({
+    id: 'velitelka', name: 'Velitelka Ocel', cost: 3, junk: 'raid', icon: 'visored-helm', hue: 12, copies: 0, rarity: 'legendary',
+    flavor: 'Plán má vždycky. Záložní taky.',
+    trait: 'Když tvůj Nájezd poškodí základnu, lízni 2 karty.',
+    abilities: [{ cost: 1, text: 'Nájezd: zahraj nebo posuň svůj Nájezd.', canUse: (g, c) => g.canRaid(c.p), needs: 'Nájezd nejde posunout.', *run(g, c) { yield* g.raid(c.p); } }],
+  }),
+];
+
+export const COLLECTION_OPERATIONS: CardDef[] = [
+  O({
+    id: 'kyselydest', name: 'Kyselý déšť', cost: 2, countdown: 2, junk: 'injure', icon: 'acid', hue: 95, copies: 0, rarity: 'rare',
+    effectText: 'Poškoď každou nekrytou soupeřovu základnu.',
+    flavor: 'Z mraků teče rez.',
+    *resolve(g, c) { yield* g.acidRain(c); },
+  }),
+  O({
+    id: 'vysadek', name: 'Výsadek', cost: 1, countdown: 1, junk: 'drifter', icon: 'parachute', hue: 210, copies: 0, rarity: 'rare',
+    effectText: 'Naverbuj 2 tuláky. Pak lízni kartu.',
+    flavor: 'Padáky ze starých plachet. Většinou drží.',
+    *resolve(g, c) { yield* g.gainDrifter(c.p); yield* g.gainDrifter(c.p); g.draw(c.p, 1); },
+  }),
+  O({
+    id: 'oaza', name: 'Oáza', cost: 2, countdown: 3, junk: 'water', icon: 'palm-tree', hue: 160, copies: 0, rarity: 'legendary',
+    effectText: 'Oprav všechny své karty a získej 3 vody navíc.',
+    flavor: 'Možná je to přelud. Ale voda je mokrá.',
+    *resolve(g, c) { g.restoreAll(c.p); g.gainWater(c.p, 3); },
+  }),
+];
+
+SURVIVORS.push(...COLLECTION_SURVIVORS);
+OPERATIONS.push(...COLLECTION_OPERATIONS);
 
 // ---------------------------------------------------------------------------
 // SPECIAL CARDS
@@ -648,6 +733,22 @@ export const BASES: CardDef[] = [
     }],
   }),
 ];
+
+// ---------------------------------------------------------------------------
+// RARITIES (collection mode)
+// ---------------------------------------------------------------------------
+const RARITY: Record<string, CardDef['rarity']> = {
+  pumpar: 'common', prak: 'common', zved: 'common', felcar: 'common', paserak: 'common', naborar: 'common',
+  rex: 'common', prospektorka: 'common', radista: 'common',
+  bara: 'uncommon', hana: 'uncommon', rez: 'uncommon', vymahac: 'uncommon', hlidkar: 'uncommon', marta: 'uncommon',
+  bedrich: 'uncommon', jiskra: 'uncommon', bubenik: 'uncommon', myska: 'uncommon', lasar: 'uncommon', ludmila: 'uncommon',
+  granatnik: 'rare', minometcik: 'rare', kat: 'rare',
+  karavana: 'common', pramen: 'common', prepad: 'common', vymena: 'common',
+  sucho: 'uncommon', delostrelectvo: 'uncommon', sanitka: 'uncommon', evakuace: 'uncommon', podkop: 'uncommon',
+  sabotaz: 'rare', boure: 'rare', poslednikapka: 'rare',
+};
+for (const c of [...SURVIVORS, ...OPERATIONS]) c.rarity = c.rarity ?? RARITY[c.id] ?? 'common';
+for (const c of [RAID, CISTERN, DRIFTER, ...BASES]) c.collectible = false;
 
 export const ALL_CARDS: CardDef[] = [...SURVIVORS, ...OPERATIONS, ...BASES, RAID, CISTERN, DRIFTER];
 

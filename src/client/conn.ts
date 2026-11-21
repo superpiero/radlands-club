@@ -192,7 +192,7 @@ export class LocalConn extends Conn {
   private fakeRoom(): RoomInfo {
     return {
       code: this.state.mode === 'bot' ? 'BOT' : 'LOKÁL',
-      seats: [{ name: this.names[0], connected: true }, { name: this.names[1], connected: true }],
+      seats: [{ name: this.names[0], connected: true, account: false }, { name: this.names[1], connected: true, account: false }],
       you: 0, spectators: 0, status: this.game.state.phase === 'over' ? 'over' : 'playing',
       options: this.options, rematch: [false, false], gameNo: this.gameNo, score: this.score,
     };

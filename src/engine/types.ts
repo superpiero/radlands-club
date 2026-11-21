@@ -60,6 +60,10 @@ export interface PlayerState {
   sentryTurn: number;
   draftOptions: string[];
   draftPicked: string[] | null;
+  /** Personal deck mode only: own draw pile (index 0 = top) and discard pile. */
+  deck?: CardInst[];
+  discard?: CardInst[];
+  reshuffles?: number;
   /** Bot/hint flag only, never used for rules. */
   isBot?: boolean;
 }
@@ -137,13 +141,15 @@ export interface GameOptions {
   seed?: number;
   /** 'draft' = pick 3 of 6 bases; 'random' = random 3 bases. */
   baseMode?: 'draft' | 'random';
+  /** Personal decks (collection mode): card ids for each player. Omit = classic shared deck. */
+  decks?: [string[], string[]];
 }
 
 export interface GameState {
   version: 1;
   seed: number;
   rng: number[];
-  opts: { baseMode: 'draft' | 'random' };
+  opts: { baseMode: 'draft' | 'random'; personal?: boolean };
   players: [PlayerState, PlayerState];
   /** deck[0] is the top card. */
   deck: CardInst[];

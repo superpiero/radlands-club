@@ -137,6 +137,20 @@ export interface BotOptions {
 function determinize(g: Game, p: PlayerIdx, r: Rand) {
   const st = g.state;
   const o = (1 - p) as PlayerIdx;
+  if (st.opts.personal) {
+    for (const owner of [0, 1] as PlayerIdx[]) {
+      const pl = st.players[owner];
+      const hand = owner === o ? pl.hand.filter((h) => h.id !== 'cisterna') : [];
+      const drifters = pl.columns.flat().filter((x) => x.faceDown);
+      const pool = shuffle([...pl.deck!.map((c) => c.id), ...hand.map((c) => c.id), ...drifters.map((d) => d.id)], r);
+      let i = 0;
+      for (const c of pl.deck!) c.id = pool[i++];
+      for (const c of hand) c.id = pool[i++];
+      for (const d of drifters) d.id = pool[i++];
+    }
+    st.rng = seedState(Math.floor(r() * 2 ** 31));
+    return;
+  }
   const pool: string[] = [];
   for (const c of st.deck) pool.push(c.id);
   const oppHand = st.players[o].hand.filter((h) => h.id !== 'cisterna');

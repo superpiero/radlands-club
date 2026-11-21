@@ -5,11 +5,15 @@ import type { GameView } from '../engine/view';
 
 export interface RoomOptions {
   baseMode: 'draft' | 'random';
+  /** classic = one shared deck; collection = each player brings a deck from their collection. */
+  deckMode?: 'classic' | 'collection';
 }
 
 export interface SeatInfo {
   name: string;
   connected: boolean;
+  /** registered account (not a guest) */
+  account: boolean;
 }
 
 export interface RoomInfo {
@@ -26,9 +30,9 @@ export interface RoomInfo {
 }
 
 export type ClientMsg =
-  | { t: 'hello'; token: string; name: string }
-  | { t: 'create'; options: RoomOptions }
-  | { t: 'join'; code: string; spectate?: boolean }
+  | { t: 'hello'; token: string; name: string; account?: string }
+  | { t: 'create'; options: RoomOptions; deckId?: string }
+  | { t: 'join'; code: string; spectate?: boolean; deckId?: string }
   | { t: 'act'; action: Action }
   | { t: 'chat'; text: string }
   | { t: 'emote'; id: string }
@@ -53,7 +57,8 @@ export type ServerMsg =
   | { t: 'chat'; line: ChatLine }
   | { t: 'chatHistory'; lines: ChatLine[] }
   | { t: 'emote'; seat: PlayerIdx | null; id: string; from: string }
-  | { t: 'pong'; ts: number };
+  | { t: 'pong'; ts: number }
+  | { t: 'reward'; gain: number; result: 'win' | 'loss' | 'draw' };
 
 export const PROTOCOL_VERSION = '1';
 

@@ -58,15 +58,24 @@ export function freshState(opts: GameOptions): GameState {
     drawDiscountTurn: -1, personDiscountTurn: -1, sentryTurn: -1, draftOptions: [], draftPicked: null,
   });
   const st: GameState = {
-    version: 1, seed, rng, opts: { baseMode: opts.baseMode ?? 'draft' },
+    version: 1, seed, rng, opts: { baseMode: opts.baseMode ?? 'draft', personal: !!opts.decks },
     players: [mkPlayer(opts.names[0]), mkPlayer(opts.names[1])],
     deck: [], discard: [], turn: 0, active: 0, first: 0, coinWinner: 0,
     phase: 'draft', step: 'start', pending: null, winner: null, winReason: null,
     reshuffles: 0, log: [], seq: 0, promptSeq: 0, rev: 0, fx: [],
   };
-  // Deck
-  st.deck = deckList().map((id) => ({ uid: `c${++st.seq}`, id }));
-  shuffleInPlace(st.rng, st.deck);
+  // Deck(s)
+  if (opts.decks) {
+    for (const p of [0, 1] as PlayerIdx[]) {
+      const pl = st.players[p];
+      pl.deck = shuffleInPlace(st.rng, opts.decks[p].map((id) => ({ uid: `c${++st.seq}`, id })));
+      pl.discard = [];
+      pl.reshuffles = 0;
+    }
+  } else {
+    st.deck = deckList().map((id) => ({ uid: `c${++st.seq}`, id }));
+    shuffleInPlace(st.rng, st.deck);
+  }
   // Bases: deal 6 to each
   const baseIds = shuffleInPlace(st.rng, BASES.map((b) => b.id));
   st.players[0].draftOptions = baseIds.slice(0, 6);
@@ -341,6 +350,8 @@ export class Game {
       }
     }
     if (pl.bases.some((b) => b.id === 'studna' && !b.destroyed && b.damage === 0)) this.gainWater(p, 1, 'Studna');
+    const barons = this.activePeople(p).filter((x) => x.id === 'baron').length;
+    if (barons > 0) this.gainWater(p, barons, 'Vodní baron');
     const ludmily = this.activePeople(p).filter((x) => x.id === 'ludmila').length;
     if (ludmily > 0 && pl.queue.every((q) => q === null)) {
       this.log(p, 'draw', `Starostka Ludmila: prázdná fronta, ${this.pn(p)} líže.`);
@@ -418,7 +429,7 @@ export class Game {
         const inst = this.takeFromHand(p, a.uid);
         const def = cardDef(inst.id);
         if (inst.id === 'cisterna') pl.cisternHome = true;
-        else st.discard.push(inst);
+        else this.discardOf(p).push(inst);
         this.fx({ t: 'junk', player: p, id: inst.id });
         this.log(p, 'play', `${this.pn(p)} rozebírá ${def.name} → ${JUNK_LABEL[def.junk!]}.`, [inst.id]);
         yield* this.junkEffect(p, def.junk!, inst.uid);
@@ -680,6 +691,11 @@ export class Game {
     return this.state.players[p].bases.some((b) => b.id === id && !b.destroyed);
   }
 
+  /** Strážce studny protects his column's base from raids. */
+  raidGuarded(owner: PlayerIdx, col: number): boolean {
+    return this.state.players[owner].columns[col].some((x) => !x.faceDown && !x.damaged && x.id === 'strazce');
+  }
+
   bunkerImmune(owner: PlayerIdx, col: number): boolean {
     const b = this.state.players[owner].bases[col];
     return b.id === 'bunkr' && !b.destroyed && this.state.players[owner].columns[col].length >= 2;
@@ -933,21 +949,47 @@ export class Game {
     return `${prefix}${++this.state.seq}`;
   }
 
-  private drawTop(): CardInst {
+  /** Draw pile used by player p (shared in classic mode). */
+  deckOf(p: PlayerIdx): CardInst[] {
+    return this.state.opts.personal ? this.state.players[p].deck! : this.state.deck;
+  }
+
+  /** Discard pile used by player p (shared in classic mode). */
+  discardOf(p: PlayerIdx): CardInst[] {
+    return this.state.opts.personal ? this.state.players[p].discard! : this.state.discard;
+  }
+
+  /** Can player p still take a card from their deck (possibly after the one allowed reshuffle)? */
+  canDrawMore(p: PlayerIdx): boolean {
     const st = this.state;
-    if (st.deck.length === 0) {
-      if (st.reshuffles === 0 && st.discard.length > 0) {
-        st.deck = st.discard.map((c) => ({ uid: this.freshUid(), id: c.id }));
-        st.discard = [];
-        shuffleInPlace(st.rng, st.deck);
-        st.reshuffles = 1;
+    const resh = st.opts.personal ? st.players[p].reshuffles ?? 0 : st.reshuffles;
+    return this.deckOf(p).length > 0 || (resh === 0 && this.discardOf(p).length > 0);
+  }
+
+  private drawTop(p: PlayerIdx): CardInst {
+    const st = this.state;
+    const deck = this.deckOf(p);
+    if (deck.length === 0) {
+      const discard = this.discardOf(p);
+      const personal = !!st.opts.personal;
+      const resh = personal ? st.players[p].reshuffles ?? 0 : st.reshuffles;
+      if (resh === 0 && discard.length > 0) {
+        deck.push(...discard.map((c) => ({ uid: this.freshUid(), id: c.id })));
+        discard.length = 0;
+        shuffleInPlace(st.rng, deck);
+        if (personal) st.players[p].reshuffles = 1;
+        else st.reshuffles = 1;
         this.revealed = true;
-        this.log(null, 'info', 'Balíček došel – odhazovací balíček se zamíchal jako nový balíček. Až dojde podruhé, hra končí remízou.');
+        this.log(personal ? p : null, 'info', personal
+          ? `${this.pn(p)}: balíček došel – odhozené karty se zamíchaly zpět. Až dojde podruhé, ${this.pn(p)} prohrává vyčerpáním.`
+          : 'Balíček došel – odhazovací balíček se zamíchal jako nový balíček. Až dojde podruhé, hra končí remízou.');
+      } else if (personal) {
+        throw new GameOver(this.opp(p), `${this.pn(p)} došly karty (vyčerpání).`);
       } else {
         throw new GameOver('draw', 'Balíček došel podruhé.');
       }
     }
-    return st.deck.shift()!;
+    return deck.shift()!;
   }
 
   draw(p: PlayerIdx, n: number, silent = false) {
@@ -955,7 +997,7 @@ export class Game {
     const pl = this.state.players[p];
     const got: string[] = [];
     for (let i = 0; i < n; i++) {
-      const c = this.drawTop();
+      const c = this.drawTop(p);
       pl.hand.push(c);
       got.push(c.id);
     }
@@ -1019,7 +1061,12 @@ export class Game {
         return null;
       }
       const res: DamageResult = { uid, owner, kind: 'person', col, destroyed: false, destroyedPerson: false };
-      if (person.faceDown || person.damaged) {
+      const tough = person.faceDown && !person.damaged && this.activePeople(owner).some((x) => x.id === 'matka');
+      if (tough) {
+        person.damaged = true;
+        this.fx({ t: 'damage', uid });
+        this.log(by, 'damage', `Tulák (${this.pn(owner)}) vydržel zásah – chrání ho Matka Prachu.`);
+      } else if (person.faceDown || person.damaged) {
         this.fx({ t: 'damage', uid, destroyed: true });
         yield* this.destroyPerson(uid, by);
         res.destroyed = true;
@@ -1089,10 +1136,10 @@ export class Game {
     const { owner, col, idx, person } = loc;
     st.players[owner].columns[col].splice(idx, 1);
     if (person.faceDown) {
-      st.deck.unshift({ uid: this.freshUid(), id: person.id });
+      this.deckOf(owner).unshift({ uid: this.freshUid(), id: person.id });
       this.log(by, 'destroy', `Tulák (${this.pn(owner)}) je zničen a vrací se lícem dolů na balíček.`);
     } else {
-      st.discard.push({ uid: person.uid, id: person.id });
+      this.discardOf(owner).push({ uid: person.uid, id: person.id });
       this.log(by, 'destroy', `${this.nm(person.id)} (${this.pn(owner)}) je zničen(a).`, [person.id]);
       if (person.id === 'rex') {
         this.log(owner, 'info', 'Pes Rex: věrný až do konce – přichází tulák.');
@@ -1110,13 +1157,13 @@ export class Game {
     }
   }
 
-  *restoreChoose(c: Ctx, o: { keepReady?: boolean; basesOnly?: boolean; exclude?: string }): Gen {
+  *restoreChoose(c: Ctx, o: { keepReady?: boolean; basesOnly?: boolean; exclude?: string; optional?: boolean }): Gen {
     const targets = this.restoreTargets(c.p, o);
     if (targets.length === 0) {
       this.log(c.p, 'info', 'Není co opravit.');
       return;
     }
-    const uid = yield* this.pick(c.p, 'Vyber svou kartu k opravě', this.cardOptions(targets, 'good'), { sourceUid: c.uid });
+    const uid = yield* this.pick(c.p, o.optional ? 'Můžeš opravit ještě jednu kartu' : 'Vyber svou kartu k opravě', this.cardOptions(targets, 'good'), { sourceUid: c.uid, optional: o.optional });
     if (uid) this.restoreCard(uid, !!o.keepReady);
   }
 
@@ -1155,7 +1202,7 @@ export class Game {
     }
     const slot = yield* this.chooseSlot(p, 'Kam postavíš tuláka?', 'tulak');
     if (!slot) return;
-    const c = this.drawTop();
+    const c = this.drawTop(p);
     const person: PersonInPlay = {
       uid: this.freshUid('t'), id: c.id, faceDown: true, damaged: false,
       playedTurn: this.state.turn, usedTurn: -1, restoredTurn: -1, stunnedTurn: -1, stash: 0,
@@ -1203,7 +1250,7 @@ export class Game {
       if (def.resolve) yield* def.resolve(this, { p, uid: inst.uid });
     } finally {
       if (inst.id === 'najezd') this.state.players[p].raidHome = true;
-      else this.state.discard.push(inst);
+      else this.discardOf(p).push(inst);
     }
   }
 
@@ -1211,14 +1258,20 @@ export class Game {
     const o = this.opp(p);
     const op = this.state.players[o];
     this.fx({ t: 'raid', player: p });
-    const opts = op.bases.map((b, col) => ({ b, col })).filter(({ b, col }) => !b.destroyed && !this.bunkerImmune(o, col)).map(({ b }) => b.uid);
+    const opts = op.bases.map((b, col) => ({ b, col })).filter(({ b, col }) => !b.destroyed && !this.bunkerImmune(o, col) && !this.raidGuarded(o, col)).map(({ b }) => b.uid);
     if (opts.length === 0) {
       this.log(p, 'event', 'Nájezd nenašel žádnou základnu, kterou by mohl poškodit.');
       return;
     }
     this.log(p, 'event', `Nájezd hráče ${this.pn(p)} dorazil! ${this.pn(o)} volí, která základna to schytá.`, ['najezd']);
     const uid = yield* this.pick(o, 'NÁJEZD! Vyber svou základnu, která bude poškozena', this.cardOptions(opts, 'danger'));
-    if (uid) yield* this.damage(uid, p, { kind: 'raid' });
+    if (!uid) return;
+    const res = yield* this.damage(uid, p, { kind: 'raid' });
+    const commanders = this.activePeople(p).filter((x) => x.id === 'velitelka').length;
+    if (res && commanders > 0) {
+      this.log(p, 'draw', 'Velitelka Ocel: nájezd byl úspěšný – líže se.');
+      this.draw(p, 2 * commanders);
+    }
   }
 
   *advanceEventChoose(c: Ctx): Gen {
@@ -1284,8 +1337,8 @@ export class Game {
 
   *smuggle(c: Ctx): Gen {
     const st = this.state;
-    const cards: CardInst[] = [this.drawTop()];
-    if (st.deck.length > 0 || (st.reshuffles === 0 && st.discard.length > 0)) cards.push(this.drawTop());
+    const cards: CardInst[] = [this.drawTop(c.p)];
+    if (this.canDrawMore(c.p)) cards.push(this.drawTop(c.p));
     this.revealed = true;
     if (cards.length === 1) {
       st.players[c.p].hand.push(cards[0]);
@@ -1296,13 +1349,14 @@ export class Game {
     const keep = cards.find((x) => x.uid === id) ?? cards[0];
     const rest = cards.filter((x) => x !== keep);
     st.players[c.p].hand.push(keep);
-    for (const r of rest) st.deck.push({ uid: this.freshUid(), id: r.id });
+    for (const r of rest) this.deckOf(c.p).push({ uid: this.freshUid(), id: r.id });
     this.log(c.p, 'draw', `${this.pn(c.p)} si bere jednu kartu a druhou dává dospod balíčku.`, undefined, { player: c.p, text: `Vzal(a) sis ${this.nm(keep.id)}, dospod šla ${rest.map((r) => this.nm(r.id)).join(', ')}.` });
   }
 
   *reorderTop(p: PlayerIdx, n: number): Gen {
     const st = this.state;
-    const cards = st.deck.slice(0, n);
+    const deck = this.deckOf(p);
+    const cards = deck.slice(0, n);
     if (cards.length === 0) return;
     this.revealed = true;
     if (cards.length === 1) {
@@ -1311,7 +1365,7 @@ export class Game {
     }
     const ans = yield* this.ask(p, 'order', 'Radiostanice: seřaď vrchní karty (první = navrchu)', cards.map((x) => ({ id: x.uid, label: this.nm(x.id), ref: { t: 'card', id: x.id, uid: x.uid } })), { reveal: cards });
     const ordered = ans.map((uid) => cards.find((x) => x.uid === uid)!);
-    st.deck.splice(0, cards.length, ...ordered);
+    deck.splice(0, cards.length, ...ordered);
     this.log(p, 'info', `${this.pn(p)} přerovnal(a) vrchní karty balíčku.`);
   }
 
@@ -1363,7 +1417,7 @@ export class Game {
   }
 
   takeTopDiscard(p: PlayerIdx) {
-    const c = this.state.discard.pop();
+    const c = this.discardOf(p).pop();
     if (!c) return;
     this.state.players[p].hand.push(c);
     this.log(p, 'draw', `${this.pn(p)} bere z odhazovacího balíčku: ${this.nm(c.id)}.`, [c.id]);
@@ -1385,7 +1439,7 @@ export class Game {
       const uid = yield* this.pick(p, title, opts.map((h) => ({ id: h.uid, label: this.nm(h.id), ref: { t: 'hand', uid: h.uid } })));
       if (!uid) return;
       const c = this.takeFromHand(p, uid);
-      this.state.discard.push(c);
+      this.discardOf(p).push(c);
       this.log(p, 'info', `${this.pn(p)} odhazuje ${this.nm(c.id)}.`, [c.id]);
     }
   }
@@ -1396,7 +1450,7 @@ export class Game {
     const ans = yield* this.ask(p, 'multi', title, opts.map((h) => ({ id: h.uid, label: this.nm(h.id), ref: { t: 'hand', uid: h.uid } })), { min: 0, max: Math.min(n, opts.length) });
     for (const uid of ans) {
       const c = this.takeFromHand(p, uid);
-      this.state.discard.push(c);
+      this.discardOf(p).push(c);
       this.log(p, 'info', `${this.pn(p)} odhazuje ${this.nm(c.id)}.`, [c.id]);
     }
     return ans.length;
@@ -1428,7 +1482,7 @@ export class Game {
     const inst = q[k]!;
     q[k] = null;
     if (inst.id === 'najezd') this.state.players[o].raidHome = true;
-    else this.state.discard.push(inst);
+    else this.discardOf(o).push(inst);
     this.log(c.p, 'event', `Sabotáž! Operace ${this.nm(inst.id)} hráče ${this.pn(o)} je zrušena.`, [inst.id]);
   }
 
@@ -1464,7 +1518,7 @@ export class Game {
     if (!uid) return;
     const inst = this.takeFromHand(c.p, uid);
     if (inst.id === 'cisterna') pl.cisternHome = true;
-    else this.state.discard.push(inst);
+    else this.discardOf(c.p).push(inst);
     const kind = cardDef(inst.id).junk!;
     this.log(c.p, 'play', `${this.pn(c.p)} rozebírá ${this.nm(inst.id)} na Šrotišti → ${JUNK_LABEL[kind]} 2×.`, [inst.id]);
     yield* this.junkEffect(c.p, kind, inst.uid);
@@ -1491,7 +1545,7 @@ export class Game {
     const [c] = hand.splice(i, 1);
     this.revealed = true;
     if (c.id === 'cisterna') st.players[o].cisternHome = true;
-    else st.discard.push(c);
+    else this.discardOf(o).push(c);
     this.log(this.opp(o), 'info', `Rušička: ${this.pn(o)} přichází o kartu ${this.nm(c.id)}.`, [c.id]);
   }
 
@@ -1506,6 +1560,25 @@ export class Game {
     const j = Number(b);
     [cols[i], cols[j]] = [cols[j], cols[i]];
     this.log(c.p, 'info', `${this.pn(c.p)} prohazuje přeživší mezi sloupci ${COL_NAME[i]} a ${COL_NAME[j]}.`);
+  }
+
+  /** Prorok Bouře: damage every currently unprotected enemy card once. */
+  *stormSweep(c: Ctx): Gen {
+    const targets = this.damageTargets(c.p, 'damage');
+    this.log(c.p, 'damage', 'Prorok Bouře přivolává bouři!');
+    for (const uid of targets) {
+      if (!this.findPerson(uid) && !this.findBase(uid)) continue;
+      yield* this.damage(uid, c.p, { kind: 'damage', srcUid: c.uid, srcIsPerson: true });
+    }
+  }
+
+  /** Kyselý déšť: damage every unprotected enemy base. */
+  *acidRain(c: Ctx): Gen {
+    const o = this.opp(c.p);
+    const op = this.state.players[o];
+    const targets = op.bases.filter((b, col) => !b.destroyed && (op.columns[col].length === 0 || this.isExposed(o, col))).map((b) => b.uid);
+    if (!targets.length) this.log(c.p, 'info', 'Kyselý déšť: žádná nekrytá základna.');
+    for (const uid of targets) yield* this.damage(uid, c.p, { kind: 'direct' });
   }
 
   *shootDrifterChoose(c: Ctx): Gen {

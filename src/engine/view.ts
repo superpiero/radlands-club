@@ -45,6 +45,11 @@ export interface PlayerView {
   draftOptions: string[] | null;
   draftDone: boolean;
   peopleCount: number;
+  /** Own draw pile size (personal deck mode) – equals the shared deck in classic mode. */
+  deckCount: number;
+  discardTop: CardInst | null;
+  discardCount: number;
+  reshuffles: number;
 }
 
 export interface GameView {
@@ -58,6 +63,8 @@ export interface GameView {
   step: Step;
   winner: PlayerIdx | 'draw' | null;
   winReason: string | null;
+  /** true = each player has their own deck (collection mode). */
+  personal: boolean;
   players: [PlayerView, PlayerView];
   deckCount: number;
   discardTop: CardInst | null;
@@ -108,6 +115,10 @@ export function buildView(g: Game, viewer: PlayerIdx | null): GameView {
       draftOptions: viewer === p && st.phase === 'draft' ? [...pl.draftOptions] : null,
       draftDone: !!pl.draftPicked,
       peopleCount: pl.columns.reduce((s, c) => s + c.length, 0),
+      deckCount: g.deckOf(p).length,
+      discardTop: g.discardOf(p).length ? { ...g.discardOf(p)[g.discardOf(p).length - 1] } : null,
+      discardCount: g.discardOf(p).length,
+      reshuffles: st.opts.personal ? pl.reshuffles ?? 0 : st.reshuffles,
     };
     return pv;
   }) as [PlayerView, PlayerView];
@@ -138,11 +149,12 @@ export function buildView(g: Game, viewer: PlayerIdx | null): GameView {
     step: st.step,
     winner: st.winner,
     winReason: st.winReason,
+    personal: !!st.opts.personal,
     players,
-    deckCount: st.deck.length,
-    discardTop: st.discard.length ? { ...st.discard[st.discard.length - 1] } : null,
-    discardCount: st.discard.length,
-    reshuffles: st.reshuffles,
+    deckCount: players[viewer ?? 0].deckCount,
+    discardTop: players[viewer ?? 0].discardTop,
+    discardCount: players[viewer ?? 0].discardCount,
+    reshuffles: players[viewer ?? 0].reshuffles,
     pending,
     waitingFor,
     log,

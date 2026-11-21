@@ -7,11 +7,15 @@ import { Game } from '../engine/game';
 import type { Action, PlayerIdx } from '../engine/types';
 import { buildView } from '../engine/view';
 import { EMOTES, type ChatLine, type RoomInfo, type RoomOptions, type ServerMsg } from '../shared/protocol';
+import { deckToList } from '../shared/collection';
+import type { Accounts } from './accounts';
 
 export interface Client {
   ws: WebSocket;
   token: string;
   name: string;
+  /** Registered account name (null = guest). */
+  account?: string | null;
   room: Room | null;
   lastMsgs: number[];
 }
@@ -20,6 +24,8 @@ interface Seat {
   token: string;
   name: string;
   client: Client | null;
+  user?: string | null;
+  deck?: Record<string, number> | null;
 }
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -40,9 +46,16 @@ export class Room {
   gameNo = 0;
   lastActivity = Date.now();
 
+  accounts: Accounts | null = null;
+  gameDecks: [string[], string[]] | null = null;
+
   constructor(code: string, options: RoomOptions) {
     this.code = code;
     this.options = options;
+  }
+
+  get collection(): boolean {
+    return this.options.deckMode === 'collection';
   }
 
   status(): RoomInfo['status'] {
@@ -59,7 +72,7 @@ export class Room {
   info(forClient: Client): RoomInfo {
     return {
       code: this.code,
-      seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.client } : null)) as RoomInfo['seats'],
+      seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.client, account: !!s.user } : null)) as RoomInfo['seats'],
       you: this.seatOf(forClient),
       spectators: this.spectators.size,
       status: this.status(),
@@ -105,7 +118,7 @@ export class Room {
   }
 
   /** Add a client; returns error message or null. */
-  join(c: Client, spectate = false): string | null {
+  join(c: Client, spectate = false, deckId?: string): string | null {
     this.lastActivity = Date.now();
     // Reconnect to an existing seat
     for (const i of [0, 1] as PlayerIdx[]) {
@@ -126,7 +139,15 @@ export class Room {
     if (!spectate) {
       const free = this.seats.findIndex((s) => s === null);
       if (free >= 0) {
-        this.seats[free] = { token: c.token, name: c.name, client: c };
+        let deck: Record<string, number> | null = null;
+        if (this.collection) {
+          const user = c.account && this.accounts ? this.accounts.get(c.account) : null;
+          if (!user) return 'Sběratelský stůl: nejdřív se přihlas (nahoře na úvodní stránce).';
+          const d = this.accounts!.deckFor(user, deckId);
+          if ('error' in d) return d.error;
+          deck = d.cards;
+        }
+        this.seats[free] = { token: c.token, name: c.name, client: c, user: c.account ?? null, deck };
         c.room = this;
         this.systemChat(`${c.name} si sedá ke stolu.`);
         if (this.seats[0] && this.seats[1] && !this.game) this.startGame();
@@ -170,7 +191,8 @@ export class Room {
     this.names = names;
     this.dirty = true;
     this.seed = Math.floor(Math.random() * 2 ** 31);
-    this.game = Game.create({ names, seed: this.seed, baseMode: this.options.baseMode });
+    this.gameDecks = this.collection ? [deckToList(this.seats[0]!.deck ?? {}), deckToList(this.seats[1]!.deck ?? {})] : null;
+    this.game = Game.create({ names, seed: this.seed, baseMode: this.options.baseMode, decks: this.gameDecks ?? undefined });
     this.history = [];
     this.rematch = [false, false];
     this.gameNo++;
@@ -192,7 +214,20 @@ export class Room {
     if (before !== 'over' && this.game.state.phase === 'over') {
       const w = this.game.state.winner;
       if (w === 0 || w === 1) this.score[w]++;
+      this.giveRewards();
       this.broadcastRoom();
+    }
+  }
+
+  private giveRewards() {
+    if (!this.accounts || !this.game) return;
+    const st = this.game.state;
+    for (const i of [0, 1] as PlayerIdx[]) {
+      const s = this.seats[i];
+      if (!s?.user) continue;
+      const result = st.winner === 'draw' ? 'draw' : st.winner === i ? 'win' : 'loss';
+      const gain = this.accounts.reward(s.user, result, st.turn);
+      if (s.client) send(s.client, { t: 'reward', gain, result });
     }
   }
 
@@ -219,7 +254,8 @@ export class Room {
   snapshot(): RoomSnapshot {
     return {
       code: this.code, options: this.options,
-      seats: this.seats.map((s) => (s ? { token: s.token, name: s.name } : null)) as RoomSnapshot['seats'],
+      seats: this.seats.map((s) => (s ? { token: s.token, name: s.name, user: s.user ?? null, deck: s.deck ?? null } : null)) as RoomSnapshot['seats'],
+      gameDecks: this.gameDecks,
       seed: this.seed, names: this.names, history: this.history, chat: this.chat.slice(-50),
       score: this.score, gameNo: this.gameNo, rematch: this.rematch, lastActivity: this.lastActivity, started: !!this.game,
     };
@@ -227,7 +263,8 @@ export class Room {
 
   static fromSnapshot(s: RoomSnapshot): Room {
     const r = new Room(s.code, s.options);
-    r.seats = s.seats.map((x) => (x ? { token: x.token, name: x.name, client: null } : null)) as Room['seats'];
+    r.seats = s.seats.map((x) => (x ? { token: x.token, name: x.name, client: null, user: x.user ?? null, deck: x.deck ?? null } : null)) as Room['seats'];
+    r.gameDecks = s.gameDecks ?? null;
     r.seed = s.seed;
     r.names = s.names;
     r.chat = s.chat ?? [];
@@ -236,7 +273,7 @@ export class Room {
     r.rematch = s.rematch ?? [false, false];
     r.lastActivity = s.lastActivity ?? Date.now();
     if (s.started) {
-      const g = Game.create({ names: s.names, seed: s.seed, baseMode: s.options.baseMode });
+      const g = Game.create({ names: s.names, seed: s.seed, baseMode: s.options.baseMode, decks: s.gameDecks ?? undefined });
       for (const h of s.history) {
         const res = g.act(h.p, h.a);
         if (!res.ok) throw new Error(`replay failed in room ${s.code}: ${res.error}`);
@@ -255,10 +292,13 @@ export class Room {
   }
 }
 
+interface SeatSnap { token: string; name: string; user?: string | null; deck?: Record<string, number> | null }
+
 export interface RoomSnapshot {
   code: string;
   options: RoomOptions;
-  seats: [{ token: string; name: string } | null, { token: string; name: string } | null];
+  seats: [SeatSnap | null, SeatSnap | null];
+  gameDecks?: [string[], string[]] | null;
   seed: number;
   names: [string, string];
   history: { p: PlayerIdx; a: Action }[];
@@ -277,6 +317,8 @@ export function send(c: Client, msg: ServerMsg) {
 export class Lobby {
   rooms = new Map<string, Room>();
 
+  constructor(public accounts: Accounts | null = null) {}
+
   newCode(): string {
     for (;;) {
       let code = '';
@@ -287,6 +329,7 @@ export class Lobby {
 
   create(options: RoomOptions): Room {
     const room = new Room(this.newCode(), options);
+    room.accounts = this.accounts;
     this.rooms.set(room.code, room);
     return room;
   }
@@ -321,7 +364,9 @@ export class Lobby {
       let n = 0;
       for (const s of data.rooms ?? []) {
         try {
-          this.rooms.set(s.code, Room.fromSnapshot(s));
+          const r = Room.fromSnapshot(s);
+          r.accounts = this.accounts;
+          this.rooms.set(s.code, r);
           n++;
         } catch (e) {
           console.warn('Nelze obnovit stůl', s.code, e);
