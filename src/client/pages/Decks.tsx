@@ -4,6 +4,7 @@ import {
   autoDeck, collectibleCards, DECK_MAX, DECK_MIN, deckSize, maxCopies, RARITY_LABEL, type Rarity, validateDeck,
 } from '../../shared/collection';
 import { go } from '../App';
+import { Gate } from '../components/Gate';
 import { deleteDeck, refreshProfile, saveDeck, selectDeck, selectedDeck, useAccount } from '../account';
 import { Card } from '../components/Card';
 import { Drop, Icon } from '../components/Icon';
@@ -50,15 +51,7 @@ export function Decks() {
 
   if (!acc.session) {
     return (
-      <div className="waiting"><div className="panel">
-        <h2 className="stencil" style={{ margin: 0 }}>Kolekce a balíčky</h2>
-        <p className="muted">Kolekci karet mají jen registrovaní hráči.</p>
-        <div className="row" style={{ justifyContent: 'center' }}>
-          <button className="btn primary" onClick={() => go('/register')}>Registrace</button>
-          <button className="btn" onClick={() => go('/login')}>Přihlášení</button>
-          <button className="btn ghost" onClick={() => go('/')}>Domů</button>
-        </div>
-      </div></div>
+      <Gate title="Kolekce a balíčky" text="Postav si vlastní balíček z karet, které nasbíráš. Kolekci mají registrovaní hráči." />
     );
   }
   if (!p) return <div className="waiting"><div className="panel">Načítám kolekci…</div></div>;

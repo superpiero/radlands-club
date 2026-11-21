@@ -4,6 +4,7 @@ import type { GameView } from '../../engine/view';
 import { sfx } from '../sound';
 import { Card } from './Card';
 import { plural } from '../../shared/plural';
+import { Panorama } from './Backdrop';
 
 export function Draft({ view, onPick, mode }: { view: GameView; onPick: (bases: string[]) => void; mode: string }) {
   const me = view.you ?? 0;
@@ -15,6 +16,7 @@ export function Draft({ view, onPick, mode }: { view: GameView; onPick: (bases: 
   if (pv.draftDone) {
     return (
       <div className="draft">
+        <Panorama variant="page" />
         <h2>Základny vybrány</h2>
         <p className="muted">{mode === 'bot' ? 'Bot vybírá…' : `Čekám, až si ${opp.name} vybere základny…`}</p>
       </div>
@@ -30,6 +32,7 @@ export function Draft({ view, onPick, mode }: { view: GameView; onPick: (bases: 
 
   return (
     <div className="draft">
+      <Panorama variant="page" />
       <h2>{pv.name}: vyber 3 základny</h2>
       <p className="muted" style={{ margin: 0, textAlign: 'center', maxWidth: 760 }}>
         Základny chráníš celou hru – když padnou všechny tři, prohráváš. Číslo s kartou udává, kolik karet si za základnu líznete do začáteční ruky.

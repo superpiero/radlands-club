@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { CARDS } from '../../engine/cards';
 import { BOOSTER_PRICE, RARITY_LABEL, type PulledCard } from '../../shared/collection';
 import { go } from '../App';
+import { Gate } from '../components/Gate';
 import { applyPendingProfile, buyBooster, openBoosterApi, refreshProfile, useAccount } from '../account';
 import { Card, CardBack } from '../components/Card';
 import { Icon } from '../components/Icon';
@@ -31,14 +32,7 @@ export function Boosters() {
 
   if (!acc.session) {
     return (
-      <div className="waiting"><div className="panel">
-        <h2 className="stencil" style={{ margin: 0 }}>Boostery</h2>
-        <p className="muted">Pro sbírání karet se musíš přihlásit.</p>
-        <div className="row" style={{ justifyContent: 'center' }}>
-          <button className="btn primary" onClick={() => go('/register')}>Registrace</button>
-          <button className="btn" onClick={() => go('/login')}>Přihlášení</button>
-        </div>
-      </div></div>
+      <Gate title="Boostery" text="Otevírej balíčky karet a sbírej vzácné a legendární kusy. Stačí se zaregistrovat." />
     );
   }
   const p = acc.profile;
