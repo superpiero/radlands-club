@@ -176,7 +176,7 @@ export function Decks() {
             {msg && <div className="muted">{msg}</div>}
             <div className="row">
               <button className="btn primary" onClick={save}>Uložit</button>
-              <button className="btn" onClick={() => { setCards(autoDeck(col)); setDirty(true); sfx.play(); }} title="Sestaví balíček z tvé kolekce">Doplnit automaticky</button>
+              <button className="btn" disabled={size >= DECK_MIN} onClick={() => { const next = autoDeck(col, DECK_MIN, cards); setCards(next); setDirty(true); sfx.play(); setMsg(`Doplněno ${deckSize(next) - size} karet – tvoje vybrané karty zůstaly.`); }} title={size >= DECK_MIN ? 'Balíček už má dost karet' : 'Ponechá vybrané karty a doplní zbytek z kolekce'}>Doplnit automaticky</button>
               {deckId && p.decks.length > 1 && (
                 <button className="btn ghost small" onClick={async () => {
                   if (!confirm('Smazat balíček?')) return;

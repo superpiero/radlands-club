@@ -742,7 +742,7 @@ export class Game {
 
   bunkerImmune(owner: PlayerIdx, col: number): boolean {
     const b = this.state.players[owner].bases[col];
-    return b.id === 'bunkr' && !b.destroyed && this.state.players[owner].columns[col].length >= 2;
+    return b.id === 'bunkr' && !b.destroyed && this.state.players[owner].columns[col].filter((x) => !x.damaged).length >= 2;
   }
 
   personCost(p: PlayerIdx, def: CardDef): number {
@@ -851,12 +851,20 @@ export class Game {
       .map((b) => b.uid);
   }
 
+  private readyScan: string[] = [];
   usedPeople(p: PlayerIdx, exclude: string): string[] {
     const t = this.state.turn;
-    return this.state.players[p].columns.flat()
-      .filter((x) => !x.faceDown && !x.damaged && x.usedTurn === t && x.uid !== exclude && x.stunnedTurn !== t && x.playedTurn !== t && x.restoredTurn !== t)
-      .filter((x) => cardDef(x.id).abilities.some((ab) => !ab.canUse || ab.canUse(this, { p, uid: x.uid })))
-      .map((x) => x.uid);
+    // a re-readier (Bubeník) asks this for every used person, including another re-readier:
+    // keep the chain of askers out so the check can never loop
+    this.readyScan.push(exclude);
+    try {
+      return this.state.players[p].columns.flat()
+        .filter((x) => !x.faceDown && !x.damaged && x.usedTurn === t && !this.readyScan.includes(x.uid) && x.stunnedTurn !== t && x.playedTurn !== t && x.restoredTurn !== t)
+        .filter((x) => cardDef(x.id).abilities.some((ab) => !ab.canUse || ab.canUse(this, { p, uid: x.uid })))
+        .map((x) => x.uid);
+    } finally {
+      this.readyScan.pop();
+    }
   }
 
   advanceableEvents(p: PlayerIdx): string[] {
@@ -1730,10 +1738,10 @@ export class Game {
 
   /** Prorok Bouře: damage every currently unprotected enemy card once. */
   *stormSweep(c: Ctx): Gen {
-    const targets = this.damageTargets(c.p, 'damage');
+    const targets = this.damageTargets(c.p, 'damage').filter((uid) => this.findPerson(uid));
     this.log(c.p, 'damage', 'Prorok Bouře přivolává bouři!');
     for (const uid of targets) {
-      if (!this.findPerson(uid) && !this.findBase(uid)) continue;
+      if (!this.findPerson(uid)) continue;
       yield* this.damage(uid, c.p, { kind: 'damage', srcUid: c.uid, srcIsPerson: true });
     }
   }

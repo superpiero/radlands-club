@@ -294,3 +294,21 @@ describe('win & views', () => {
     expect(JSON.stringify(v)).not.toContain('"kat"');
   });
 });
+
+describe('round-2 regressions', () => {
+  it('a second Bubeník in the same turn does not loop forever', () => {
+    const g = setupGame();
+    const t = g.state.turn;
+    g.state.players[0].water = 10;
+    const b1 = putPerson(g, 0, 0, 'bubenik', { usedTurn: t });
+    const b2 = putPerson(g, 0, 1, 'bubenik');
+    putPerson(g, 0, 2, 'bara', { usedTurn: t });
+    expect(() => g.legalActions(0)).not.toThrow();
+    const res = g.act(0, { t: 'ability', uid: b2.uid, idx: 0 });
+    expect(res.ok).toBe(true);
+    expect(g.state.pending).not.toBeNull();
+    // the used Bubeník can be readied only because Bára could then be readied by him – both are valid choices
+    const opts = g.state.pending!.options.map((o) => o.ref && 'uid' in o.ref ? o.ref.uid : null);
+    expect(opts).toContain(b1.uid);
+  });
+});

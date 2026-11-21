@@ -133,9 +133,9 @@ export const SURVIVORS: CardDef[] = [
     id: 'rez', name: 'Kovářka Rez', cost: 2, junk: 'restore', icon: 'anvil-impact', hue: 25,
     flavor: 'Svařuje zdi z kapot aut.',
     abilities: [{
-      cost: 2, text: 'Oprav svou poškozenou základnu (nebo zneškodni nálož). Pak lízni kartu.',
+      cost: 2, text: 'Oprav svou poškozenou základnu (nebo zneškodni nálož).',
       canUse: (g, c) => g.restoreTargets(c.p, { basesOnly: true }).length > 0,
-      *run(g, c) { yield* g.restoreChoose(c, { basesOnly: true }); g.draw(c.p, 1); },
+      *run(g, c) { yield* g.restoreChoose(c, { basesOnly: true }); },
     }],
     tags: ['support', 'base'],
   }),
@@ -405,7 +405,7 @@ export const COLLECTION_SURVIVORS: CardDef[] = [
   S({
     id: 'honak', name: 'Honák Vítek', cost: 2, junk: 'raid', icon: 'cowboy-boot', hue: 28, copies: 0, rarity: 'rare',
     flavor: 'Žene stádo motorek přes duny.',
-    abilities: [{ cost: 1, text: 'Nájezd: zahraj nebo posuň svůj Nájezd.', canUse: (g, c) => g.canRaid(c.p), needs: 'Nájezd nejde posunout.', *run(g, c) { yield* g.raid(c.p); } }],
+    abilities: [{ cost: 2, text: 'Nájezd: zahraj nebo posuň svůj Nájezd.', canUse: (g, c) => g.canRaid(c.p), needs: 'Nájezd nejde posunout.', *run(g, c) { yield* g.raid(c.p); } }],
   }),
   S({
     id: 'doktorka', name: 'Doktorka Iva', cost: 3, junk: 'restore', icon: 'stethoscope', hue: 150, copies: 0, rarity: 'rare',
@@ -442,8 +442,9 @@ export const COLLECTION_SURVIVORS: CardDef[] = [
     id: 'prorok', name: 'Prorok Bouře', cost: 4, junk: 'injure', icon: 'lightning-storm', hue: 260, copies: 0, rarity: 'legendary',
     flavor: '„Nebe vám to spočítá.“',
     abilities: [{
-      cost: 3, text: 'Poškoď každou nekrytou soupeřovu kartu (přeživší i základny).',
-      canUse: (g, c) => g.hasDamageTarget(c.p, 'damage'),
+      cost: 3, text: 'Poškoď každého nekrytého soupeřova přeživšího.',
+      canUse: (g, c) => g.damageTargets(c.p, 'damage').some((uid) => !!g.findPerson(uid)),
+      needs: 'Soupeř nemá žádného nekrytého přeživšího.',
       *run(g, c) { yield* g.stormSweep(c); },
     }],
   }),
@@ -562,16 +563,16 @@ export const BASES: CardDef[] = [
     id: 'ubikace', name: 'Ubikace', draw: 1, icon: 'camping-tent', hue: 85,
     flavor: 'Postel je postel, i když je z palet.',
     abilities: [{
-      cost: 2, text: 'Naverbuj tuláka.',
+      cost: 1, text: 'Naverbuj tuláka.',
       canUse: (g, c) => g.hasFreeSlot(c.p),
       needs: 'Nemáš volné místo pro přeživšího.',
       *run(g, c) { yield* g.gainDrifter(c.p); },
     }],
   }),
   B({
-    id: 'bunkr', name: 'Bunkr', draw: 2, icon: 'bunker', hue: 210,
+    id: 'bunkr', name: 'Bunkr', draw: 1, icon: 'bunker', hue: 210,
     flavor: 'Beton z doby, kdy se ještě věřilo na budoucnost.',
-    trait: 'Dokud v tomto sloupci stojí 2 přeživší, Bunkr nelze poškodit (ani nájezdem).',
+    trait: 'Dokud v tomto sloupci stojí 2 nepoškození přeživší, Bunkr nelze poškodit (ani nájezdem).',
     abilities: [],
   }),
   B({
@@ -581,7 +582,7 @@ export const BASES: CardDef[] = [
     abilities: [],
   }),
   B({
-    id: 'srotiste', name: 'Šrotiště', draw: 1, icon: 'gear-hammer', hue: 28,
+    id: 'srotiste', name: 'Šrotiště', draw: 2, icon: 'gear-hammer', hue: 28,
     flavor: 'Všechno se dá rozebrat. Dvakrát.',
     abilities: [{
       cost: 1, text: 'Rozeber kartu z ruky: její efekt rozebrání se provede dvakrát.',
@@ -637,7 +638,7 @@ export const BASES: CardDef[] = [
     }],
   }),
   B({
-    id: 'rusicka', name: 'Rušička', draw: 1, icon: 'static-waves', hue: 290,
+    id: 'rusicka', name: 'Rušička', draw: 2, icon: 'static-waves', hue: 290,
     flavor: 'Bzzzzzz.',
     abilities: [{
       cost: 1, text: 'Soupeř náhodně odhodí kartu z ruky. (Cisterna se mu vrátí do zóny.)',
@@ -657,7 +658,7 @@ export const BASES: CardDef[] = [
     }],
   }),
   B({
-    id: 'vysilac', name: 'Vysílač', draw: 1, icon: 'satellite-communication', hue: 165,
+    id: 'vysilac', name: 'Vysílač', draw: 0, icon: 'satellite-communication', hue: 165,
     flavor: 'Rozkazy letí rychleji než kulky.',
     trait: 'Tvoje operace (i Nájezd) se ve frontě umisťují o 1 místo blíž (nejméně na místo 1).',
     abilities: [],
@@ -677,10 +678,10 @@ export const BASES: CardDef[] = [
     }],
   }),
   B({
-    id: 'vezeni', name: 'Vězení', draw: 1, icon: 'prisoner', hue: 260,
+    id: 'vezeni', name: 'Vězení', draw: 2, icon: 'prisoner', hue: 260,
     flavor: 'Mříže ze starých postelí. Pořád drží.',
     abilities: [{
-      cost: 2, text: 'Omrač nekrytého nepřítele: během soupeřova příštího tahu nebude připravený.',
+      cost: 1, text: 'Omrač nekrytého nepřítele: během soupeřova příštího tahu nebude připravený.',
       canUse: (g, c) => g.stunTargets(c.p).length > 0,
       *run(g, c) { yield* g.stunChoose(c); },
     }],

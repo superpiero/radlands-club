@@ -98,7 +98,7 @@
     "abilities": [
       {
         "cost": 2,
-        "text": "Oprav svou poškozenou základnu (nebo zneškodni nálož). Pak lízni kartu."
+        "text": "Oprav svou poškozenou základnu (nebo zneškodni nálož)."
       }
     ],
     "copies": 2,
@@ -356,7 +356,7 @@
     "junk": "raid",
     "abilities": [
       {
-        "cost": 1,
+        "cost": 2,
         "text": "Nájezd: zahraj nebo posuň svůj Nájezd."
       }
     ],
@@ -430,7 +430,7 @@
     "abilities": [
       {
         "cost": 3,
-        "text": "Poškoď každou nekrytou soupeřovu kartu (přeživší i základny)."
+        "text": "Poškoď každého nekrytého soupeřova přeživšího."
       }
     ],
     "copies": 0,
@@ -723,7 +723,7 @@
     "draw": 1,
     "abilities": [
       {
-        "cost": 2,
+        "cost": 1,
         "text": "Naverbuj tuláka."
       }
     ],
@@ -734,9 +734,9 @@
     "id": "bunkr",
     "name": "Bunkr",
     "kind": "base",
-    "draw": 2,
+    "draw": 1,
     "abilities": [],
-    "trait": "Dokud v tomto sloupci stojí 2 přeživší, Bunkr nelze poškodit (ani nájezdem).",
+    "trait": "Dokud v tomto sloupci stojí 2 nepoškození přeživší, Bunkr nelze poškodit (ani nájezdem).",
     "copies": 1,
     "flavor": "Beton z doby, kdy se ještě věřilo na budoucnost."
   },
@@ -754,7 +754,7 @@
     "id": "srotiste",
     "name": "Šrotiště",
     "kind": "base",
-    "draw": 1,
+    "draw": 2,
     "abilities": [
       {
         "cost": 1,
@@ -845,7 +845,7 @@
     "id": "rusicka",
     "name": "Rušička",
     "kind": "base",
-    "draw": 1,
+    "draw": 2,
     "abilities": [
       {
         "cost": 1,
@@ -873,7 +873,7 @@
     "id": "vysilac",
     "name": "Vysílač",
     "kind": "base",
-    "draw": 1,
+    "draw": 0,
     "abilities": [],
     "trait": "Tvoje operace (i Nájezd) se ve frontě umisťují o 1 místo blíž (nejméně na místo 1).",
     "copies": 1,
@@ -906,10 +906,10 @@
     "id": "vezeni",
     "name": "Vězení",
     "kind": "base",
-    "draw": 1,
+    "draw": 2,
     "abilities": [
       {
-        "cost": 2,
+        "cost": 1,
         "text": "Omrač nekrytého nepřítele: během soupeřova příštího tahu nebude připravený."
       }
     ],
