@@ -183,3 +183,151 @@ input.field, select.field { background-color: rgba(12, 9, 7, .72); border-color:
 .actions .endturn:not(:disabled) { letter-spacing: .08em; }
 .qwrap .qslot, .hz .home-zone .token { border-radius: 10px; }
 .status .pill, .center .pill { background: rgba(16, 11, 8, .7); border-color: rgba(246, 220, 176, .2); }
+
+/* ==========================================================================
+   IDENTITY v3 – "water-works stencil"
+   Condensed stencil type like paint sprayed on barrels and cisterns, hazard
+   tape as the signature accent, bone card stock, rust for danger,
+   teal reserved for water. Genre-typical post-apo, but our own look.
+   ========================================================================== */
+:root {
+  /* palette */
+  --bg: #13100e;
+  --bg-2: #1d1814;
+  --tarp: #2a221c;
+  --tarp-2: #352b22;
+  --sand: #efdcb6;
+  --sand-2: #d2bb90;
+  --paper: #f2e6ca;
+  --ink: #1b1511;
+  --ink-2: #5a4838;
+  --text: #f4ead6;
+  --muted: #bba98b;
+  --rust: #c8531f;
+  --ember: #f07c2c;
+  --gold: #f2b632;          /* hazard yellow */
+  --water: #2ec2d4;
+  --water-2: #8ee9f3;
+  --water-deep: #137f8e;
+  --line: rgba(239, 220, 182, 0.14);
+  --line-2: rgba(239, 220, 182, 0.28);
+  --hazard: repeating-linear-gradient(-45deg, var(--gold) 0 10px, #17120e 10px 20px);
+
+  /* type */
+  --f-title: 'Big Shoulders Display', 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --f-stencil: 'Big Shoulders Stencil Display', 'Big Shoulders Display', 'Arial Narrow', sans-serif;
+
+  /* spacing scale */
+  --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 24px; --s6: 32px; --s7: 48px;
+  --radius: 12px;
+}
+
+/* ---------- type: titles get the condensed display face, heroes the stencil ---------- */
+.stencil, .card .name, .home-card h2, .pop .ptitle, .modal h2, .summary th, .recap-title,
+.recap-dock .recap-title, .rarity-name, .showcase .sc-label, .qslot .qn, .ht-junk { font-weight: 800; letter-spacing: .02em; }
+.logo h1, .page h1, .banner .inner, .gameover h1, .handover h1, .welcome h2, .room-code, .draft h2,
+.pack-title, .card .badge-stamp, .card.k-operation .stamp, .card.k-back .backtxt {
+  font-family: var(--f-stencil); font-weight: 900; letter-spacing: .02em;
+}
+.logo h1 { font-size: clamp(64px, 12vw, 150px); line-height: .86; letter-spacing: .01em; }
+.logo .tag { font-size: 19px; margin-top: var(--s3); }
+.page h1 { font-size: clamp(44px, 6vw, 68px); line-height: .95; margin: var(--s3) 0 var(--s3); }
+.page h1::after { content: ''; display: block; width: 120px; height: 8px; margin-top: var(--s3); background: var(--hazard); border-radius: 2px; opacity: .9; }
+.page h2 { font-size: 32px; margin: var(--s6) 0 var(--s3); font-weight: 800; }
+.page h2 small, .page h2 .muted { font-family: var(--f-ui); font-size: 18px; }
+.home-card h2 { font-size: 30px; }
+.draft h2 { font-size: clamp(36px, 5vw, 52px); }
+.banner .inner { font-size: clamp(48px, 9vw, 112px); }
+.gameover h1 { font-size: 76px; }
+.room-code { font-size: 84px; }
+.pack-title { font-size: 44px; }
+.modal h2 { font-size: 34px; }
+.pop .ptitle { font-size: 22px; }
+
+/* ---------- spacing ---------- */
+.page { padding: var(--s5) var(--s4) var(--s7); }
+.page .inner { width: min(1160px, 100%); }
+.home { gap: var(--s5); }
+.home-grid { gap: var(--s4); }
+.home-card { padding: var(--s5); gap: var(--s3); }
+.home .panel.home-card:first-of-type { padding: var(--s4) var(--s5); }
+.gallery { gap: var(--s5) var(--s4); }
+.btn { padding: 10px 18px; font-weight: 700; letter-spacing: .06em; }
+.btn.small { padding: 6px 12px; }
+
+/* ---------- controls ---------- */
+.btn:not(.primary):not(.danger) { background: linear-gradient(180deg, rgba(255,240,210,.09), rgba(255,240,210,.03)); border-color: rgba(239,220,182,.26); color: var(--text); }
+.btn:not(.primary):not(.danger):hover:not(:disabled) { background: linear-gradient(180deg, rgba(255,240,210,.16), rgba(255,240,210,.06)); border-color: rgba(239,220,182,.5); }
+.btn.ghost { background: transparent !important; }
+.seg { border-color: rgba(239,220,182,.26); border-radius: 10px; background: rgba(0,0,0,.25); }
+.seg button { font-weight: 700; padding: 7px 14px; }
+.seg button.on { background: var(--sand); color: var(--ink); box-shadow: inset 0 -2px 0 rgba(0,0,0,.18); }
+.btn.danger { background: linear-gradient(180deg, #d9632e, #a33f17); border-color: #f0915f; }
+
+/* ==========================================================================
+   CARD v3 – ink border, dark title band, bone stock
+   ========================================================================== */
+.card { --stock: linear-gradient(170deg, #f5ead0 0%, #e7d6b0 60%, #dbc79c 100%); }
+.card .frame {
+  box-shadow: inset 0 0 0 .2em #16110d, inset 0 0 0 .3em rgba(255, 240, 210, .38), inset 0 0 1.4em rgba(70, 45, 20, .28);
+}
+.card.k-survivor { background: var(--stock); }
+
+/* title band */
+.card.k-survivor .head, .card.k-operation .head {
+  margin: .32em .32em 0; padding: .32em .4em .3em; border-radius: .3em .3em .18em .18em; min-height: 2em;
+  background: linear-gradient(180deg, #2e251d, #18130f);
+  box-shadow: inset 0 1px 0 rgba(255,240,210,.12), inset 0 -.14em 0 var(--rust), 0 1px 2px rgba(0,0,0,.45);
+}
+.card.k-operation .head { box-shadow: inset 0 1px 0 rgba(255,240,210,.12), inset 0 -.14em 0 var(--gold), 0 1px 2px rgba(0,0,0,.45); }
+.card.k-survivor .name, .card.k-operation .name { color: #f6ead2; text-shadow: 0 1px 0 #000; }
+.card.k-operation .name { color: #ffd36a; }
+.card .name { font-family: var(--f-title); line-height: .92; letter-spacing: .03em;
+  font-size: min(1.4em, calc((var(--w) - var(--nr) * 1em) * 1.9 / var(--nl, 9))); white-space: normal; }
+.card.compact .name { font-size: min(1.45em, calc(var(--w) * 1.95 / var(--nl, 9))); }
+
+/* cost: teal drop medallion */
+.card .cost svg { color: #1793a4; }
+.card .cost span { font-family: var(--f-title); font-weight: 900; font-size: 1.12em; top: .2em; }
+
+/* art window */
+.card .art { margin: .3em .32em 0; border-radius: .25em;
+  box-shadow: inset 0 0 0 .1em rgba(22,17,13,.9), inset 0 -1.4em 1.6em rgba(0,0,0,.32); }
+.card.compact .art { margin: .22em .24em 0; }
+
+/* type line as a small tag */
+.card .typeline { padding: .3em .55em 0; font-size: .68em; letter-spacing: .18em; color: #6d5843; font-weight: 800; }
+.card.k-operation .typeline { color: #c8bb8f; }
+
+/* rules text */
+.card .text { padding: .32em .36em .45em; gap: .28em; }
+.card .ab { border-radius: .3em; padding: .3em .4em; line-height: 1.14;
+  background: linear-gradient(180deg, #2c241c, #1a1510); box-shadow: inset 0 1px 0 rgba(255,240,210,.08), 0 1px 0 rgba(255,255,255,.3); }
+.card .ab .abc { color: var(--water-2); font-family: var(--f-title); font-weight: 900; font-size: 1.08em; }
+.card .trait { border-left-color: var(--rust); }
+.card .flavor { font-family: var(--f-type); }
+.card .junk { background: rgba(18,13,10,.86); border: 1px solid rgba(239,220,182,.18); letter-spacing: .04em; }
+
+/* operations: olive stock with a hazard edge */
+.card.k-operation { background: linear-gradient(170deg, #45422b, #2a281b 70%, #211f15); }
+.card.k-operation::before { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: .3em; z-index: 1; background: var(--hazard); background-size: 1.2em 1.2em; opacity: .75; }
+.card .fuse { background: var(--gold); color: #1d1408; font-family: var(--f-title); font-weight: 900; }
+.card .fuse.instant { background: var(--ember); }
+
+/* full-art cards keep the band readable over the image */
+.card.has-art.k-survivor .head, .card.has-art.k-operation .head { background: linear-gradient(180deg, rgba(30,24,18,.92), rgba(18,14,10,.86)); }
+
+/* card back: stencil emblem */
+.card.k-back .backtxt { letter-spacing: .18em; font-size: 1.15em; }
+
+/* rarity name under booster reveals */
+.rarity-name { font-size: 20px; }
+
+/* Czech carons/acutes above capitals must not be clipped by the name box */
+.card .name { line-height: 1.04; padding-top: .16em; margin-top: -.1em; }
+.card.compact .name { padding-top: .14em; }
+.home-card .row .btn { letter-spacing: .05em; }
+
+/* numerals: the display face's "1" reads like "I" – costs, countdowns and slots use Barlow */
+.card .cost span, .card .ab .abc, .card .fuse, .qwrap .qslot .qn, .qslot .qn, .card.k-base .draws { font-family: var(--f-ui); font-weight: 800; }
+.card .cost span { font-size: 1.05em; top: .16em; }
