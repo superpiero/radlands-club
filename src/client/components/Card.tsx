@@ -129,6 +129,35 @@ function longestWord(name: string): number {
   return Math.max(6, ...name.split(/\s+/).map((w) => w.length));
 }
 
+// Width of the longest word of a card name in `em` of the title font, so CSS can size names to fit exactly.
+const emCache = new Map<string, number>();
+let measureCtx: CanvasRenderingContext2D | null | undefined;
+function nameEm(name: string): number {
+  const hit = emCache.get(name);
+  if (hit !== undefined) return hit;
+  const words = name.toUpperCase().split(/\s+/);
+  const longest = Math.max(...words.map((w) => w.length));
+  let em = Math.max(4.2, longest * 0.72); // conservative until the font is ready
+  try {
+    const ready = typeof document !== 'undefined' && document.fonts?.check('100px "Saira Stencil One"');
+    if (measureCtx === undefined) measureCtx = typeof document !== 'undefined' ? document.createElement('canvas').getContext('2d') : null;
+    if (ready && measureCtx) {
+      measureCtx.font = '100px "Saira Stencil One"';
+      em = Math.max(4.2, ...words.map((w) => measureCtx!.measureText(w).width / 100 + w.length * 0.01));
+      emCache.set(name, em);
+    }
+  } catch { /* keep the estimate */ }
+  return em;
+}
+
+function CardName({ name }: { name: string }) {
+  return (
+    <div className="name fit" style={{ ['--nl' as string]: longestWord(name), ['--nem' as string]: nameEm(name).toFixed(3) }}>
+      <span className="nm">{name}</span>
+    </div>
+  );
+}
+
 /** Background behind the procedural scene (shows while the SVG paints, and under the glyph). */
 export function artStyle(_hue: number, kind: string, id = ''): CSSProperties {
   const pal = paletteFor(id, kind);
@@ -192,7 +221,7 @@ export function Card(p: CardProps) {
         {art}
         <div className="bside">
           <div className="head">
-            <div className="name" style={{ ['--nl' as string]: longestWord(def.name) }}>{def.name}</div>
+            <CardName name={def.name} />
             <span className="draws" title="Počet karet, které si na začátku hry líznete"><Icon name="card-draw" />{def.draw}</span>
           </div>
           {hp > 2 && (
@@ -217,12 +246,7 @@ export function Card(p: CardProps) {
         {costVal !== undefined && (
           <span className="cost" title="Cena ve vodě"><Icon name="water-drop" /><span>{costVal}</span></span>
         )}
-        <div className="name" style={{ ['--nl' as string]: longestWord(def.name) }}>{def.name}</div>
-        {def.kind === 'operation' && (
-          <span className={`fuse ${def.countdown === 0 ? 'instant' : ''}`} title={def.countdown === 0 ? 'Okamžitá operace' : `Odpočet: ${def.countdown}`}>
-            {def.countdown === 0 ? <Icon name="focused-lightning" /> : <><Icon name="sands-of-time" />{def.countdown}</>}
-          </span>
-        )}
+        <CardName name={def.name} />
       </div>
       <div className={`art ${hasArt ? 'art-img' : ''}`} style={hasArt ? undefined : artStyle(def.hue, def.kind, def.id)}>
         {hasArt ? <img src={`/art/${def.id}.webp?v=${ART_VERSION}`} alt="" loading="lazy" decoding="async" draggable={false} /> : (
@@ -231,6 +255,11 @@ export function Card(p: CardProps) {
             <div className="halftone" />
             <Icon name={def.icon} className="glyph" />
           </>
+        )}
+        {def.kind === 'operation' && (
+          <span className={`fuse ${def.countdown === 0 ? 'instant' : ''}`} title={def.countdown === 0 ? 'Okamžitá operace – provede se hned' : `Odpočet: provede se za ${def.countdown} ${def.countdown === 1 ? 'tah' : 'tahy'}`}>
+            {def.countdown === 0 ? <Icon name="focused-lightning" /> : <><Icon name="sands-of-time" />{def.countdown}</>}
+          </span>
         )}
         {def.junk && def.kind !== 'cistern' && (
           <div className="junk" title={`Rozebrání: ${JUNK_LABEL[def.junk]}`}><Icon name={JUNK_ICON[def.junk]} />{!p.compact && JUNK_LABEL[def.junk]}</div>

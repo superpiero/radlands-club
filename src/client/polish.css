@@ -1,0 +1,95 @@
+/* ==========================================================================
+   POSLEDNÍ KAPKA – UX polish layer (owned by the dev session)
+   Loaded last. Card interior spacing and screen spacing fixes.
+   ========================================================================== */
+
+/* QA lab page (#/lab) */
+.lab { padding: 16px; color: var(--text); }
+.lab section { margin: 0 0 22px; }
+.lab h3 { margin: 0 0 8px; font-size: 14px; color: var(--muted); }
+.lab-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+
+/* --------------------------------------------------------------------------
+   Card names: sized to the measured longest word (--nem, in em), max 2 lines.
+   Replaces the older char-count guesses that clipped letters on the board.
+   -------------------------------------------------------------------------- */
+.card .name.fit {
+  container-type: inline-size;
+  font-size: 1.05em; line-height: 1.02;
+  white-space: normal; overflow-wrap: normal; word-break: normal; hyphens: none;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden; text-overflow: clip;
+  padding-top: .06em; /* room for diacritics (Ř, Č, Ž) */
+}
+.card.compact .name.fit { font-size: 1.15em; }
+.card .name.fit > .nm { font-size: min(1em, calc(100cqw / var(--nem, 7) * .96)); }
+.card .head { align-items: center; }
+
+/* operation countdown lives in the art corner, so the name gets the full head */
+.card .art > .fuse { position: absolute; top: .3em; right: .3em; z-index: 2; font-size: .8em; padding: .08em .35em; box-shadow: 0 1px 3px rgba(0,0,0,.55); }
+.card.compact .art > .fuse { font-size: .75em; top: .2em; right: .2em; }
+
+/* text box never runs under the rarity gem */
+.card:not(.compact):has(.gem) .text { padding-bottom: .9em; }
+
+/* board cards: the play cost is history once a card is on the table – give the name the whole head */
+.card.compact .head > .cost { display: none; }
+.card.compact .head { padding: .3em .35em .2em; gap: 0; }
+
+/* type line: readable on dark (operations) and hidden where it only repeats the name */
+.card.k-operation .typeline { color: rgba(255, 226, 180, .62); }
+.card.k-cistern .typeline, .card.k-raid .typeline { display: none; }
+
+/* large bases: text keeps clear of the bottom frame; flavor readable over the art */
+.card.k-base:not(.compact) .bside { padding-bottom: .5em; padding-right: .15em; }
+.card.k-base:not(.compact) .bside { margin-left: 30%; min-height: 0; }
+.card.k-base:not(.compact) .head { flex: none; }
+.card.k-base:not(.compact) .text { padding: .15em .45em .1em .35em; gap: .3em; justify-content: center; font-size: .84em; min-height: 0; }
+.card.k-base:not(.compact) .flavor { color: #e8dcc4; opacity: 1; background: rgba(20,14,10,.6); border-radius: .3em; padding: .25em .4em; text-shadow: 0 1px 1px #000; }
+
+/* small screens: the opponent recap floats at the top (over the opponent's side), never over my controls */
+@media (max-width: 860px), (max-height: 560px) {
+  .table > .recap { top: 40px; bottom: auto; left: 50%; transform: translateX(-50%); width: min(420px, 92vw); padding: 8px 12px; font-size: 13px; }
+  .table > .recap .recap-title { font-size: 14px; }
+  .table > .recap .recap-line { font-size: 13px; }
+}
+
+/* home: every card's actions sit on the bottom edge, headings and copy wrap evenly */
+.home-grid .home-card > .row:last-child, .home-grid .home-card > .btn:last-child { margin-top: auto; }
+.home .logo p, .home .tagline, .home-card p, .welcome p, .panel p { text-wrap: pretty; }
+.home .logo p, .home .tagline { text-wrap: balance; }
+.home .tag { text-wrap: balance; }
+
+/* deck builder: clear count header; on phones the deck is a bottom sheet you can always reach */
+.deck-stats { display: flex; flex-direction: column; gap: 2px; }
+.deck-stats .ds-count { font-size: 15px; }
+.deck-stats .ds-count b { font-size: 22px; font-family: var(--f-title); }
+.deck-stats .ok { color: var(--good, #7fc35d); } .deck-stats .bad { color: #ff9a7a; }
+.sheet-handle { display: none; }
+@media (max-width: 900px) {
+  .deck-layout { padding-bottom: 72px; }
+  .deck-panel { position: fixed; z-index: 60; left: 0; right: 0; bottom: 0; top: auto; max-height: 78vh; overflow-y: auto;
+    border-radius: 16px 16px 0 0; padding: 0 14px 14px; transform: translateY(calc(100% - 54px)); transition: transform .28s var(--ease-out, ease-out);
+    box-shadow: 0 -10px 30px rgba(0,0,0,.55); background: var(--glass-strong, #1a130e); }
+  .deck-panel.open { transform: none; }
+  .sheet-handle { display: flex; position: sticky; top: 0; z-index: 2; width: calc(100% + 28px); margin: 0 -14px 6px; height: 54px; align-items: center; justify-content: space-between;
+    padding: 0 16px; border: 0; border-bottom: 1px solid var(--line); background: inherit; color: var(--text); font: 600 16px/1 var(--f-ui, inherit); cursor: pointer; }
+  .sheet-handle b { font-family: var(--f-title); font-size: 20px; margin: 0 2px; }
+  .sheet-handle .ok { color: var(--good, #7fc35d); } .sheet-handle .bad { color: #ff9a7a; }
+  .sheet-cta { font-size: 14px; color: var(--water, #4fc3d9); letter-spacing: .04em; }
+}
+
+/* phones: the card action menu is a bottom sheet above the hand button – nothing hides under it */
+@media (max-width: 860px), (max-height: 560px) {
+  .pop.panel { left: 8px !important; right: 8px !important; top: auto !important; bottom: 58px !important; transform: none !important;
+    max-width: none; min-width: 0; z-index: 70; max-height: calc(100dvh - 120px); overflow-y: auto;
+    background: rgba(24,17,12,.97); box-shadow: 0 -8px 30px rgba(0,0,0,.6); }
+  .pop .opt { padding-top: 9px; padding-bottom: 9px; }
+}
+
+/* draft: the confirm row stays in reach while scrolling through the bases */
+@media (max-width: 860px) {
+  .draft > .row { position: sticky; bottom: 0; z-index: 5; margin: 0 -12px; padding: 10px 12px calc(10px + env(safe-area-inset-bottom));
+    background: linear-gradient(180deg, rgba(18,12,9,0), rgba(18,12,9,.92) 30%); justify-content: space-between; }
+  .draft h1, .draft h2 { font-size: clamp(24px, 7vw, 34px); text-wrap: balance; }
+}

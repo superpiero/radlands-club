@@ -19,6 +19,7 @@ import '@fontsource/big-shoulders-stencil-display/latin-900';
 import '@fontsource/big-shoulders-stencil-display/latin-ext-900';
 import './styles.css';
 import './design.css';
+import './polish.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(<App />);

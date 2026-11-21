@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Gallery } from './pages/Gallery';
+import { Lab } from './pages/Lab';
 import { Home } from './pages/Home';
 import { Rules } from './pages/Rules';
 import { GameRoute } from './pages/GameRoute';
@@ -18,6 +19,7 @@ export type Route =
   | { page: 'login' }
   | { page: 'register' }
   | { page: 'boosters' }
+  | { page: 'lab' }
   | { page: 'decks' }
   | { page: 'room'; code: string; spectate?: boolean }
   | { page: 'new'; baseMode: 'draft' | 'random'; deckMode: 'classic' | 'collection'; turnSeconds: number }
@@ -33,6 +35,7 @@ function parse(hash: string): Route {
   switch (parts[0]) {
     case 'rules': return { page: 'rules' };
     case 'cards': return { page: 'cards' };
+    case 'lab': return { page: 'lab' };
     case 'login': return { page: 'login' };
     case 'register': return { page: 'register' };
     case 'boosters': return { page: 'boosters' };
@@ -67,6 +70,7 @@ export function App() {
       {route.page === 'home' && <Home />}
       {route.page === 'rules' && <Rules />}
       {route.page === 'cards' && <Gallery />}
+      {route.page === 'lab' && <Lab />}
       {(route.page === 'login' || route.page === 'register') && <AccountPage mode={route.page} />}
       {route.page === 'boosters' && <Boosters />}
       {route.page === 'decks' && <Decks />}
