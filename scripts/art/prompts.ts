@@ -2,11 +2,11 @@
 // All subjects describe ORIGINAL characters and places of "Poslední kapka".
 
 export const ART_STYLE =
-  'Painterly digital illustration for a premium collectible card game, original artwork. ' +
-  'Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. ' +
-  'Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. ' +
-  'Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. ' +
-  'Keep the main subject centred with some headroom so it still reads when cropped small. ' +
+  'Vivid neon-noir illustration for a premium collectible card game, original artwork, edition "Night Current". ' +
+  'Setting: a post-apocalyptic Central European wasteland decades after the rivers dried up – rusty trams, concrete panel blocks, cooling towers, bridges and scrap shanties. ' +
+  'Dense, highly detailed digital painting with bold ink outlines and a gritty comic texture. Dusk-to-night skies in magenta, violet and burning orange; neon tubes and disco-ball glints; ' +
+  'a mint-teal glow is reserved for water and water technology. Scrappy, characterful survivors in patched gear with improvised tech. ' +
+  'Strong readable silhouette of the main subject, centred with some headroom so it still reads when cropped small. ' +
   'Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only.';
 
 export interface ArtSpec { subject: string; landscape?: boolean }

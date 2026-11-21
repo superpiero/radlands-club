@@ -37,30 +37,21 @@ rub karet, hrací plochu, jejich postavy, tábory a názvy karet, ani její ilus
 dust haze, tarp and corrugated metal, welded pipes, jerrycans, goggles, bandanas, water tanks, windmills,
 cracked earth, heat shimmer, frontier town, caravan, wasteland survivors*.
 
-## 2. Identita hry
+## 2. Identita hry – edice „Noční proud“
 
 - **Název:** Poslední kapka. Duel dvou hráčů o vodu. Voda (kapka) je jediná surovina.
-- **Typy karet:** přeživší (postavy), operace (události ve frontě s odpočtem), základny (3 na hráče),
-  Nájezd, tulák (rub karty), cisterna.
-- **Paleta** (`src/client/styles.css` a `src/client/design.css`): spálená poušť, rez a plachty;
-  tyrkysová je **jediná čistá barva a patří vodě**.
-
-  | token | hex | použití |
-  |---|---|---|
-  | bg | `#17120e` | noc, stíny |
-  | tarp | `#2a221b` | plachty, tmavé plochy |
-  | sand | `#e8d5b0` | písek, světlo |
-  | paper | `#efe3c8` | papír karet |
-  | rust | `#b5532a` | rez, nebezpečí |
-  | ember | `#e8742f` | oheň, akce |
-  | gold | `#e9b949` | vzácnost, slunce |
-  | water | `#3fb8c9` | **jen voda a naděje** |
-  | water-deep | `#1f7686` | stín vody, ikona ceny |
-
-- **Písma:** Saira Stencil One (názvy, šablonové písmo), Barlow Condensed (UI), Special Elite (psací stroj, flavor text).
-- **Karta ve hře:** s obrázkem se kreslí jako full-art (ilustrace přes celou kartu, nahoře štítek s názvem
-  a cenou, dole tmavý panel se schopností). Bez obrázku má procedurální scénu v kurátorovaných paletách
-  (`PALETTES` v `src/client/components/Card.tsx`). Menu mají procedurální panorama (`Backdrop.tsx`).
+- **Edice:** „Noční proud“ (podklady od uživatele v `design/edition-nocni-proud/`: 78 ilustrací,
+  pozadí stolu, makety stolu, rejstříku a rámů karet, znak a ikony). Je to závazný vizuální směr.
+- **Typy karet a jejich barvy:** přeživší **růžová** `#ff5fb8`, operace **oranžová** `#ff9a3d`,
+  základny **fialová** `#a78bfa`, speciální (Nájezd, Cisterna, Tulák) **limetková** `#c9f25c`.
+- **Paleta rozhraní** (`src/client/edition.css`): noční modř `#0d0b14` / `#14111d`, panely z tmavého skla,
+  **voda mátová** `#5ff2d2`, **výběr a hlavní akce limetkové** `#e2f36a`, nebezpečí `#ff4d6d`.
+- **Písma:** Archivo 900 kurzíva (velké nadpisy, logo), Archivo 800 (názvy karet, nadpisy panelů),
+  JetBrains Mono (popisky skupin a štítky), Barlow Condensed (text rozhraní a schopností).
+- **Karta ve hře:** ilustrace nahoře, pod ní tmavý štítek s popiskem skupiny („● PŘEŽIVŠÍ“), bílým názvem
+  a schopnostmi; tenký lem v barvě skupiny; mátová cenovka v levém horním rohu. Základny jsou na šířku:
+  ilustrace vlevo, štítek vpravo.
+- **Znak:** `public/emblem.svg` (mátová kapka) – favicon, rub karty, logo na úvodní stránce.
 
 ## 3. Styl: `ART_STYLE`
 
@@ -72,9 +63,11 @@ textury, booster…) si ho ulož do souboru a předej přes `--style`:
 node -e "console.log(require('./docs/art-prompts.json').style)" > design/style.txt
 ```
 
-Ve zkratce: *painterly digital illustration, sun-bleached Central European wasteland after the rivers dried up,
-ochre / rust / sand / tarp browns, teal only for water, golden-hour rim light, strong silhouette, dust,
-film grain, subject centred, no text / frames / borders.*
+Ve zkratce: *vivid neon-noir, Central European ruins (trams, panel blocks, cooling towers, bridges), dense detailed
+digital painting with bold ink outlines and comic grit, magenta / violet / orange dusk-to-night skies, neon tubes,
+mint-teal glow only for water, scrappy characterful survivors, subject centred, no text / frames / borders.*
+Jako `--ref` pro konzistenci se hodí přímo obrázky z `design/edition-nocni-proud/` (např. `pumpar.avif`
+převedený na PNG) – jsou to schválené kotvy stylu.
 
 Když chce uživatel styl změnit, změň `ART_STYLE`, přegeneruj export (`npx tsx scripts/art/export-prompts.ts`)
 a ukaž mu pár skic dřív, než se pustíš do celé sady – existující obrázky by jinak stylově nesedly.
