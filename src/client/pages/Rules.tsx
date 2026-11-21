@@ -104,7 +104,7 @@ export function Rules() {
         <ul>
           <li>Vlastnosti (text v kurzívě) platí stále – u přeživších jen dokud nejsou poškození, u základen dokud nejsou zničené.</li>
           <li>Útočné efekty nesmíš použít na své vlastní karty, pokud to karta výslovně neříká.</li>
-          <li>Když dojde balíček, zamíchá se odhazovací balíček jako nový. <b>Když dojde podruhé, hra končí – vyhrává hráč s více stojícími základnami</b> (při shodě menší poškození, jinak remíza). Ve sběratelském režimu prohrává ten, komu balíček došel.</li>
+          <li>Když dojde balíček, zamíchá se odhazovací balíček jako nový. <b>Když dojde podruhé, hra končí – vyhrává hráč s více stojícími základnami</b> (při shodě menší poškození, jinak remíza). Ve sběratelském režimu platí <b>Žízeň</b>: balíček se znovu zamíchá, ale od druhého zamíchání to stojí poškození tvé nejméně poškozené základny.</li>
           <li>Ruka nemá limit. Odhazovací balíček je veřejný jen vrchní kartou.</li>
           <li>Dokud neodhalíš novou informaci (líznutí, rozhodnutí soupeře…), můžeš akci vrátit tlačítkem <b>Zpět</b> (Ctrl+Z). Rozdělanou volbu zrušíš klávesou Esc.</li>
         </ul>

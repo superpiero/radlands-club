@@ -21,6 +21,13 @@ export function Boosters() {
   const packRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { void refreshProfile(); }, []);
+  const allFlipped = flipped.length > 0 && flipped.every(Boolean);
+  useEffect(() => {
+    if (stage === 'torn' && allFlipped) {
+      applyPendingProfile();
+      setStage('done');
+    }
+  }, [allFlipped, stage]);
 
   if (!acc.session) {
     return (
@@ -74,13 +81,6 @@ export function Boosters() {
     else sfx.flip();
   };
 
-  const allFlipped = flipped.length > 0 && flipped.every(Boolean);
-  useEffect(() => {
-    if (stage === 'torn' && allFlipped) {
-      applyPendingProfile();
-      setStage('done');
-    }
-  }, [allFlipped, stage]);
 
   const next = () => { setCards([]); setFlipped([]); setStage('idle'); };
 

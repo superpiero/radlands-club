@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CARDS, type CardDef } from '../../engine/cards';
 import {
   autoDeck, collectibleCards, DECK_MAX, DECK_MIN, deckSize, maxCopies, RARITY_LABEL, type Rarity, validateDeck,
@@ -25,9 +25,11 @@ export function Decks() {
   const [dirty, setDirty] = useState(false);
 
   useEffect(() => { void refreshProfile(); }, []);
-  // load the selected deck when the profile arrives
+  // load the selected deck once, when the profile first arrives
+  const loaded = useRef(false);
   useEffect(() => {
-    if (!p || deckId !== null) return;
+    if (!p || loaded.current) return;
+    loaded.current = true;
     const id = selectedDeck();
     const d = p.decks.find((x) => x.id === id) ?? p.decks[0];
     if (d) { setDeckId(d.id); setName(d.name); setCards({ ...d.cards }); }
@@ -176,7 +178,13 @@ export function Decks() {
               <button className="btn primary" onClick={save}>Uložit</button>
               <button className="btn" onClick={() => { setCards(autoDeck(col)); setDirty(true); sfx.play(); }} title="Sestaví balíček z tvé kolekce">Doplnit automaticky</button>
               {deckId && p.decks.length > 1 && (
-                <button className="btn ghost small" onClick={async () => { if (confirm('Smazat balíček?')) { await deleteDeck(deckId); setDeckId(null); setCards({}); } }}>Smazat</button>
+                <button className="btn ghost small" onClick={async () => {
+                  if (!confirm('Smazat balíček?')) return;
+                  await deleteDeck(deckId);
+                  const rest = p.decks.filter((d) => d.id !== deckId);
+                  if (rest[0]) { setDeckId(rest[0].id); setName(rest[0].name); setCards({ ...rest[0].cards }); selectDeck(rest[0].id); } else { setDeckId(null); setCards({}); }
+                  setDirty(false);
+                }}>Smazat</button>
               )}
             </div>
           </aside>

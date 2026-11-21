@@ -277,6 +277,25 @@ export class Room {
   tick(now: number) {
     if (!this.game || this.game.state.phase === 'over') return;
     const st = this.game.state;
+    const awayLong = (i: PlayerIdx) => {
+      const s = this.seats[i];
+      return !!s && !s.client && !!s.awaySince && now - s.awaySince >= AUTO_ANSWER_MS;
+    };
+    // setup phases: decide for an absent player so the table never gets stuck
+    if (st.phase === 'draft') {
+      for (const i of [0, 1] as PlayerIdx[]) {
+        if (!st.players[i].draftPicked && awayLong(i)) {
+          const a: Action = { t: 'draftPick', bases: st.players[i].draftOptions.slice(0, 3) };
+          if (this.game.act(i, a).ok) { this.history.push({ p: i, a }); this.dirty = true; this.systemChat(`${this.seats[i]?.name ?? 'Hráč'} je pryč – základny vybrány automaticky.`); this.broadcastState(); }
+        }
+      }
+      return;
+    }
+    if (st.phase === 'chooseFirst' && awayLong(st.coinWinner)) {
+      const a: Action = { t: 'chooseFirst', first: st.coinWinner };
+      if (this.game.act(st.coinWinner, a).ok) { this.history.push({ p: st.coinWinner, a }); this.dirty = true; this.broadcastState(); }
+      return;
+    }
     // optional turn timer
     if ((this.options.turnSeconds ?? 0) > 0 && st.phase === 'play') {
       const changed = this.syncTimer(now);

@@ -544,7 +544,7 @@ export class Game {
         return null;
       }
       case 'drawCard':
-        if (st.opts.personal && !this.canDrawMore(p)) return 'Tvůj balíček je vyčerpaný – líznutí by znamenalo prohru.';
+        if (st.opts.personal && !this.canDrawMore(p)) return 'Nemáš z čeho líznout – balíček i odhazovací balíček jsou prázdné.';
         return this.drawCost(p) <= pl.water ? null : 'Nemáš dost vody.';
       case 'takeCistern':
         if (!pl.cisternHome) return 'Cisternu už máš v ruce.';
@@ -1041,34 +1041,61 @@ export class Game {
   /** Can player p still take a card from their deck (possibly after the one allowed reshuffle)? */
   canDrawMore(p: PlayerIdx): boolean {
     const st = this.state;
-    const resh = st.opts.personal ? st.players[p].reshuffles ?? 0 : st.reshuffles;
-    return this.deckOf(p).length > 0 || (resh === 0 && this.discardOf(p).length > 0);
+    if (st.opts.personal) return this.deckOf(p).length > 0 || this.discardOf(p).length > 0;
+    return this.deckOf(p).length > 0 || (st.reshuffles === 0 && this.discardOf(p).length > 0);
   }
 
-  private drawTop(p: PlayerIdx): CardInst {
+  /** "Žízeň" (personal decks): each reshuffle after the first damages your least damaged base. */
+  private thirst(p: PlayerIdx) {
+    const bases = this.state.players[p].bases.filter((b) => !b.destroyed);
+    if (!bases.length) return;
+    const b = [...bases].sort((x, y) => x.damage - y.damage)[0];
+    const hp = cardDef(b.id).hp ?? 2;
+    b.damage++;
+    this.log(p, 'damage', `Žízeň: ${this.pn(p)} zamíchal(a) balíček znovu – základna ${this.nm(b.id)} je poškozena.`, [b.id]);
+    if (b.damage >= hp) {
+      b.destroyed = true;
+      b.charge = null;
+      b.stored = 0;
+      this.fx({ t: 'damage', uid: b.uid, destroyed: true });
+      this.log(p, 'destroy', `Základna ${this.nm(b.id)} (${this.pn(p)}) podlehla žízni!`, [b.id]);
+      this.checkWin();
+    } else {
+      this.fx({ t: 'damage', uid: b.uid });
+    }
+  }
+
+  /** Top card of p's draw pile; null when a personal deck has nothing left at all. */
+  private drawTop(p: PlayerIdx): CardInst | null {
     const st = this.state;
     const deck = this.deckOf(p);
     if (deck.length === 0) {
       const discard = this.discardOf(p);
-      const personal = !!st.opts.personal;
-      const resh = personal ? st.players[p].reshuffles ?? 0 : st.reshuffles;
-      if (resh === 0 && discard.length > 0) {
+      if (st.opts.personal) {
+        const pl = st.players[p];
+        if (discard.length === 0) {
+          this.thirst(p);
+          return null;
+        }
         deck.push(...discard.map((c) => ({ uid: this.freshUid(), id: c.id })));
         discard.length = 0;
         shuffleInPlace(st.rng, deck);
-        if (personal) st.players[p].reshuffles = 1;
-        else st.reshuffles = 1;
+        pl.reshuffles = (pl.reshuffles ?? 0) + 1;
         this.revealed = true;
-        this.log(personal ? p : null, 'info', personal
-          ? `${this.pn(p)}: balíček došel – odhozené karty se zamíchaly zpět. Až dojde podruhé, ${this.pn(p)} prohrává vyčerpáním.`
-          : 'Balíček došel – odhazovací balíček se zamíchal jako nový balíček. Až dojde podruhé, hra skončí a rozhodne počet stojících základen.');
-      } else if (personal) {
-        throw new GameOver(this.opp(p), `${this.pn(p)} došly karty (vyčerpání).`);
+        if (pl.reshuffles >= 2) this.thirst(p);
+        else this.log(p, 'info', `${this.pn(p)}: balíček došel – odhozené karty se zamíchaly zpět. Každé další zamíchání stojí poškození základny (Žízeň).`);
+      } else if (st.reshuffles === 0 && discard.length > 0) {
+        deck.push(...discard.map((c) => ({ uid: this.freshUid(), id: c.id })));
+        discard.length = 0;
+        shuffleInPlace(st.rng, deck);
+        st.reshuffles = 1;
+        this.revealed = true;
+        this.log(null, 'info', 'Balíček došel – odhazovací balíček se zamíchal jako nový balíček. Až dojde podruhé, hra skončí a rozhodne počet stojících základen.');
       } else {
-        throw this.deckOutResult(resh === 0 ? 'Došly všechny karty.' : 'Balíček došel podruhé.');
+        throw this.deckOutResult(st.reshuffles === 0 ? 'Došly všechny karty.' : 'Balíček došel podruhé.');
       }
     }
-    return deck.shift()!;
+    return deck.shift() ?? null;
   }
 
   draw(p: PlayerIdx, n: number, silent = false) {
@@ -1077,9 +1104,12 @@ export class Game {
     const got: string[] = [];
     for (let i = 0; i < n; i++) {
       const c = this.drawTop(p);
+      if (!c) break;
       pl.hand.push(c);
       got.push(c.id);
     }
+    if (!got.length) return;
+    n = got.length;
     this.revealed = true;
     this.fx({ t: 'draw', player: p, n });
     if (!silent) {
@@ -1319,6 +1349,7 @@ export class Game {
     const slot = yield* this.chooseSlot(p, 'Kam postavíš tuláka?', 'tulak');
     if (!slot) return;
     const c = this.drawTop(p);
+    if (!c) return;
     const person: PersonInPlay = {
       uid: this.freshUid('t'), id: c.id, faceDown: true, damaged: false,
       playedTurn: this.state.turn, usedTurn: -1, restoredTurn: -1, stunnedTurn: -1, stash: 0,
@@ -1457,8 +1488,19 @@ export class Game {
       this.log(c.p, 'info', 'Balíček je vyčerpaný – Pašerák nic nesežene.');
       return;
     }
-    const cards: CardInst[] = [this.drawTop(c.p)];
-    if (this.canDrawMore(c.p)) cards.push(this.drawTop(c.p));
+    const first = this.drawTop(c.p);
+    if (!first) return;
+    const cards: CardInst[] = [first];
+    if (this.canDrawMore(c.p)) {
+      try {
+        const second = this.drawTop(c.p);
+        if (second) cards.push(second);
+      } catch (e) {
+        // the game ended while drawing the second card: keep the first one in hand so no card vanishes
+        st.players[c.p].hand.push(first);
+        throw e;
+      }
+    }
     this.revealed = true;
     if (cards.length === 1) {
       st.players[c.p].hand.push(cards[0]);

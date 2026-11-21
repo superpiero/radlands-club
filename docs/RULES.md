@@ -72,7 +72,7 @@ Když balíček dojde podruhé, hra končí: vyhrává hráč s více stojícím
 ## 10. Sběratelský režim (vlastní balíčky)
 - Každý hráč hraje se svým balíčkem (30–40 karet, max. 2 kopie, legendární 1×) a má vlastní odhazovací balíček.
 - Tuláci se berou z vlastního balíčku a po zničení se vrací na jeho vršek. Karty, které „berou z odhazovacího balíčku“ (Sběračka Myška), berou z vlastního.
-- Když ti dojde balíček, zamíchá se tvůj odhazovací balíček (jednou). **Když dojde podruhé, prohráváš (vyčerpání).**
+- Když ti dojde balíček, zamíchá se tvůj odhazovací balíček jako nový. **Žízeň:** každé další zamíchání (od druhého) poškodí tvou nejméně poškozenou základnu. Když nemáš ani odhozené karty, líznutí propadne a základna je poškozena také.
 - Za odehrané online hry dostávají registrovaní hráči kapky na nákup boosterů.
 
 ## 11. Další pravidla
