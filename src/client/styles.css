@@ -887,3 +887,8 @@ select.field { padding: 7px 8px; font-size: 16px; }
 }
 .pill.timer { border-color: rgba(143,227,239,.5); color: var(--water-2); font-variant-numeric: tabular-nums; }
 .pill.timer.low { border-color: var(--danger); color: #ffb4a6; animation: tick 1s steps(2) infinite; }
+.summary { border-collapse: collapse; font-size: 15px; min-width: min(420px, 86vw); }
+.summary th, .summary td { padding: 3px 10px; border-bottom: 1px solid var(--line); text-align: center; }
+.summary td:first-child { text-align: left; color: var(--muted); }
+.summary th { color: var(--sand); font-family: var(--f-title); font-weight: 400; }
+.summary td.best { color: var(--gold); font-weight: 800; }

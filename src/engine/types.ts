@@ -174,6 +174,19 @@ export interface GameState {
   rev: number;
   /** Short-lived visual effects for clients (cleared each act). */
   fx: Fx[];
+  /** Per-player match statistics (for the game-over summary). */
+  stats?: [MatchStats, MatchStats];
+}
+
+export interface MatchStats {
+  damage: number;
+  kills: number;
+  bases: number;
+  played: number;
+  junked: number;
+  abilities: number;
+  /** damage dealt per source card id */
+  bySource: Record<string, number>;
 }
 
 export type Fx =

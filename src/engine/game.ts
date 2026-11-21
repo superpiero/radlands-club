@@ -49,6 +49,10 @@ export interface LegalInfo {
 
 const COL_NAME = ['levý', 'prostřední', 'pravý'];
 
+function emptyStats(): import('./types').MatchStats {
+  return { damage: 0, kills: 0, bases: 0, played: 0, junked: 0, abilities: 0, bySource: {} };
+}
+
 export function freshState(opts: GameOptions): GameState {
   const seed = opts.seed ?? Math.floor(Math.random() * 2 ** 31);
   const rng = seedState(seed);
@@ -63,6 +67,7 @@ export function freshState(opts: GameOptions): GameState {
     deck: [], discard: [], turn: 0, active: 0, first: 0, coinWinner: 0,
     phase: 'draft', step: 'start', pending: null, winner: null, winReason: null,
     reshuffles: 0, log: [], seq: 0, promptSeq: 0, rev: 0, fx: [],
+    stats: [emptyStats(), emptyStats()],
   };
   // Deck(s)
   if (opts.decks) {
@@ -425,6 +430,7 @@ export class Game {
           playedTurn: st.turn, usedTurn: -1, restoredTurn: -1, stunnedTurn: -1, stash: 0,
         };
         this.placePerson(p, person, col, pos);
+        this.stat(p).played++;
         this.fx({ t: 'play', uid: inst.uid, player: p });
         this.log(p, 'play', `${this.pn(p)} verbuje ${def.name} (${COL_NAME[col]} sloupec, cena ${cost}).`, [inst.id]);
         return;
@@ -433,6 +439,7 @@ export class Game {
         const inst = this.takeFromHand(p, a.uid);
         const def = cardDef(inst.id);
         pl.water -= def.cost ?? 0;
+        this.stat(p).played++;
         this.fx({ t: 'event', uid: inst.uid, player: p, id: inst.id });
         if ((def.countdown ?? 0) === 0) {
           this.revealed = true;
@@ -452,6 +459,7 @@ export class Game {
         if (inst.id !== 'cisterna') this.revealed = true;
         if (inst.id === 'cisterna') pl.cisternHome = true;
         else this.discardOf(p).push(inst);
+        this.stat(p).junked++;
         this.fx({ t: 'junk', player: p, id: inst.id });
         this.log(p, 'play', `${this.pn(p)} rozebírá ${def.name} → ${JUNK_LABEL[def.junk!]}.`, [inst.id]);
         yield* this.junkEffect(p, def.junk!, inst.uid);
@@ -480,6 +488,7 @@ export class Game {
         pl.water -= this.abilityCost(p, ab.cost);
         if (pl2) pl2.person.usedTurn = st.turn;
         else this.findBase(a.uid)!.base.usedTurn = st.turn;
+        this.stat(p).abilities++;
         this.fx({ t: 'ability', uid: a.uid, player: p });
         this.log(p, 'play', `${this.pn(p)} používá ${def.name}: ${ab.text}`, [def.id]);
         yield* ab.run(this, ctx);
@@ -1114,6 +1123,34 @@ export class Game {
     return yield* this.damage(uid, c.p, { kind: o.kind, srcUid: c.uid, srcIsPerson });
   }
 
+  private stat(p: PlayerIdx): import('./types').MatchStats {
+    const st = this.state;
+    st.stats ??= [emptyStats(), emptyStats()];
+    return st.stats[p];
+  }
+
+  private srcId(srcUid?: string): string | null {
+    if (!srcUid) return null;
+    const pp = this.findPerson(srcUid);
+    if (pp) return pp.person.faceDown ? null : pp.person.id;
+    const bb = this.findBase(srcUid);
+    if (bb) return bb.base.id;
+    for (const pl of this.state.players) for (const e of pl.queue) if (e?.uid === srcUid) return e.id;
+    for (const pl of this.state.players) for (const d of pl.discard ?? []) if (d.uid === srcUid) return d.id;
+    for (const d of this.state.discard) if (d.uid === srcUid) return d.id;
+    return srcUid.startsWith('raidtok') ? 'najezd' : null;
+  }
+
+  private recordDamage(by: PlayerIdx, owner: PlayerIdx, o: { kind: string; srcUid?: string }, destroyed: boolean, isBase: boolean) {
+    if (by === owner) return;
+    const s = this.stat(by);
+    s.damage++;
+    if (destroyed && !isBase) s.kills++;
+    if (destroyed && isBase) s.bases++;
+    const id = o.kind === 'raid' ? 'najezd' : o.kind === 'charge' ? 'nalož' : this.srcId(o.srcUid);
+    if (id) s.bySource[id] = (s.bySource[id] ?? 0) + 1;
+  }
+
   /** Apply one damage to a card (person or base). Ignores protection – callers choose legal targets. */
   *damage(uid: string, by: PlayerIdx, o: { kind: DmgKind; srcUid?: string; srcIsPerson?: boolean }): Gen<DamageResult | null> {
     const st = this.state;
@@ -1127,6 +1164,7 @@ export class Game {
       const res: DamageResult = { uid, owner, kind: 'person', col, destroyed: false, destroyedPerson: false };
       const tough = person.faceDown && !person.damaged && this.activePeople(owner).some((x) => x.id === 'matka');
       const src = o.srcUid ?? (o.kind === 'raid' ? `raidtok-${by}` : undefined);
+      this.recordDamage(by, owner, o, !tough && (person.faceDown || person.damaged), false);
       if (tough) {
         person.damaged = true;
         this.fx({ t: 'damage', uid, src });
@@ -1154,6 +1192,7 @@ export class Game {
     }
     const hp = cardDef(base.id).hp ?? 2;
     const bsrc = o.srcUid ?? (o.kind === 'raid' ? `raidtok-${by}` : undefined);
+    this.recordDamage(by, owner, o, base.damage + 1 >= hp, true);
     base.damage++;
     const res: DamageResult = { uid, owner, kind: 'base', col, destroyed: false, destroyedPerson: false };
     if (base.damage >= hp) {

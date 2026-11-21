@@ -736,6 +736,33 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   );
 }
 
+function MatchSummary({ view }: { view: GameView }) {
+  const st = view.stats!;
+  const rows: [string, (i: 0 | 1) => number][] = [
+    ['Poškození', (i) => st[i].damage],
+    ['Zničení přeživší', (i) => st[i].kills],
+    ['Zničené základny', (i) => st[i].bases],
+    ['Zahrané karty', (i) => st[i].played],
+    ['Rozebrané karty', (i) => st[i].junked],
+    ['Použité schopnosti', (i) => st[i].abilities],
+  ];
+  const mvp = (i: 0 | 1) => {
+    const e = Object.entries(st[i].bySource).sort((a, b) => b[1] - a[1])[0];
+    return e ? `${CARDS[e[0]]?.name ?? (e[0] === 'nalož' ? 'Nálože' : e[0])} (${e[1]})` : '—';
+  };
+  return (
+    <table className="summary">
+      <thead><tr><th /><th>{view.players[0].name}</th><th>{view.players[1].name}</th></tr></thead>
+      <tbody>
+        {rows.map(([label, f]) => (
+          <tr key={label}><td>{label}</td><td className={f(0) > f(1) ? 'best' : ''}>{f(0)}</td><td className={f(1) > f(0) ? 'best' : ''}>{f(1)}</td></tr>
+        ))}
+        <tr><td>Karta zápasu</td><td>{mvp(0)}</td><td>{mvp(1)}</td></tr>
+      </tbody>
+    </table>
+  );
+}
+
 function ChooseFirst({ view, me, act, state }: { view: GameView; me: PlayerIdx; act: (a: Action) => void; state: ConnState }) {
   const mine = view.coinWinner === me && view.you !== null;
   return (
@@ -788,6 +815,7 @@ function GameOver({ view, me, state, conn }: { view: GameView; me: PlayerIdx; st
         <h1 className={!win && !draw ? 'lose' : ''}>{draw ? 'REMÍZA' : spectator ? `${view.players[view.winner as PlayerIdx].name} vyhrává` : win ? 'VÍTĚZSTVÍ!' : 'PORÁŽKA'}</h1>
         <p className="muted" style={{ margin: 0 }}>{view.winReason}</p>
         <p className="muted" style={{ margin: 0 }}>Hra trvala {view.turn} {plural(view.turn, 'tah', 'tahy', 'tahů')}.</p>
+        {view.stats && <MatchSummary view={view} />}
         {state.reward && (
           <p style={{ margin: 0, color: 'var(--water-2)', fontWeight: 800, fontSize: 20 }}>
             {state.reward.gain > 0 ? `+${state.reward.gain} kapek do kolekce` : 'Za tak krátkou hru se kapky nepřipisují.'}
