@@ -264,7 +264,7 @@ export class LocalConn extends Conn {
       || (!st.pending && st.phase === 'play' && st.active === bot);
     if (!needs) return;
     this.set({ botThinking: true });
-    const delay = st.pending ? 650 : st.phase === 'draft' ? 900 : 850;
+    const delay = st.pending ? 700 : st.phase === 'draft' ? 900 : 1250;
     this.timer = setTimeout(() => {
       this.timer = null;
       let a: Action | null = null;

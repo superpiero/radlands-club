@@ -177,7 +177,7 @@ export interface GameState {
 }
 
 export type Fx =
-  | { t: 'damage'; uid: string; destroyed?: boolean }
+  | { t: 'damage'; uid: string; destroyed?: boolean; src?: string }
   | { t: 'restore'; uid: string }
   | { t: 'play'; uid: string; player: PlayerIdx }
   | { t: 'draw'; player: PlayerIdx; n: number }

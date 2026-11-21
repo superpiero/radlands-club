@@ -276,7 +276,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     const mine = owner === me;
     return (
       <div className="home-zone">
-        <div className={`token raid ${pl.raidHome ? '' : 'away'}`} onMouseEnter={() => zoomStore.set({ id: 'najezd' })} onMouseLeave={() => zoomStore.clear('najezd')}
+        <div className={`token raid ${pl.raidHome ? '' : 'away'}`} data-uid={`raidtok-${owner}`} onMouseEnter={() => zoomStore.set({ id: 'najezd' })} onMouseLeave={() => zoomStore.clear('najezd')}
           title={pl.raidHome ? 'Nájezd je doma – rozebráním karty s ikonou Nájezdu ho pošleš do fronty' : 'Nájezd je ve frontě'}>
           <Icon name="flaming-claw" />Nájezd
         </div>
@@ -493,6 +493,20 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   };
 
   const hand = P.hand ?? [];
+  const handTilt = (e: React.MouseEvent) => {
+    const el = (e.target as HTMLElement).closest<HTMLElement>('.hand .card');
+    document.querySelectorAll<HTMLElement>('.hand .card.tilt').forEach((c) => { if (c !== el) c.classList.remove('tilt'); });
+    if (!el || el.classList.contains('selected')) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width;
+    const py = (e.clientY - r.top) / r.height;
+    el.style.setProperty('--ry', `${(px - 0.5) * 18}deg`);
+    el.style.setProperty('--rx', `${(0.5 - py) * 14}deg`);
+    el.style.setProperty('--gx', `${px * 100}%`);
+    el.style.setProperty('--gy', `${py * 100}%`);
+    el.classList.add('tilt');
+  };
+  const handTiltEnd = () => document.querySelectorAll<HTMLElement>('.hand .card.tilt').forEach((c) => c.classList.remove('tilt'));
   const handPlayable = (uid: string) => canAct && (legal?.playable.includes(uid) || true);
 
   // tips for new players
@@ -575,7 +589,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         </div>
         <div className="center">
           <div className="pilebox">
-            <div className="pile deck" title={`Balíček: ${view.deckCount} karet${view.reshuffles ? ' (už jednou zamíchán – až dojde, je remíza!)' : ''}`}>
+            <div className="pile deck" data-uid="deck-pile" title={`Balíček: ${view.deckCount} karet${view.reshuffles ? ' (už jednou zamíchán – až dojde, je remíza!)' : ''}`}>
               <Icon name="stockpiles" /><span className="pc">{view.deckCount}</span>
             </div>
             <div className="pile discard" title="Odhazovací balíček (vrchní karta)">
@@ -597,7 +611,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         {pbar(me)}
         <div className="hand-wrap">
           {spectator ? <div className="hand-empty">Sleduješ hru jako divák.</div> : hand.length === 0 ? <div className="hand-empty">Prázdná ruka.</div> : (
-            <div className="hand" style={{ ['--n' as string]: hand.length }}>
+            <div className="hand" style={{ ['--n' as string]: hand.length }} onMouseMove={handTilt} onMouseLeave={handTiltEnd}>
               {hand.map((c) => {
                 const o = optByUid.get(c.uid);
                 const cant = canAct && !legal?.playable.includes(c.uid) && CARDS[c.id].kind !== 'cistern';

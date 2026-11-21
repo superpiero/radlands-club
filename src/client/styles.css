@@ -560,3 +560,29 @@ select.field { padding: 7px 8px; font-size: 16px; }
 .acc-strip { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: space-between; }
 .acc-strip .stat { display: inline-flex; gap: 6px; align-items: center; }
 .badge-dot { background: var(--danger); color: #fff; border-radius: 999px; padding: 0 7px; font-size: 13px; font-weight: 900; margin-left: 4px; }
+
+/* ---------- FX v2: projectiles, activation, water flights ---------- */
+.fx.hit, .fx.boom, .fx.heal, .fx.stun { animation-fill-mode: both; }
+.fx.projectile { width: 0; height: 0; animation: projFly .34s cubic-bezier(.4,0,.8,.6) both; }
+.fx.projectile::before { content: ''; position: absolute; left: -26px; top: -4px; width: 34px; height: 8px; border-radius: 8px;
+  background: linear-gradient(90deg, rgba(255,200,120,0), #ffd27a 60%, #fff); box-shadow: 0 0 14px #ff9a3c, 0 0 4px #fff; transform: rotate(var(--ang)); transform-origin: 26px 4px; }
+@keyframes projFly { from { transform: translate(0, 0); opacity: 1; } 90% { opacity: 1; } to { transform: translate(var(--dx), var(--dy)); opacity: 0; } }
+.fx.activate { border-radius: 10px; animation: activate .6s ease-out both; }
+@keyframes activate { from { box-shadow: 0 0 0 0 rgba(143,227,239,.9), inset 0 0 30px rgba(143,227,239,.8); } to { box-shadow: 0 0 0 22px rgba(143,227,239,0), inset 0 0 0 rgba(143,227,239,0); } }
+.fx.dropfly { width: 0; height: 0; animation: dropFly .55s cubic-bezier(.5,0,.6,1) both; color: var(--water-2); }
+.fx.dropfly svg { position: absolute; left: -10px; top: -12px; width: 20px; height: 24px; filter: drop-shadow(0 0 6px var(--water)); }
+@keyframes dropFly { from { transform: translate(0, 0) scale(1); opacity: 1; } 70% { opacity: 1; } to { transform: translate(var(--dx), var(--dy)) scale(.4); opacity: 0; } }
+
+/* hand tilt */
+.hand .card { will-change: transform; }
+.hand .card.tilt { transform: translateY(-14%) scale(1.08) perspective(600px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); z-index: 10; transition: transform .08s; }
+.hand .card.tilt .tex { background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255,255,255,.35), transparent 45%); mix-blend-mode: soft-light; opacity: 1; }
+
+/* opponent showcase */
+.showcase { position: fixed; inset: 0; z-index: 65; pointer-events: none; display: grid; place-items: center; }
+.showcase .sc-inner { display: flex; flex-direction: column; align-items: center; gap: 10px; animation: scIn .9s cubic-bezier(.2,1.2,.3,1) both; }
+.showcase .sc-label { font-family: var(--f-title); font-size: 22px; color: var(--opp); background: rgba(20,15,11,.9); padding: 4px 14px; border-radius: 8px; border: 1px solid rgba(224,115,60,.5); }
+.showcase .card { --h: min(44vh, 340px); --w: calc(var(--h) * .72); box-shadow: 0 30px 80px rgba(0,0,0,.8), 0 0 0 2px rgba(224,115,60,.6); }
+.showcase .card.k-base { --w: min(360px, 60vw); --h: calc(var(--w) * .62); font-size: calc(var(--h) * .085); }
+.showcase.dim::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at center, rgba(0,0,0,.25), rgba(0,0,0,.6)); animation: fadeIn .2s; }
+@keyframes scIn { 0% { transform: translateY(-40vh) scale(.3) rotate(-8deg); opacity: 0; } 30% { transform: translateY(0) scale(1.05) rotate(1deg); opacity: 1; } 40% { transform: scale(1) rotate(0); } 85% { transform: scale(1); opacity: 1; } 100% { transform: scale(.7) translateY(10vh); opacity: 0; } }

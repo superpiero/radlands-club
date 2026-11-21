@@ -5,9 +5,70 @@ import { Draft } from '../components/Draft';
 import { Icon } from '../components/Icon';
 import type { Conn, ConnState } from '../conn';
 import { sfx } from '../sound';
+import { Card } from '../components/Card';
+import type { GameView } from '../../engine/view';
+
+interface Showcase { id: string; label: string; key: number }
+
+const reduced = () => { try { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch { return false; } };
+
+/** Which opponent actions in this update deserve a big "card reveal" before the board updates. */
+function showcaseFor(v: GameView, mode: string): Showcase | null {
+  if (v.you === null || mode === 'hotseat') return null;
+  const opp = 1 - v.you;
+  const findId = (uid: string) => {
+    for (const pl of v.players) {
+      for (const col of pl.columns) for (const x of col) if (x.uid === uid) return x.faceDown ? null : x.id;
+      for (const b of pl.bases) if (b.uid === uid) return b.id;
+    }
+    return null;
+  };
+  for (const f of v.fx) {
+    if (f.t === 'play' && f.player === opp) { const id = findId(f.uid); if (id) return { id, label: 'Soupeř verbuje', key: v.rev }; }
+    if (f.t === 'event' && f.player === opp && f.id !== 'najezd') return { id: f.id, label: 'Soupeř spouští operaci', key: v.rev };
+    if (f.t === 'junk' && f.player === opp && f.id !== 'cisterna') return { id: f.id, label: 'Soupeř rozebírá', key: v.rev };
+    if (f.t === 'ability' && f.player === opp) { const id = findId(f.uid); if (id) return { id, label: 'Soupeř používá', key: v.rev }; }
+  }
+  return null;
+}
+
+/** Buffers incoming views so opponent actions are revealed one by one (card showcase first). */
+function useBufferedView(view: GameView | null, mode: string): { shown: GameView | null; showcase: Showcase | null } {
+  const [shown, setShown] = useState<GameView | null>(view);
+  const [showcase, setShowcase] = useState<Showcase | null>(null);
+  const queue = useRef<GameView[]>([]);
+  const busy = useRef(false);
+  const pump = useRef<() => void>(() => {});
+  pump.current = () => {
+    if (busy.current) return;
+    const next = queue.current.shift();
+    if (!next) return;
+    const sc = queue.current.length < 3 && !reduced() ? showcaseFor(next, mode) : null;
+    if (!sc) {
+      setShown(next);
+      pump.current();
+      return;
+    }
+    busy.current = true;
+    setShowcase(sc);
+    setTimeout(() => {
+      setShowcase(null);
+      setShown(next);
+      busy.current = false;
+      setTimeout(() => pump.current(), 260);
+    }, 900);
+  };
+  useEffect(() => {
+    if (!view) return;
+    queue.current.push(view);
+    pump.current();
+  }, [view]);
+  return { shown: shown ?? view, showcase };
+}
 
 export function GameScreen({ conn, state }: { conn: Conn; state: ConnState }) {
-  const { view, room } = state;
+  const { room } = state;
+  const { shown: view, showcase } = useBufferedView(state.view, state.mode);
   const [handoverOk, setHandoverOk] = useState<number | null>(null);
   const lastErr = useRef(0);
 
@@ -67,6 +128,14 @@ export function GameScreen({ conn, state }: { conn: Conn; state: ConnState }) {
     <>
       {toasts}
       <Board conn={conn} state={state} view={view} />
+      {showcase && (
+        <div className="showcase dim" key={showcase.key}>
+          <div className="sc-inner">
+            <div className="sc-label">{showcase.label}</div>
+            <Card id={showcase.id} noZoom rarityFx />
+          </div>
+        </div>
+      )}
     </>
   );
 }

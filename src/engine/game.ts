@@ -1102,18 +1102,19 @@ export class Game {
       }
       const res: DamageResult = { uid, owner, kind: 'person', col, destroyed: false, destroyedPerson: false };
       const tough = person.faceDown && !person.damaged && this.activePeople(owner).some((x) => x.id === 'matka');
+      const src = o.srcUid ?? (o.kind === 'raid' ? `raidtok-${by}` : undefined);
       if (tough) {
         person.damaged = true;
-        this.fx({ t: 'damage', uid });
+        this.fx({ t: 'damage', uid, src });
         this.log(by, 'damage', `Tulák (${this.pn(owner)}) vydržel zásah – chrání ho Matka Prachu.`);
       } else if (person.faceDown || person.damaged) {
-        this.fx({ t: 'damage', uid, destroyed: true });
+        this.fx({ t: 'damage', uid, destroyed: true, src });
         yield* this.destroyPerson(uid, by);
         res.destroyed = true;
         res.destroyedPerson = true;
       } else {
         person.damaged = true;
-        this.fx({ t: 'damage', uid });
+        this.fx({ t: 'damage', uid, src });
         this.log(by, 'damage', `${this.nm(person.id)} (${this.pn(owner)}) je poškozen(a).`, [person.id]);
       }
       if (owner !== by) yield* this.sentryCheck(owner, col, uid, by);
@@ -1128,6 +1129,7 @@ export class Game {
       return null;
     }
     const hp = cardDef(base.id).hp ?? 2;
+    const bsrc = o.srcUid ?? (o.kind === 'raid' ? `raidtok-${by}` : undefined);
     base.damage++;
     const res: DamageResult = { uid, owner, kind: 'base', col, destroyed: false, destroyedPerson: false };
     if (base.damage >= hp) {
@@ -1135,11 +1137,11 @@ export class Game {
       base.charge = null;
       base.stored = 0;
       res.destroyed = true;
-      this.fx({ t: 'damage', uid, destroyed: true });
+      this.fx({ t: 'damage', uid, destroyed: true, src: bsrc });
       this.log(by, 'destroy', `Základna ${this.nm(base.id)} (${this.pn(owner)}) je ZNIČENA!`, [base.id]);
       this.checkWin();
     } else {
-      this.fx({ t: 'damage', uid });
+      this.fx({ t: 'damage', uid, src: bsrc });
       this.log(by, 'damage', `Základna ${this.nm(base.id)} (${this.pn(owner)}) je poškozena${hp > 2 ? ` (${base.damage}/${hp - 1})` : ''}.`, [base.id]);
     }
     // Minové pole retaliation
@@ -1505,7 +1507,7 @@ export class Game {
   *executeChoose(c: Ctx): Gen {
     const uid = yield* this.pick(c.p, 'Kat: vyber poškozeného nepřítele ke zničení', this.cardOptions(this.damagedEnemies(c.p), 'danger'), { sourceUid: c.uid });
     if (!uid) return;
-    this.fx({ t: 'damage', uid, destroyed: true });
+    this.fx({ t: 'damage', uid, destroyed: true, src: c.uid });
     const owner = this.findPerson(uid)!.owner;
     const col = this.findPerson(uid)!.col;
     yield* this.destroyPerson(uid, c.p);
