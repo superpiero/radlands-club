@@ -797,3 +797,5 @@ select.field { padding: 7px 8px; font-size: 16px; }
 .prompt .tipline .btn { margin-left: 6px; vertical-align: middle; }
 :root { --hand-h: clamp(84px, 13vh, 150px); }
 @media (max-height: 560px), (max-width: 860px) { .prompt .tipline { display: none; } }
+.chat .line, .log .le { overflow-wrap: anywhere; }
+@media (pointer: coarse) { .controls .btn, .btn.small { min-height: 36px; min-width: 36px; } }

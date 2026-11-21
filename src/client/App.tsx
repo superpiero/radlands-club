@@ -36,7 +36,10 @@ function parse(hash: string): Route {
     case 'decks': return { page: 'decks' };
     case 'room': return parts[1] ? { page: 'room', code: parts[1].toUpperCase(), spectate: q.get('watch') === '1' } : { page: 'home' };
     case 'new': return { page: 'new', baseMode, deckMode: q.get('decks') === 'collection' ? 'collection' : 'classic' };
-    case 'bot': return { page: 'bot', baseMode, level: (q.get('level') as 'easy' | 'normal' | 'hard') || 'normal' };
+    case 'bot': {
+      const lv = q.get('level');
+      return { page: 'bot', baseMode, level: lv === 'easy' || lv === 'hard' ? lv : 'normal' };
+    }
     case 'hotseat': return { page: 'hotseat', baseMode };
     default: return { page: 'home' };
   }

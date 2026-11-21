@@ -702,10 +702,14 @@ function ChooseFirst({ view, me, act }: { view: GameView; me: PlayerIdx; act: (a
         ) : (
           <p>Los padl na hráče <b>{view.players[view.coinWinner].name}</b> – vybírá, kdo začne…</p>
         )}
-        <div className="cardrow" style={{ marginTop: 6 }}>
-          {view.players[me].bases.map((b) => <Card key={b.uid} id={b.id} noZoom compact />)}
-        </div>
-        <p className="muted" style={{ margin: 0 }}>Tvoje základny. Začáteční ruka: {view.players[me].handCount} karet.</p>
+        {view.you !== null && (
+          <>
+            <div className="cardrow" style={{ marginTop: 6 }}>
+              {view.players[me].bases.map((b) => <Card key={b.uid} id={b.id} noZoom compact />)}
+            </div>
+            <p className="muted" style={{ margin: 0 }}>Tvoje základny. Začáteční ruka: {view.players[me].handCount} karet.</p>
+          </>
+        )}
       </div>
     </div>
   );
@@ -746,6 +750,7 @@ function GameOver({ view, me, state, conn }: { view: GameView; me: PlayerIdx; st
           </div>
         )}
         {theyWant && !iWant && <p style={{ color: 'var(--gold)', margin: 0 }}>Soupeř chce odvetu!</p>}
+        {spectator && <div className="row" style={{ justifyContent: 'center' }}><button className="btn" onClick={() => setHidden(true)}>Prohlédnout stůl</button><button className="btn ghost" onClick={() => go('/')}>Domů</button></div>}
       </div>
     </div>
   );

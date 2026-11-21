@@ -70,6 +70,8 @@ export function GameScreen({ conn, state }: { conn: Conn; state: ConnState }) {
   const { room } = state;
   const { shown: view, showcase } = useBufferedView(state.view, state.mode);
   const [handoverOk, setHandoverOk] = useState<number | null>(null);
+  const gameNo = state.room?.gameNo ?? 0;
+  useEffect(() => { setHandoverOk(null); }, [gameNo]);
   const lastErr = useRef(0);
 
   useEffect(() => {
@@ -115,6 +117,17 @@ export function GameScreen({ conn, state }: { conn: Conn; state: ConnState }) {
     );
   }
 
+  if (view.phase === 'draft' && view.you === null) {
+    return (
+      <>
+        {toasts}
+        <div className="waiting"><div className="panel">
+          <h2 className="stencil" style={{ margin: 0 }}>Hráči vybírají základny</h2>
+          <p className="muted">{view.players.map((p) => `${p.name}: ${p.draftDone ? 'hotovo' : 'vybírá…'}`).join(' · ')}</p>
+        </div></div>
+      </>
+    );
+  }
   if (view.phase === 'draft') {
     return (
       <>

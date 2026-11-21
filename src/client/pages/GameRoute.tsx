@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import type { Route } from '../App';
 import { type Conn, type ConnState, LocalConn, NetConn } from '../conn';
-import { getName, getToken, randomName } from '../prefs';
+import { getName, getToken, randomName, setName } from '../prefs';
 import { selectedDeck } from '../account';
 import { GameScreen } from './GameScreen';
 
@@ -9,7 +9,8 @@ const BOT_NAMES: Record<string, string> = { easy: 'Bot Prášek', normal: 'Bot R
 
 export function GameRoute({ route }: { route: Route }) {
   const conn: Conn = useMemo(() => {
-    const name = getName() || randomName();
+    let name = getName();
+    if (!name) { name = randomName(); setName(name); }
     switch (route.page) {
       case 'new':
         return new NetConn(name, getToken(), { t: 'create', options: { baseMode: route.baseMode, deckMode: route.deckMode }, deckId: selectedDeck() ?? undefined });
