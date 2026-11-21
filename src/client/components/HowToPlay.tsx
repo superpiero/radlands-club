@@ -1,6 +1,6 @@
 import { useState, type ReactNode } from 'react';
 import { Card, CardBack } from './Card';
-import { Icon } from './Icon';
+import { Drop, Icon } from './Icon';
 
 interface Slide { title: string; body: ReactNode; visual: ReactNode }
 
@@ -12,7 +12,7 @@ const SLIDES: Slide[] = [
   },
   {
     title: 'Voda',
-    body: <>Na začátku tahu dostaneš <b>3 vody</b> 💧 a lízneš kartu. Vodou platíš přeživší, operace i schopnosti. <b>Co neutratíš, propadne.</b> Zbyla 1? Vezmi Cisternu. Zbyly 2? Lízni kartu.</>,
+    body: <>Na začátku tahu dostaneš <b>3 vody</b> <Drop /> a lízneš kartu. Vodou platíš přeživší, operace i schopnosti. <b>Co neutratíš, propadne.</b> Zbyla 1? Vezmi Cisternu. Zbyly 2? Lízni kartu.</>,
     visual: <div className="ht-row ht-water">{[0, 1, 2].map((i) => <Icon key={i} name="water-drop" />)}</div>,
   },
   {

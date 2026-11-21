@@ -7,6 +7,9 @@ import { AccountPage } from './pages/AccountPage';
 import { Boosters } from './pages/Boosters';
 import { Decks } from './pages/Decks';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { Panorama } from './components/Backdrop';
+
+const MENU_PAGES = new Set(['rules', 'cards', 'login', 'register', 'boosters', 'decks']);
 
 export type Route =
   | { page: 'home' }
@@ -59,6 +62,8 @@ export function App() {
   return (
     <div className="grain" style={{ height: '100%' }}>
       <div className="app-bg" />
+      {route.page === 'home' && <Panorama variant="home" />}
+      {MENU_PAGES.has(route.page) && <Panorama variant="page" />}
       {route.page === 'home' && <Home />}
       {route.page === 'rules' && <Rules />}
       {route.page === 'cards' && <Gallery />}

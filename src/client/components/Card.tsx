@@ -61,35 +61,65 @@ const SKYLINES: ((y: number) => string)[] = [
   (y) => `M0 ${y} Q10 ${y - 8} 20 ${y - 2} L24 ${y - 6} H32 L35 ${y - 2} Q50 ${y - 10} 64 ${y - 1} L68 ${y - 7} L78 ${y - 8} L81 ${y - 2} Q90 ${y - 6} 100 ${y - 1} V70 H0Z`,
 ];
 
+/**
+ * Curated wasteland palettes (sun-bleached desert; teal only where water lives).
+ * sky top/bottom, sun, far skyline, mid dunes, ground top/bottom, dust motes.
+ */
+export interface Palette { sky: [string, string]; sun: string; far: string; mid: string; ground: [string, string]; dust: string; night?: boolean }
+export const PALETTES: Record<string, Palette> = {
+  noon:    { sky: ['#f4e4c1', '#e6b479'], sun: '#fff7e0', far: '#c4885a', mid: '#9c5a35', ground: ['#6b3d22', '#2a180e'], dust: '#fff3d6' },
+  dawn:    { sky: ['#f0d2b4', '#df966c'], sun: '#fff0d4', far: '#b0745a', mid: '#874a34', ground: ['#57301f', '#22130c'], dust: '#ffe6cf' },
+  haze:    { sky: ['#e8dfc6', '#c8ae80'], sun: '#fffbea', far: '#a5946c', mid: '#7a6846', ground: ['#4f412b', '#1f190f'], dust: '#fff8e4' },
+  copper:  { sky: ['#f1b47e', '#bc552d'], sun: '#ffe5b4', far: '#8a3c24', mid: '#662915', ground: ['#40180d', '#1a0a05'], dust: '#ffd9ad' },
+  dust:    { sky: ['#e3c58f', '#b4854a'], sun: '#fbeac0', far: '#977041', mid: '#75512f', ground: ['#4a321e', '#1d140b'], dust: '#fff0cc' },
+  well:    { sky: ['#d5e2d6', '#e2c497'], sun: '#fffcee', far: '#7c988b', mid: '#5c6d5a', ground: ['#3c3e2d', '#191911'], dust: '#f2fff9' },
+  dusk:    { sky: ['#1f2433', '#6e4a3b'], sun: '#f3ead2', far: '#3b3237', mid: '#2a2226', ground: ['#1a1416', '#0b0809'], dust: '#f6ecd8', night: true },
+  ember:   { sky: ['#1c1411', '#7a391e'], sun: '#ffd9a8', far: '#4a2416', mid: '#311710', ground: ['#1e0e09', '#0a0504'], dust: '#ffcf9c', night: true },
+  moon:    { sky: ['#10222a', '#2e5a60'], sun: '#e9fbff', far: '#1c3a40', mid: '#14292e', ground: ['#0d1b1e', '#050b0c'], dust: '#dff8ff', night: true },
+  storm:   { sky: ['#2e2a22', '#8a6a3e'], sun: '#f6e6c0', far: '#4a3d2b', mid: '#352b1f', ground: ['#211a12', '#0d0a07'], dust: '#f8e9c8', night: true },
+  raid:    { sky: ['#3a120a', '#c4471f'], sun: '#ffd2a0', far: '#5a1a0c', mid: '#3e1208', ground: ['#250a05', '#0e0302'], dust: '#ffc69a' },
+  cistern: { sky: ['#0f2b31', '#3f8f99'], sun: '#eafcff', far: '#1d4950', mid: '#143338', ground: ['#0c2226', '#040c0e'], dust: '#e6fbff', night: true },
+};
+const DAY = ['noon', 'dawn', 'haze', 'copper', 'dust'];
+const NIGHT = ['dusk', 'ember', 'moon', 'storm'];
+
+export function paletteFor(id: string, kind: string): Palette {
+  const h = hashStr(id);
+  if (kind === 'raid') return PALETTES.raid;
+  if (kind === 'cistern') return PALETTES.cistern;
+  if (kind === 'operation') return PALETTES[NIGHT[h % NIGHT.length]];
+  if (CARDS[id]?.junk === 'water' && h % 2 === 0) return PALETTES.well;
+  return PALETTES[DAY[h % DAY.length]];
+}
+
 /** Procedural wasteland illustration backdrop – unique per card id. */
-export function Scene({ id, hue, kind }: { id: string; hue: number; kind: string }) {
+export function Scene({ id, kind }: { id: string; hue?: number; kind: string }) {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, '');
   const h = hashStr(id);
   const r = (n: number) => ((h >>> (n * 3)) % 1000) / 1000;
-  const night = kind === 'operation';
-  const raid = kind === 'raid';
+  const pal = paletteFor(id, kind);
+  const night = !!pal.night;
   const sunX = 16 + r(1) * 68;
   const sunY = 12 + r(2) * 14;
   const a = 40 + r(3) * 8, b = 44 + r(4) * 8, c = 54 + r(5) * 6, d = 57 + r(6) * 6;
-  const sky1 = night ? `hsl(${(hue + 220) % 360} 45% 16%)` : raid ? `hsl(${hue} 80% 30%)` : `hsl(${(hue + 10) % 360} 70% 76%)`;
-  const sky2 = night ? `hsl(${hue} 45% 34%)` : raid ? `hsl(${(hue + 25) % 360} 90% 52%)` : `hsl(${(hue + 35) % 360} 85% 62%)`;
-  const sun = night ? '#f6f1dc' : `hsl(${(hue + 40) % 360} 100% 88%)`;
   const sky = SKYLINES[h % SKYLINES.length];
   return (
     <svg className="scene" viewBox="0 0 100 70" preserveAspectRatio="xMidYMid slice" aria-hidden>
       <defs>
-        <linearGradient id={`sk${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={sky1} /><stop offset="1" stopColor={sky2} /></linearGradient>
-        <radialGradient id={`sn${uid}`}><stop offset="0" stopColor={sun} stopOpacity="1" /><stop offset=".35" stopColor={sun} stopOpacity=".9" /><stop offset="1" stopColor={sun} stopOpacity="0" /></radialGradient>
-        <linearGradient id={`gr${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={`hsl(${hue} 28% ${night ? 14 : 24}%)`} /><stop offset="1" stopColor={`hsl(${hue} 30% ${night ? 7 : 12}%)`} /></linearGradient>
+        <linearGradient id={`sk${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={pal.sky[0]} /><stop offset="1" stopColor={pal.sky[1]} /></linearGradient>
+        <radialGradient id={`sn${uid}`}><stop offset="0" stopColor={pal.sun} stopOpacity="1" /><stop offset=".3" stopColor={pal.sun} stopOpacity=".75" /><stop offset="1" stopColor={pal.sun} stopOpacity="0" /></radialGradient>
+        <linearGradient id={`gr${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={pal.ground[0]} /><stop offset="1" stopColor={pal.ground[1]} /></linearGradient>
+        <linearGradient id={`hz${uid}`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor={pal.sky[1]} stopOpacity="0" /><stop offset=".6" stopColor={pal.sky[1]} stopOpacity=".55" /><stop offset="1" stopColor={pal.sky[1]} stopOpacity="0" /></linearGradient>
       </defs>
       <rect width="100" height="70" fill={`url(#sk${uid})`} />
-      <circle cx={sunX} cy={sunY} r={night ? 16 : 26} fill={`url(#sn${uid})`} opacity={night ? 0.5 : 0.85} />
-      <circle cx={sunX} cy={sunY} r={night ? 4.5 : 7.5} fill={sun} opacity={night ? 0.9 : 0.95} />
-      {night && Array.from({ length: 9 }, (_, i) => <circle key={i} cx={(i * 13 + r(i + 7) * 11) % 100} cy={3 + ((h >>> i) % 24)} r={0.35 + (i % 3) * 0.2} fill="#fff" opacity=".75" />)}
-      <path d={sky(a)} fill={`hsl(${hue} ${night ? 25 : 30}% ${night ? 22 : 42}%)`} opacity=".55" />
-      <path d={`M0 ${b} Q 22 ${b - 7} 45 ${b + 1} T 100 ${b - 1} V70 H0Z`} fill={`hsl(${hue} 32% ${night ? 16 : 30}%)`} opacity=".75" />
+      <circle cx={sunX} cy={sunY} r={night ? 16 : 28} fill={`url(#sn${uid})`} opacity={night ? 0.45 : 0.8} />
+      <circle cx={sunX} cy={sunY} r={night ? 4.2 : 7} fill={pal.sun} opacity={night ? 0.92 : 0.96} />
+      {night && Array.from({ length: 11 }, (_, i) => <circle key={i} cx={(i * 13 + r(i + 7) * 11) % 100} cy={3 + ((h >>> i) % 24)} r={0.3 + (i % 3) * 0.18} fill={pal.dust} opacity=".7" />)}
+      <path d={sky(a)} fill={pal.far} opacity={night ? 0.8 : 0.6} />
+      <rect y={a - 12} width="100" height="16" fill={`url(#hz${uid})`} />
+      <path d={`M0 ${b} Q 22 ${b - 7} 45 ${b + 1} T 100 ${b - 1} V70 H0Z`} fill={pal.mid} opacity=".9" />
       <path d={`M0 ${c} Q 30 ${c - 6} 58 ${d} T 100 ${c} V70 H0Z`} fill={`url(#gr${uid})`} />
-      {Array.from({ length: 7 }, (_, i) => <circle key={`d${i}`} cx={(r(i + 3) * 100 + i * 17) % 100} cy={20 + ((h >>> (i + 2)) % 40)} r=".45" fill="#fff" opacity=".35" />)}
+      {Array.from({ length: 7 }, (_, i) => <circle key={`d${i}`} cx={(r(i + 3) * 100 + i * 17) % 100} cy={20 + ((h >>> (i + 2)) % 40)} r=".4" fill={pal.dust} opacity=".4" />)}
       <ellipse cx="50" cy={c + 6} rx="22" ry="2.6" fill="#000" opacity=".35" />
     </svg>
   );
@@ -99,11 +129,10 @@ function longestWord(name: string): number {
   return Math.max(6, ...name.split(/\s+/).map((w) => w.length));
 }
 
-export function artStyle(hue: number, kind: string): CSSProperties {
-  const sat = kind === 'operation' ? 45 : 55;
-  return {
-    background: `radial-gradient(circle at 50% 38%, hsl(${hue} ${sat}% 72%) 0%, hsl(${hue} ${sat}% 55%) 45%, hsl(${(hue + 20) % 360} ${sat - 10}% 32%) 100%)`,
-  };
+/** Background behind the procedural scene (shows while the SVG paints, and under the glyph). */
+export function artStyle(_hue: number, kind: string, id = ''): CSSProperties {
+  const pal = paletteFor(id, kind);
+  return { background: `linear-gradient(180deg, ${pal.sky[0]} 0%, ${pal.sky[1]} 55%, ${pal.ground[1]} 100%)` };
 }
 
 export function Card(p: CardProps) {
@@ -126,7 +155,7 @@ export function Card(p: CardProps) {
   const art = hasArt ? (
     <div className="art art-img"><img src={`/art/${def.id}.webp?v=${ART_VERSION}`} alt="" loading="lazy" decoding="async" draggable={false} /></div>
   ) : (
-    <div className="art" style={artStyle(def.hue, def.kind)}>
+    <div className="art" style={artStyle(def.hue, def.kind, def.id)}>
       <Scene id={def.id} hue={def.hue} kind={def.kind} />
       <div className="halftone" />
       <Icon name={def.icon} className="glyph" />
@@ -191,11 +220,11 @@ export function Card(p: CardProps) {
         <div className="name" style={{ ['--nl' as string]: longestWord(def.name) }}>{def.name}</div>
         {def.kind === 'operation' && (
           <span className={`fuse ${def.countdown === 0 ? 'instant' : ''}`} title={def.countdown === 0 ? 'Okamžitá operace' : `Odpočet: ${def.countdown}`}>
-            <Icon name="sands-of-time" />{def.countdown === 0 ? '⚡' : def.countdown}
+            {def.countdown === 0 ? <Icon name="focused-lightning" /> : <><Icon name="sands-of-time" />{def.countdown}</>}
           </span>
         )}
       </div>
-      <div className={`art ${hasArt ? 'art-img' : ''}`} style={hasArt ? undefined : artStyle(def.hue, def.kind)}>
+      <div className={`art ${hasArt ? 'art-img' : ''}`} style={hasArt ? undefined : artStyle(def.hue, def.kind, def.id)}>
         {hasArt ? <img src={`/art/${def.id}.webp?v=${ART_VERSION}`} alt="" loading="lazy" decoding="async" draggable={false} /> : (
           <>
             <Scene id={def.id} hue={def.hue} kind={def.kind} />

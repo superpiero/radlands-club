@@ -1,0 +1,138 @@
+/* ==========================================================================
+   POSLEDNÍ KAPKA – design layer v2 (owned by the design session)
+   Loaded after styles.css. Functional layout rules stay in styles.css;
+   this file only restyles. Keep it organised by section.
+   ========================================================================== */
+
+:root {
+  --glass: rgba(26, 19, 14, 0.66);
+  --glass-strong: rgba(22, 16, 12, 0.84);
+  --glass-line: rgba(246, 220, 176, 0.16);
+  --glass-hi: rgba(255, 236, 200, 0.10);
+  --ease-out: cubic-bezier(.2, .9, .25, 1);
+}
+
+/* --------------------------------------------------------------------------
+   1. Panorama backdrop (Backdrop.tsx)
+   -------------------------------------------------------------------------- */
+.backdrop { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; background: #120c10; }
+.backdrop svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.backdrop .rotor { animation: bd-spin 14s linear infinite; }
+.backdrop .fg .rotor { animation-duration: 22s; }
+.backdrop .twinkle { animation: bd-twinkle 4s ease-in-out infinite alternate; }
+.backdrop .glint { animation: bd-glint 5s ease-in-out infinite; }
+.backdrop .dust { position: absolute; inset: -20% 0 0 -20%; opacity: .5;
+  background-image:
+    radial-gradient(1.5px 1.5px at 20% 30%, rgba(255,230,190,.8), transparent),
+    radial-gradient(1px 1px at 60% 70%, rgba(255,230,190,.7), transparent),
+    radial-gradient(1.5px 1.5px at 80% 20%, rgba(255,230,190,.6), transparent),
+    radial-gradient(1px 1px at 35% 85%, rgba(255,230,190,.6), transparent),
+    radial-gradient(2px 2px at 90% 55%, rgba(255,230,190,.5), transparent);
+  background-size: 340px 260px; animation: bd-dust 40s linear infinite; }
+.backdrop::after { content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 120% 70% at 50% 105%, rgba(10,7,5,.0) 40%, rgba(10,7,5,.55) 100%); }
+.backdrop-page { opacity: .42; }
+.backdrop-page::after { background: linear-gradient(180deg, rgba(18,12,9,.55), rgba(18,12,9,.92) 55%, #120c09); }
+@keyframes bd-spin { to { transform: rotate(360deg); } }
+@keyframes bd-twinkle { from { opacity: .15; } to { opacity: .8; } }
+@keyframes bd-glint { 0%, 100% { opacity: .35; } 50% { opacity: 1; } }
+@keyframes bd-dust { from { transform: translate(0, 0); } to { transform: translate(340px, -60px); } }
+@media (prefers-reduced-motion: reduce) {
+  .backdrop .rotor, .backdrop .twinkle, .backdrop .glint, .backdrop .dust { animation: none; }
+}
+
+/* content above the backdrop */
+.home, .page { position: relative; z-index: 1; }
+
+/* --------------------------------------------------------------------------
+   2. Glass panels, buttons, fields
+   -------------------------------------------------------------------------- */
+.home .panel, .page .panel, .gate .panel {
+  background: linear-gradient(180deg, var(--glass-hi), transparent 40%), var(--glass);
+  border: 1px solid var(--glass-line);
+  box-shadow: 0 18px 40px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,240,210,.08);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15); backdrop-filter: blur(14px) saturate(1.15);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .home .panel, .page .panel, .gate .panel { background: var(--glass-strong); }
+}
+
+.btn { border-radius: 10px; letter-spacing: .04em; }
+.btn.primary {
+  background: linear-gradient(180deg, #45c3d3 0%, #2696a8 48%, #1c7383 100%);
+  border-color: rgba(160, 236, 245, .75);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 6px 18px rgba(31,118,134,.35);
+  text-shadow: 0 1px 1px rgba(0,0,0,.35);
+}
+.btn.primary:hover:not(:disabled) { background: linear-gradient(180deg, #55d0df 0%, #2ca5b8 48%, #1f7f90 100%); box-shadow: inset 0 1px 0 rgba(255,255,255,.4), 0 8px 24px rgba(63,184,201,.45); }
+.btn:focus-visible, .seg button:focus-visible { outline: 2px solid var(--water-2); outline-offset: 2px; }
+input.field, select.field { background-color: rgba(12, 9, 7, .72); border-color: rgba(246, 220, 176, .22); border-radius: 10px; }
+
+/* inline icons that replace emoji in text */
+.ico-inline { width: 1em; height: 1em; vertical-align: -0.15em; }
+.ico-water { color: var(--water-2); }
+.ico-win { color: var(--gold); }
+.ico-loss { color: #d98a7a; }
+
+/* --------------------------------------------------------------------------
+   3. Home
+   -------------------------------------------------------------------------- */
+.home { gap: 20px; padding-top: clamp(20px, 5vh, 56px); }
+.logo { margin-top: 0; }
+.logo h1 { color: #f3e2bf; letter-spacing: .01em;
+  text-shadow: 0 2px 0 #7a3a1c, 0 5px 0 #3c1a0c, 0 18px 40px rgba(0,0,0,.55), 0 0 80px rgba(255,160,80,.25); }
+.logo h1 .drop { color: #59d4e3; text-shadow: 0 2px 0 #1b5b66, 0 5px 0 #0c2a30, 0 0 30px rgba(89,212,227,.55); }
+.logo .tag { color: #f0d9b5; text-shadow: 0 1px 2px rgba(0,0,0,.8); letter-spacing: .04em; }
+.home-card h2 { color: #f3e2bf; }
+.home-card h2 .icon { color: var(--ember); filter: drop-shadow(0 0 10px rgba(232,116,47,.35)); }
+.home-card p { color: #d9c8aa; }
+.home-grid .home-card { transition: transform .25s var(--ease-out), border-color .25s, box-shadow .25s; }
+.home-grid .home-card:hover { transform: translateY(-3px); border-color: rgba(246, 220, 176, .3); box-shadow: 0 24px 50px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,240,210,.12); }
+.home-grid .home-card > .btn:last-of-type, .home-grid .home-card > form { margin-top: auto; }
+.home-grid .home-card > .btn { justify-content: center; }
+.footer-note { color: rgba(240, 217, 181, .65); }
+
+/* --------------------------------------------------------------------------
+   4. Pages (rules, cards, decks, boosters, account)
+   -------------------------------------------------------------------------- */
+.page h1 { color: #f3e2bf; text-shadow: 0 3px 0 #3c1a0c, 0 12px 30px rgba(0,0,0,.6); }
+.page h2 { color: #f0d9b5; }
+
+/* --------------------------------------------------------------------------
+   5. Bases on the board: full-bleed art with a dark plate for the text
+   -------------------------------------------------------------------------- */
+.card.k-base { background: linear-gradient(175deg, #3a2e22, #1d1610); color: var(--text); }
+.card.k-base.compact:not(.has-art) .art { position: absolute; inset: 0; width: auto; margin: 0; border-radius: inherit; box-shadow: none; z-index: 0; }
+.card.k-base.compact:not(.has-art) .art::after { background: linear-gradient(90deg, transparent 22%, rgba(14,10,7,.62) 50%, rgba(14,10,7,.92) 100%); }
+.card.k-base.compact:not(.has-art) .art svg.glyph { width: 40%; height: 70%; margin-left: -56%; margin-top: 0; }
+.card.k-base.compact:not(.has-art) .bside { margin-left: 36%; }
+.card.k-base .name { color: #f6ead2; text-shadow: 0 1px 2px #000; }
+.card.k-base .frame { box-shadow: inset 0 0 0 .14em rgba(20,14,9,.95), inset 0 0 0 .26em rgba(246,220,176,.22); }
+.card.k-base .draws { background: rgba(10,7,5,.75); border: 1px solid rgba(246,220,176,.2); }
+.card.k-base .ab { background: linear-gradient(180deg, rgba(36,27,19,.92), rgba(22,16,11,.95)); }
+
+/* --------------------------------------------------------------------------
+   6. Tabletop: warmer lamp light on the mat, printed emblem in the middle
+   -------------------------------------------------------------------------- */
+.table:not(.has-mat) {
+  background-color: #34281d;
+  background-image:
+    radial-gradient(ellipse 70% 55% at 50% 48%, rgba(255, 206, 140, .13), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'><g fill='none' stroke='%23e8d5b0' stroke-opacity='.07' stroke-width='1.4'><circle cx='100' cy='100' r='78'/><circle cx='100' cy='100' r='64' stroke-dasharray='3 5'/><path d='M100 52c10 17 24 31 24 47a24 24 0 0 1-48 0c0-16 14-30 24-47z'/><path d='M22 100h20M158 100h20M100 22v12M100 166v12'/></g></svg>") center / min(46%, 420px) no-repeat,
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='300' viewBox='0 0 420 300'><g fill='none' stroke='%23e8d5b0' stroke-opacity='.055' stroke-width='1.2'><path d='M-20 60 C60 20 140 90 220 50 S360 20 440 60'/><path d='M-20 90 C70 50 150 120 230 80 S370 50 440 92'/><path d='M-20 125 C80 90 160 150 240 112 S380 85 440 126'/><path d='M-20 170 C60 140 150 200 230 160 S360 140 440 175'/><path d='M-20 210 C70 180 160 240 240 200 S370 185 440 215'/><path d='M-20 250 C80 225 170 280 250 240 S380 228 440 255'/></g></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 .1 0 0 0 0 .08 0 0 0 0 .06 0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+}
+.table { outline-color: rgba(246, 220, 176, .14); }
+/* whose turn: a soft edge glow on the active half */
+.table[data-active="me"] { box-shadow: 0 24px 50px rgba(0,0,0,.65), inset 0 -120px 140px -100px rgba(63,184,201,.28), inset 0 0 80px rgba(0,0,0,.4); }
+.table[data-active="opp"] { box-shadow: 0 24px 50px rgba(0,0,0,.65), inset 0 120px 140px -100px rgba(224,115,60,.26), inset 0 0 80px rgba(0,0,0,.4); }
+
+/* --------------------------------------------------------------------------
+   7. Small icon details (emoji replacements)
+   -------------------------------------------------------------------------- */
+.hand-chevron.up { transform: rotate(-90deg); }
+.hand-chevron.down { transform: rotate(90deg); }
+.card .fuse.instant .icon { width: 1.05em; height: 1.05em; }
+.pill .icon.ico-win, .stat .icon.ico-win { color: var(--gold); }
+.fx .float .ico-inline, .float .ico-inline { color: var(--water-2); margin-left: .05em; }
+.curve small .ico-inline { width: .9em; height: .9em; }

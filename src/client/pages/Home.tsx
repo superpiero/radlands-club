@@ -45,7 +45,7 @@ export function Home() {
             <>
               <span className="stat" style={{ fontSize: 19, fontWeight: 800 }}><Icon name="gas-mask" /> {prof.name}</span>
               <span className="stat pill"><Icon name="water-drop" /> {prof.kapky} kapek</span>
-              <span className="stat pill">🏆 {prof.stats.wins} · 💀 {prof.stats.losses}</span>
+              <span className="stat pill" title="Výhry · prohry"><Icon name="trophy-cup" className="ico-win" /> {prof.stats.wins} · <Icon name="death-skull" className="ico-loss" /> {prof.stats.losses}</span>
               <div className="row">
                 <button className={`btn small ${prof.unopened > 0 ? 'primary pulse' : ''}`} onClick={() => go('/boosters')}>
                   Boostery{prof.unopened > 0 && <span className="badge-dot">{prof.unopened}</span>}

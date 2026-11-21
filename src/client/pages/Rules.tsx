@@ -51,7 +51,7 @@ export function Rules() {
           <li><b>Akce</b> – v libovolném pořadí a kolikrát chceš:
             <ul>
               <li><b>Zahrát přeživšího</b> – zaplať cenu a postav ho do sloupce (vepředu nebo vzadu). V tahu, kdy přišel, není připravený.</li>
-              <li><b>Zahrát operaci</b> – zaplať cenu a polož ji do fronty na místo podle odpočtu <Icon name="sands-of-time" />. Je-li obsazeno, jde na první volné místo za ním. Operace s ⚡ se vyhodnotí hned.</li>
+              <li><b>Zahrát operaci</b> – zaplať cenu a polož ji do fronty na místo podle odpočtu <Icon name="sands-of-time" />. Je-li obsazeno, jde na první volné místo za ním. Operace s <Icon name="focused-lightning" /> se vyhodnotí hned.</li>
               <li><b>Rozebrat kartu</b> – odhoď kartu z ruky a proveď její efekt rozebrání (ikona v rohu karty). Zadarmo!</li>
               <li><b>Použít schopnost</b> připravené karty – zaplať cenu ve vodě; karta pak do konce tahu není připravená.</li>
               <li><b>Líznout kartu</b> za 2 vody, nebo <b>vzít Cisternu</b> za 1 vodu.</li>

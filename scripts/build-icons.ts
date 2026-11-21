@@ -17,6 +17,7 @@ export const UI_ICONS = [
   'stockpiles', 'explosion-rays', 'desert', 'podium-winner', 'robot-golem', 'tabletop-players',
   'wifi-router', 'padlock', 'shield', 'sun', 'magnifying-glass', 'broken-shield', 'swap-bag', 'card-draw',
   'crossed-swords', 'cracked-shield', 'heart-drop', 'knockout', 'checkered-flag', 'sands-of-time',
+  'focused-lightning', 'stopwatch', 'windpump', 'sandstorm',
 ];
 
 const names = new Set<string>([...UI_ICONS, ...ALL_CARDS.map((c) => c.icon)]);

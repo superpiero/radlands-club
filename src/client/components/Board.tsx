@@ -10,7 +10,7 @@ import { isMuted, setMuted, sfx } from '../sound';
 import { zoomStore } from '../zoom';
 import { Card, CardBack } from './Card';
 import { FxLayer } from './FxLayer';
-import { Icon, JUNK_ICON } from './Icon';
+import { Drop, Icon, JUNK_ICON } from './Icon';
 import { Sidebar } from './Sidebar';
 import { plural } from '../../shared/plural';
 import { ART_IDS, ART_VERSION } from '../gen/art';
@@ -367,7 +367,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           <span key={i} className={`wtok ${i < n ? (i >= 3 ? 'extra' : '') : 'spent'}`} />
         ))}
         {drops > 8 && <span className="wcount">×{n}</span>}
-        {pl.waterPenalty > 0 && <span className="pill" title="Sucho – příští tah o vodu méně">−{pl.waterPenalty} 💧</span>}
+        {pl.waterPenalty > 0 && <span className="pill" title="Sucho – příští tah o vodu méně">−{pl.waterPenalty} <Drop /></span>}
       </div>
     );
   };
@@ -456,7 +456,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         <>
           <div className="ptitle">Cisterna</div>
           <button className="btn opt" disabled={!legal?.canTakeCistern} onClick={() => { setSel(null); act({ t: 'takeCistern' }); }}>
-            Vzít do ruky (1 💧)<small>Později ji rozeber a získáš 1 vodu navíc – voda se tak přenese do dalšího tahu.</small>
+            Vzít do ruky (1 <Drop />)<small>Později ji rozeber a získáš 1 vodu navíc – voda se tak přenese do dalšího tahu.</small>
           </button>
         </>
       );
@@ -472,12 +472,12 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           <div className="ptitle">{def.name}</div>
           {def.kind === 'survivor' && (
             <button className="btn opt primary" disabled={!playable} onClick={() => { setSel(null); act({ t: 'playPerson', uid: c.uid }); }}>
-              Zahrát za {cost} 💧<small>Postav přeživšího do sloupce před základnu.</small>
+              Zahrát za {cost} <Drop /><small>Postav přeživšího do sloupce před základnu.</small>
             </button>
           )}
           {def.kind === 'operation' && (
             <button className="btn opt primary" disabled={!playable} onClick={() => { setSel(null); act({ t: 'playEvent', uid: c.uid }); }}>
-              Zahrát za {def.cost} 💧<small>{def.countdown === 0 ? 'Okamžitě se vyhodnotí.' : `Do fronty na místo ${def.countdown}.`} {def.effectText}</small>
+              Zahrát za {def.cost} <Drop /><small>{def.countdown === 0 ? 'Okamžitě se vyhodnotí.' : `Do fronty na místo ${def.countdown}.`} {def.effectText}</small>
             </button>
           )}
           {!playable && why && def.kind !== 'cistern' && <div className="why">{why}</div>}
@@ -504,7 +504,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
             return (
               <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <button className="btn opt primary" disabled={!ok} onClick={() => { setSel(null); act({ t: 'ability', uid: sel.uid, idx }); }}>
-                  Použít za {ab.cost} 💧<small>{ab.text}</small>
+                  Použít za {ab.cost} <Drop /><small>{ab.text}</small>
                 </button>
                 {!ok && why && <div className="why">{why}</div>}
               </div>
@@ -610,7 +610,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     const oppRaid = O.queue[0]?.id === 'najezd';
     if (canAct && oppRaid) return <>Pozor: soupeřův <b>Nájezd</b> je na místě 1 – na začátku jeho tahu poškodí jednu tvou základnu (vybereš si kterou).</>;
     if (canAct && view.turn <= 2 && P.peopleCount === 0) return <>Začni tím, že <b>klikneš na kartu v ruce</b>: přeživšího můžeš zahrát za vodu, nebo kartu <b>rozebrat</b> pro okamžitý efekt.</>;
-    if (canAct && P.water >= 2 && (legal?.playable.length ?? 0) === 0 && (legal?.abilities.length ?? 0) === 0) return <>Zbylou vodu můžeš využít na <b>Líznout kartu (2 💧)</b> nebo vzít <b>Cisternu</b> (1 💧).</>;
+    if (canAct && P.water >= 2 && (legal?.playable.length ?? 0) === 0 && (legal?.abilities.length ?? 0) === 0) return <>Zbylou vodu můžeš využít na <b>Líznout kartu (2 <Drop />)</b> nebo vzít <b>Cisternu</b> (1 <Drop />).</>;
     if (canAct && (legal?.abilities.length ?? 0) > 0 && view.turn <= 6) return <>Karty se <b>svítícím okrajem</b> jsou připravené – klikni na ně a použij schopnost.</>;
     return null;
   })();
@@ -635,10 +635,10 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           )}
           <span className="pill" title="Přeživších ve hře (max 6)"><Icon name="hooded-figure" />{pl.peopleCount}/6</span>
           {view.personal && <span className={`pill ${pl.deckCount <= 3 && (pl.reshuffles ?? 0) >= 1 ? 'warn' : ''}`} title={`Vlastní balíček: ${pl.deckCount} karet, odhozeno ${pl.discardCount}${(pl.reshuffles ?? 0) >= 1 ? ' · další zamíchání poškodí základnu (Žízeň)' : ''}`}><Icon name="stockpiles" />{pl.deckCount}</span>}
-          {state.room && (state.room.score[0] + state.room.score[1] > 0) && <span className="pill" title="Výhry v této sérii">🏆 {state.room.score[owner]}</span>}
+          {state.room && (state.room.score[0] + state.room.score[1] > 0) && <span className="pill" title="Výhry v této sérii"><Icon name="trophy-cup" className="ico-inline ico-win" /> {state.room.score[owner]}</span>}
           {state.mode === 'online' && seat && !seat.connected && <span className="pill warn" title="Hráč je odpojený">odpojen {Math.floor((seat.awayMs ?? 0) / 1000)} s</span>}
           {timerFor === owner && timeLeft !== null && (
-            <span className={`pill timer ${timeLeft <= 10 ? 'low' : ''}`} title="Časový limit">⏱ {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</span>
+            <span className={`pill timer ${timeLeft <= 10 ? 'low' : ''}`} title="Časový limit"><Icon name="stopwatch" className="ico-inline" /> {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</span>
           )}
         </div>
         {!isMe && !spectator && view.phase === 'play' && state.mode === 'online' && seat && !seat.connected && (seat.awayMs ?? 0) >= (state.room?.claimWinMs ?? 120000) && (
@@ -652,7 +652,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     <div className="controls">
       <button className="btn small ghost mobile-only" onClick={() => setSideOpen(true)} title="Záznam a chat"><Icon name="hamburger-menu" /></button>
       <button className="btn small ghost" onClick={() => { setMuted(!muted); setMut(!muted); }} title={muted ? 'Zapnout zvuk' : 'Vypnout zvuk'}><Icon name={muted ? 'speaker-off' : 'speaker'} /></button>
-      <button className="btn small ghost hide-sm" onClick={() => { setTipsOn(!tipsOn); setFlag('tips', !tipsOn); }} title="Nápověda pro začátečníky">{tipsOn ? 'Tipy ✓' : 'Tipy ✗'}</button>
+      <button className="btn small ghost hide-sm" onClick={() => { setTipsOn(!tipsOn); setFlag('tips', !tipsOn); }} title="Nápověda pro začátečníky">Tipy <Icon name={tipsOn ? 'check-mark' : 'cross-mark'} className="ico-inline" /></button>
       <button className="btn small ghost" onClick={(e) => { e.stopPropagation(); setHowto(true); }} title="Jak hrát"><Icon name="info" /></button>
       {!spectator && view.phase === 'play' && (
         <button className="btn small ghost" onClick={() => { if (confirm('Opravdu se vzdát? Soupeř vyhraje tuto hru.')) act({ t: 'concede' }); }} title="Vzdát hru"><Icon name="broken-shield" /></button>
@@ -665,7 +665,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     <div className="actions">
       {view.canUndo && <button className="btn small" onClick={() => act({ t: 'undo' })} title="Vrátit poslední akci (Ctrl+Z)"><Icon name="return-arrow" /> Zpět</button>}
       <button className="btn small" disabled={!legal?.canDraw} onClick={() => act({ t: 'drawCard' })} title="Zaplať vodu a lízni kartu">
-        <Icon name="card-draw" /> Líznout ({legal?.drawCost ?? 2}💧)
+        <Icon name="card-draw" /> Líznout ({legal?.drawCost ?? 2} <Drop />)
       </button>
       <button className={`btn primary endturn ${canAct && P.water === 0 && (legal?.abilities.length ?? 0) === 0 ? 'pulse' : ''}`} disabled={!canAct} onClick={endTurn}>
         <Icon name="checkered-flag" /> Konec tahu
@@ -703,7 +703,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         <div className={`hand-wrap ${handOpen ? 'open' : ''} ${handInactive ? 'inactive' : ''}`}>
           {!spectator && hand.length > 0 && (
             <button className="btn small hand-toggle" onClick={(e) => { e.stopPropagation(); setHandOpen(!handOpen); }}>
-              {handOpen ? '▼ Schovat ruku' : `▲ Ruka (${hand.length})`}
+              <Icon name="play-button" className={`ico-inline hand-chevron ${handOpen ? 'down' : 'up'}`} /> {handOpen ? 'Schovat ruku' : `Ruka (${hand.length})`}
             </button>
           )}
           {spectator ? <div className="hand-empty">Sleduješ hru jako divák.</div> : hand.length === 0 ? <div className="hand-empty">Prázdná ruka.</div> : (

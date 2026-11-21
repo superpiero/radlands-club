@@ -210,10 +210,10 @@ function WaitingRoom({ state }: { state: ConnState }) {
           <>
             <div className="muted" style={{ fontWeight: 700, letterSpacing: '.1em' }}>KÓD STOLU</div>
             <div className="room-code">{room.code}</div>
-            <div className="pill" style={{ alignSelf: 'center' }}>{room.options.deckMode === 'collection' ? 'Sběratelský stůl – každý hraje se svým balíčkem' : 'Klasika – společný balíček'}{room.options.turnSeconds ? ` · ⏱ ${room.options.turnSeconds} s na tah` : ''}</div>
+            <div className="pill" style={{ alignSelf: 'center' }}>{room.options.deckMode === 'collection' ? 'Sběratelský stůl – každý hraje se svým balíčkem' : 'Klasika – společný balíček'}{room.options.turnSeconds ? <> · <Icon name="stopwatch" className="ico-inline" /> {room.options.turnSeconds} s na tah</> : ''}</div>
             <div className="copybox">
               <input className="field" readOnly value={link} onFocus={(e) => e.target.select()} />
-              <button className="btn primary" onClick={copy}>{copied ? 'Zkopírováno ✓' : 'Kopírovat odkaz'}</button>
+              <button className="btn primary" onClick={copy}>{copied ? <>Zkopírováno <Icon name="check-mark" className="ico-inline" /></> : 'Kopírovat odkaz'}</button>
             </div>
             <p className="muted" style={{ margin: 0 }}>Pošli odkaz kamarádovi. Hra začne, jakmile si sedne ke stolu.</p>
             <div className="seats">

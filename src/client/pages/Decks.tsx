@@ -6,7 +6,7 @@ import {
 import { go } from '../App';
 import { deleteDeck, refreshProfile, saveDeck, selectDeck, selectedDeck, useAccount } from '../account';
 import { Card } from '../components/Card';
-import { Icon } from '../components/Icon';
+import { Drop, Icon } from '../components/Icon';
 import { sfx } from '../sound';
 
 type KindF = 'all' | 'survivor' | 'operation';
@@ -159,7 +159,7 @@ export function Decks() {
             </div>
             <div className="curve" title="Rozložení cen (0–4+)">
               {curve.map((n, i) => (
-                <div key={i} className="bar"><div className="fill" style={{ height: `${(n / curveMax) * 100}%` }} /><span>{n}</span><small>{i === 4 ? '4+' : i}💧</small></div>
+                <div key={i} className="bar"><div className="fill" style={{ height: `${(n / curveMax) * 100}%` }} /><span>{n}</span><small>{i === 4 ? '4+' : i}<Drop /></small></div>
               ))}
             </div>
             <div className="decklist">

@@ -15,3 +15,8 @@ export const JUNK_ICON: Record<string, string> = {
   drifter: 'hooded-figure',
   water: 'water-drop',
 };
+
+/** Inline water-drop icon used wherever text mentions a water cost (replaces the 💧 emoji). */
+export function Drop({ className }: { className?: string }) {
+  return <Icon name="water-drop" className={`ico-inline ico-water ${className ?? ''}`} />;
+}
