@@ -1075,3 +1075,18 @@ select, option { font-family: inherit; }
 select.field { appearance: none; padding-right: 30px; color: var(--text); background: #120e0b url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%23cdb78e' stroke-width='2' fill='none'/></svg>") no-repeat right 10px center; }
 input[type=checkbox] { accent-color: var(--water); width: 18px; height: 18px; }
 @media (max-width: 600px) { .pulled-row { row-gap: 34px; padding-bottom: 30px; } .pulled-card .rarity-name { bottom: -26px; } }
+
+/* colour-blind friendly target markers: shape, not just colour */
+.card.target::after { content: '✕'; position: absolute; top: 4px; right: 4px; z-index: 6; width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font: 800 13px/1 var(--f-ui, sans-serif); color: #fff; background: var(--danger); border: 2px solid #1a120c; box-shadow: 0 2px 6px rgba(0,0,0,.6); pointer-events: none; }
+.card.target.good::after { content: '+'; font-size: 17px; background: var(--good); color: #10200a; }
+.card.target.neutral::after { content: '●'; font-size: 10px; background: var(--gold); color: #2a1d08; }
+.card.compact.target::after { width: 17px; height: 17px; top: 2px; right: 2px; font-size: 10px; border-width: 1.5px; }
+.card.compact.target.good::after { font-size: 14px; }
+
+/* phones: two-column card gallery */
+@media (max-width: 600px) {
+  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .gallery .card { --w: calc((100vw - 42px) / 2); --h: calc(var(--w) / .72); }
+  .gallery.bases { grid-template-columns: 1fr; }
+  .gallery .card.k-base { --w: min(340px, calc(100vw - 32px)); --h: calc(var(--w) * .62); }
+}
