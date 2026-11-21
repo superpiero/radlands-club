@@ -11,7 +11,10 @@ const row = (c: CardDef) => {
 
 let md = `# Databáze karet – Poslední kapka\n\n> Generováno z \`src/engine/cards.ts\` (\`npm run docs:cards\`). Neupravovat ručně.\n\n`;
 const deck = [...SURVIVORS, ...OPERATIONS].reduce((s, c) => s + c.copies, 0);
-md += `Balíček: **${deck} karet** – ${SURVIVORS.length} druhů přeživších a ${OPERATIONS.length} druhů operací, každá 2×.  \nZákladen: **${BASES.length}** (každý hráč dostane 6, vybere 3).\n\n`;
+const inDeck = (l: { copies?: number }[]) => l.filter((c) => (c.copies ?? 2) > 0).length;
+const collOnly = SURVIVORS.length + OPERATIONS.length - inDeck(SURVIVORS) - inDeck(OPERATIONS);
+md += `Klasický balíček: **${deck} karet** – ${inDeck(SURVIVORS)} druhů přeživších a ${inDeck(OPERATIONS)} druhů operací, každá 2×` +
+  (collOnly ? ` (+${collOnly} karet jen pro sběratelský režim)` : '') + `.  \nZákladen: **${BASES.length}** (každý hráč dostane 6, vybere 3).\n\n`;
 
 md += `## Přeživší (${SURVIVORS.length})\n\n| Karta | Cena | Rozebrání | Schopnosti / vlastnosti |\n|---|---|---|---|\n`;
 for (const c of SURVIVORS) md += `| **${c.name}** \`${c.id}\` | ${c.cost}💧 | ${JUNK_LABEL[c.junk!]} | ${row(c)} |\n`;

@@ -86,11 +86,12 @@ function eventValue(g: Game, owner: PlayerIdx, id: string): number {
     case 'poslednikapka': return 14;
     case 'podkop': case 'delostrelectvo': case 'kyselydest': return 8;
     case 'karavana': return 6;
-    case 'pramen': case 'oaza': return 5;
+    case 'pramen': return 5;
+    case 'oaza': return 6 + 3 * g.restoreTargets(owner, {}).length;
     case 'sanitka': return 2 + 3 * g.restoreTargets(owner, {}).length;
     case 'boure': return 1 + 1.5 * g.ownFaceUpPeople(o).length;
     case 'prepad': return 3 + (g.peopleCount(o) >= 4 ? 2 : 0);
-    case 'sucho': return 3.5;
+    case 'sucho': return 6;
     case 'vysadek': return 5;
     default: return 3.5 + (cardDef(id).cost ?? 0) * 0.8;
   }
@@ -141,7 +142,7 @@ function sideScore(g: Game, p: PlayerIdx, perspective: PlayerIdx): number {
 export function evaluate(g: Game, p: PlayerIdx): number {
   const st = g.state;
   if (st.winner === p) return 1e6;
-  if (st.winner === 'draw') return 0;
+  if (st.winner === 'draw') return -15; // play on rather than settle for a draw
   if (st.winner !== null) return -1e6;
   const o = (1 - p) as PlayerIdx;
   let v = sideScore(g, p, p) - sideScore(g, o, p) * 1.05;
@@ -257,16 +258,22 @@ function answerCandidates(pr: Prompt, r: Rand): Answer[] {
 }
 
 const BASE_PREF: Record<string, number> = Object.fromEntries(BASES.map((b) => [b.id, (b.draw ?? 0) * 1.2 + (b.abilities.length ? 1.5 : 0.6)]));
+// measured base strength (round-2 sims), adjusted for the follow-up rebalance of the outliers
 Object.assign(BASE_PREF, {
-  dilna: 4.2, nemocnice: 3.6, signal: 4.2, trhaviny: 4, studna: 3.8, trziste: 3.6, elektrarna: 3.4, zbrojnice: 3.6, benzinka: 3.2,
-  vodarna: 3.0, krater: 3.0, pevnost: 3.0, radiostanice: 2.4, hangar: 2.4, skrys: 2.4, hnizdo: 3.0, rusicka: 2.6, stezka: 2.8, vysilac: 2.8, kantyna: 2.8,
+  bunkr: 4.4, vysilac: 3.8, pevnost: 4.2, trziste: 4.1, krater: 4.0, studna: 3.7, kantyna: 3.6, dilna: 3.6, nemocnice: 3.6, strelnice: 3.5,
+  signal: 3.5, trhaviny: 3.5, vodarna: 3.1, radiostanice: 2.9, hangar: 2.9, benzinka: 2.9, skrys: 2.8, vrakoviste: 2.7, elektrarna: 2.7,
+  radar: 2.7, minovepole: 2.7, prehrada: 2.7, stezka: 2.5, hnizdo: 2.4, zbrojnice: 2.2, srotiste: 2.6, ubikace: 2.6, rusicka: 2.4, vezeni: 2.4,
 });
+
+// safety net: a bot never takes more than this many actions in one turn (guards against rare action cycles)
+const MAX_BOT_ACTIONS_PER_TURN = 60;
+const turnCounter = new WeakMap<Game, { turn: number; n: number }>();
 
 export function botMove(g: Game, p: PlayerIdx, opts: BotOptions = {}): Action | null {
   const st = g.state;
   const r = opts.rand ?? Math.random;
   const level = opts.level ?? 'normal';
-  const noise = level === 'easy' ? 3.5 : level === 'normal' ? 0.6 : 0.1;
+  const noise = level === 'easy' ? 6 : level === 'normal' ? 0.6 : 0.1;
   const rollouts = level === 'hard' ? 5 : 2;
   if (st.phase === 'over') return null;
   if (st.phase === 'draft') {
@@ -283,7 +290,7 @@ export function botMove(g: Game, p: PlayerIdx, opts: BotOptions = {}): Action | 
     const pr = st.pending;
     if (pr.player !== p) return null;
     const cands = answerCandidates(pr, r);
-    if (cands.length === 1 || level === 'easy' && r() < 0.3) return { t: 'answer', promptId: pr.id, choice: level === 'easy' ? randomAnswer(pr, r) : cands[0] };
+    if (cands.length === 1 || level === 'easy' && r() < 0.5) return { t: 'answer', promptId: pr.id, choice: level === 'easy' ? randomAnswer(pr, r) : cands[0] };
     let best = cands[0];
     let bestV = -Infinity;
     for (const ans of cands) {
@@ -293,8 +300,16 @@ export function botMove(g: Game, p: PlayerIdx, opts: BotOptions = {}): Action | 
     return { t: 'answer', promptId: pr.id, choice: best };
   }
   if (st.active !== p) return null;
+  const tc = turnCounter.get(g);
+  if (!tc || tc.turn !== st.turn) turnCounter.set(g, { turn: st.turn, n: 1 });
+  else if (++tc.n > MAX_BOT_ACTIONS_PER_TURN) return { t: 'endTurn' };
   const acts = g.legalActions(p).filter((a) => a.t !== 'endTurn');
-  if (level === 'easy' && r() < 0.35 && acts.length) return pickRand(acts, r);
+  if (level === 'easy') {
+    // a beginner: sometimes ends the turn early, often plays something random instead of the best move
+    if (st.players[p].water < 3 && r() < 0.25) return { t: 'endTurn' };
+    const cheap = acts.filter((a) => a.t !== 'drawCard' && a.t !== 'takeCistern');
+    if (r() < 0.45 && cheap.length) return pickRand(cheap, r);
+  }
   // Baseline: water left is wasted at end of turn
   const baseline = evaluate(g, p) - g.state.players[p].water * 0.55;
   let best: Action = { t: 'endTurn' };

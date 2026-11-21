@@ -45,7 +45,9 @@ export function starterSet(): Record<string, number> {
   for (const c of byRarity('common')) out[c.id] = 2;
   const unc = byRarity('uncommon').map((c) => c.id);
   // a fixed, friendly selection of uncommons so the starter deck is coherent
-  for (const id of ['bara', 'hana', 'marta', 'hlidkar', 'sanitka', 'sucho']) if (unc.includes(id)) out[id] = 1;
+  // tested in round-2 sims: enough base damage that starter games are decided by fighting, not by Žízeň
+  const picks: Record<string, number> = { bara: 2, hana: 1, vymahac: 1, podkop: 2, delostrelectvo: 1, sanitka: 1 };
+  for (const [id, n] of Object.entries(picks)) if (unc.includes(id)) out[id] = n;
   return out;
 }
 
@@ -146,30 +148,52 @@ export function deckToList(cards: Record<string, number>): string[] {
  * Build a reasonable deck from a collection: best rarity first, then a healthy
  * mix of survivors (~65 %) and operations, cheap cards favoured.
  */
-export function autoDeck(collection: Record<string, number>, size = DECK_MIN): Record<string, number> {
+// Hand-tuned card strength for the auto deck builder (from round-2 bot A/B games).
+const POWER: Record<string, number> = {
+  poslednikapka: 9, podkop: 8, prorok: 8, delostrelectvo: 7.5, kyselydest: 7.5, bara: 7, granatnik: 7, velitelka: 7,
+  prak: 6, hana: 6, minometcik: 6, honak: 6, baron: 6, doktorka: 6, kat: 5.5, rez: 5.5, sanitka: 5.5, lasar: 5,
+  pumpar: 5, sucho: 5, boure: 5, vysadek: 5, oaza: 5, felcar: 4.5, paserak: 4.5, marta: 4.5, ludmila: 4.5,
+  prospektorka: 4.5, jiskra: 4.5, myska: 4.5, karavana: 4.5, pramen: 4.5, vymahac: 4.5, hlidkar: 4.5, bedrich: 4.5,
+  rex: 4.5, strazce: 4.5, matka: 4.5, sabotaz: 4.5, prepad: 4.5, vymena: 4, radista: 4, bubenik: 4, naborar: 4, zved: 4, evakuace: 4,
+};
+const DAMAGE = new Set(['poslednikapka', 'podkop', 'delostrelectvo', 'kyselydest', 'bara', 'granatnik', 'prak', 'hana', 'minometcik', 'honak', 'velitelka']);
+const REPAIR = new Set(['rez', 'doktorka', 'sanitka']);
+const DRAW = new Set(['pumpar', 'paserak', 'marta', 'ludmila', 'prospektorka', 'jiskra', 'myska', 'karavana', 'pramen', 'vymena']);
+
+/**
+ * Builds a legal deck of `size` cards by role: enough base damage, a little repair, capped pure card draw.
+ * Cards already in `base` are kept and only the rest is filled in.
+ */
+export function autoDeck(collection: Record<string, number>, size = DECK_MIN, base: Record<string, number> = {}): Record<string, number> {
   const rank: Record<Rarity, number> = { legendary: 4, rare: 3, uncommon: 2, common: 1 };
-  const owned = collectibleCards().filter((c) => (collection[c.id] ?? 0) > 0);
-  const score = (c: CardDef) => rank[(c.rarity ?? 'common') as Rarity] * 2 - (c.cost ?? 1) * 0.6 + (c.kind === 'survivor' ? 0.8 : 0);
-  const surv = owned.filter((c) => c.kind === 'survivor').sort((a, b) => score(b) - score(a));
-  const ops = owned.filter((c) => c.kind === 'operation').sort((a, b) => score(b) - score(a));
   const deck: Record<string, number> = {};
-  const add = (list: CardDef[], target: number) => {
-    let added = 0;
-    for (let pass = 0; pass < 2 && added < target; pass++) {
-      for (const c of list) {
-        if (added >= target) break;
-        const have = deck[c.id] ?? 0;
-        if (have < Math.min(maxCopies(c.id), collection[c.id] ?? 0) && have <= pass) {
-          deck[c.id] = have + 1;
-          added++;
-        }
-      }
+  const legal = new Set(collectibleCards().map((c) => c.id));
+  for (const [id, n] of Object.entries(base)) {
+    if (!legal.has(id)) continue;
+    const keep = Math.min(Math.floor(n), maxCopies(id), collection[id] ?? 0);
+    if (keep > 0) deck[id] = keep;
+  }
+  if (deckSize(deck) >= size) return deck;
+  const limit = (id: string) => Math.min(maxCopies(id), collection[id] ?? 0);
+  const copies: { c: CardDef; v: number }[] = [];
+  for (const c of collectibleCards()) {
+    for (let k = 0; k < limit(c.id); k++) copies.push({ c, v: (POWER[c.id] ?? 4) + 0.3 * rank[(c.rarity ?? 'common') as Rarity] - k * 0.6 });
+  }
+  copies.sort((a, b) => b.v - a.v);
+  const count = (pred: (c: CardDef) => boolean) => Object.entries(deck).reduce((s, [id, n]) => s + (CARDS[id] && pred(CARDS[id]) ? n : 0), 0);
+  const fill = (ok: (c: CardDef) => boolean, cap = Infinity, capPred: (c: CardDef) => boolean = ok) => {
+    for (const { c } of copies) {
+      if (deckSize(deck) >= size) return;
+      if (!ok(c) || (deck[c.id] ?? 0) >= limit(c.id)) continue;
+      if (capPred(c) && count(capPred) >= cap) continue;
+      deck[c.id] = (deck[c.id] ?? 0) + 1;
     }
-    return added;
   };
-  const s = add(surv, Math.round(size * 0.65));
-  add(ops, size - s);
-  if (deckSize(deck) < size) add(surv, size - deckSize(deck));
+  fill((c) => DAMAGE.has(c.id), 8);
+  fill((c) => REPAIR.has(c.id), 3);
+  const survCap = Math.ceil(size * 0.7);
+  fill((c) => !DRAW.has(c.id) || count((x) => DRAW.has(x.id)) < 6, survCap, (c) => c.kind === 'survivor');
+  fill(() => true); // small collections: take whatever is left
   return deck;
 }
 
