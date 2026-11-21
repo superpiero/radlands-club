@@ -41,10 +41,12 @@
   --glass-hi: rgba(255, 255, 255, 0.05);
   --hazard: linear-gradient(90deg, var(--c-surv), var(--c-op) 50%, var(--lime));
 
-  --f-title: 'Archivo', 'Barlow Condensed', 'Arial', sans-serif;
-  --f-stencil: 'Archivo', 'Arial Black', sans-serif;
-  --f-mono: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
-  --f-type: 'JetBrains Mono', ui-monospace, monospace;
+  /* two families only: Archivo = heavy display sans for headings, Inter = readable text face */
+  --f-title: 'Archivo', 'Arial Black', system-ui, sans-serif;
+  --f-stencil: 'Archivo', 'Arial Black', system-ui, sans-serif;
+  --f-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --f-mono: 'Inter', system-ui, sans-serif;
+  --f-type: 'Inter', system-ui, sans-serif;
 }
 
 body { background: var(--bg); }

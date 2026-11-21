@@ -231,7 +231,7 @@ export function Card(p: CardProps) {
   const def = CARDS[p.id];
   const zoom = useZoom();
   const baseTextRef = useRef<HTMLDivElement>(null);
-  useFitText(baseTextRef, !!def && def.kind === 'base' && !p.compact, p.id);
+  useFitText(baseTextRef, !!def && !p.compact, p.id);
   if (!def || p.id === 'tulak') return <CardBack {...p} />;
   const hasArt = ART_IDS.has(def.id);
   const cls = [
@@ -284,10 +284,10 @@ export function Card(p: CardProps) {
         <div className="tex" />
         <div className="frame" />
         {art}
+        <span className="draws ibadge r-draw" title="Počet karet, které si za tuto základnu líznete na začátku hry"><span className="ib-ico"><Icon name="ui-cards" /></span><b>{def.draw}</b></span>
         <div className="bside">
           <div className="head">
             <CardName name={def.name} />
-            <span className="draws" title="Počet karet, které si na začátku hry líznete"><Icon name="card-draw" />{def.draw}</span>
           </div>
           {hp > 2 && (
             <div className="hp">{Array.from({ length: hp - 1 }, (_, i) => <i key={i} className={i < (p.damage ?? 0) ? 'lost' : ''} />)}</div>
@@ -309,7 +309,7 @@ export function Card(p: CardProps) {
       <div className="frame" />
       <div className="head">
         {costVal !== undefined && (
-          <span className="cost" title="Cena ve vodě"><Icon name="water-drop" /><span>{costVal}</span></span>
+          <span className="cost ibadge r-water" title={`Cena: ${costVal} ${costVal === 1 ? 'voda' : costVal >= 2 && costVal <= 4 ? 'vody' : 'vod'}`}><Icon name="water-drop" className="ib-shape" /><b>{costVal}</b></span>
         )}
         <CardName name={def.name} />
       </div>
@@ -322,17 +322,20 @@ export function Card(p: CardProps) {
           </>
         )}
         {def.kind === 'operation' && (
-          <span className={`fuse ${def.countdown === 0 ? 'instant' : ''}`} title={def.countdown === 0 ? 'Okamžitá operace – provede se hned' : `Odpočet: provede se za ${def.countdown} ${def.countdown === 1 ? 'tah' : 'tahy'}`}>
-            {def.countdown === 0 ? <Icon name="focused-lightning" /> : <><Icon name="sands-of-time" />{def.countdown}</>}
+          <span className={`fuse ibadge r-time ${def.countdown === 0 ? 'instant' : ''}`} title={def.countdown === 0 ? 'Okamžitá operace – provede se hned' : `Odpočet: provede se za ${def.countdown} ${def.countdown === 1 ? 'tah' : 'tahy'}`}>
+            <span className="ib-ico"><Icon name={def.countdown === 0 ? 'focused-lightning' : 'ui-clock'} /></span>{def.countdown !== 0 && <b>{def.countdown}</b>}
           </span>
         )}
         {def.junk && def.kind !== 'cistern' && (
-          <div className="junk" title={`Rozebrání: ${JUNK_LABEL[def.junk]}`}><Icon name={JUNK_ICON[def.junk]} />{!p.compact && JUNK_LABEL[def.junk]}</div>
+          <div className={`junk ibadge r-${def.junk}`} title={`Rozebrání: ${JUNK_LABEL[def.junk]}`}>
+            {!p.compact && <span className="ib-cap">{JUNK_LABEL[def.junk]}</span>}
+            <span className="ib-ico"><Icon name={JUNK_ICON[def.junk]} /></span>
+          </div>
         )}
       </div>
       {def.kind === 'operation' && <div className="stamp">OPERACE</div>}
       <div className="typeline">{KIND_LABEL[def.kind]}</div>
-      <div className="text">
+      <div className="text" ref={baseTextRef}>
         {def.trait && <div className="trait"><span className="trait-text">{def.trait}</span>{p.compact && <span>⟨vlastnost⟩</span>}</div>}
         {abilities}
         {def.effectText && <div className="ab"><span className="ab-text">{def.effectText}</span>{p.compact && <span>efekt</span>}</div>}

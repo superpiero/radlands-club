@@ -112,3 +112,100 @@
 
 /* state stamps on survivors sit on the art, never over the name label (edition: name at the bottom) */
 .card:not(.k-base) .badge-stamp { top: 32%; }
+
+/* ==========================================================================
+   ICON BADGES – big, colour-coded, overlapping the art (edition icon set)
+   ========================================================================== */
+.card .ibadge { --ib-bg: linear-gradient(160deg, #8f86b8, #4d4670); --ib-fg: #fff; }
+.card .ibadge.r-water   { --ib-bg: linear-gradient(160deg, #7af7df, #14a597); --ib-fg: #04211d; }
+.card .ibadge.r-injure  { --ib-bg: linear-gradient(160deg, #ff7aa6, #cf1f5c); }
+.card .ibadge.r-restore { --ib-bg: linear-gradient(160deg, #e2fb6e, #72b41f); --ib-fg: #132209; }
+.card .ibadge.r-draw    { --ib-bg: linear-gradient(160deg, #a796ff, #5641e2); }
+.card .ibadge.r-raid    { --ib-bg: linear-gradient(160deg, #ffb35f, #e2541b); --ib-fg: #2a0f02; }
+.card .ibadge.r-drifter { --ib-bg: linear-gradient(160deg, #d3d8e8, #6f7795); --ib-fg: #141320; }
+.card .ibadge.r-time    { --ib-bg: linear-gradient(160deg, #ffd46b, #f0870f); --ib-fg: #241503; }
+.card .ibadge.r-time.instant { --ib-bg: linear-gradient(160deg, #ecff86, #8bcf1c); --ib-fg: #132209; }
+
+.card .ibadge .ib-ico {
+  width: var(--ibs, 2.15em); height: var(--ibs, 2.15em); flex: none; border-radius: 50%;
+  display: grid; place-items: center; background: var(--ib-bg); color: var(--ib-fg);
+  box-shadow: 0 0 0 .13em #0b0a14, 0 .2em .55em rgba(0,0,0,.65), inset 0 .12em 0 rgba(255,255,255,.4), inset 0 -.12em .2em rgba(0,0,0,.25);
+}
+.card .ibadge .ib-ico .icon { width: 60%; height: 60%; filter: none; }
+.card .ibadge .ib-ico .icon.ui { stroke-width: 2.7; }
+
+/* art may be overlapped by badges (the image clips itself) */
+.card.has-art .art.art-img { overflow: visible; }
+.card.has-art .art.art-img > img { border-radius: inherit; }
+
+/* junk effect: round badge on the bottom edge of the art, caption pill to its left */
+.card .art > .junk.ibadge {
+  position: absolute; top: auto; left: auto; right: .35em; bottom: -1.08em; z-index: 6;
+  display: flex; align-items: center; padding: 0; gap: 0; background: none; border: 0; box-shadow: none; color: inherit;
+}
+.card .art > .junk.ibadge .ib-cap {
+  margin-right: -1em; padding: .3em 1.3em .3em .6em; border-radius: 999px 0 0 999px;
+  background: rgba(11,10,20,.9); border: 1px solid rgba(255,255,255,.14);
+  font: 700 .6em/1 var(--f-ui); letter-spacing: .06em; text-transform: uppercase; color: #f3efff; white-space: nowrap;
+}
+.card.compact .art > .junk.ibadge { --ibs: 1.5em; right: .25em; bottom: -.72em; }
+
+/* operation countdown: clock badge top-right, number on a chip */
+.card .art > .fuse.ibadge { position: absolute; top: .4em; right: .4em; z-index: 6; padding: 0; background: none; box-shadow: none; display: block; font-size: 1em; }
+.card .art > .fuse.ibadge .ib-ico { --ibs: 2.05em; }
+.card .art > .fuse.ibadge b {
+  position: absolute; right: -.3em; bottom: -.3em; min-width: 1.3em; height: 1.3em; padding: 0 .2em; border-radius: 999px;
+  background: #0b0a14; color: #ffd46b; font: 900 .82em/1.3em var(--f-title); text-align: center; box-shadow: 0 0 0 .1em #ffd46b;
+}
+.card.compact .art > .fuse.ibadge { top: .25em; right: .25em; }
+.card.compact .art > .fuse.ibadge .ib-ico { --ibs: 1.45em; }
+
+/* play cost: a big water drop over the top-left corner of the art */
+.card .head > .cost.ibadge {
+  position: absolute; top: .28em; left: .3em; z-index: 7; width: 2.1em; height: 2.55em; padding: 0; gap: 0;
+  display: grid; place-items: center; background: none; border: 0; box-shadow: none;
+}
+.card .head > .cost.ibadge .ib-shape {
+  position: absolute; inset: 0; width: 100%; height: 100%; color: #42e6c9;
+  stroke: #0b0a14; stroke-width: 30px; paint-order: stroke; filter: drop-shadow(0 .14em .3em rgba(0,0,0,.7));
+}
+.card .head > .cost.ibadge b { position: relative; top: .3em; font: 900 1.15em/1 var(--f-title); color: #04211d; }
+
+/* bases: card-draw count as a chip */
+.card.k-base .head > .draws.ibadge {
+  display: inline-flex; align-items: center; gap: .3em; padding: 0 .5em 0 0; flex: none;
+  background: rgba(11,10,20,.88); border: 1px solid rgba(255,255,255,.14); border-radius: 999px; color: #fff;
+}
+.card.k-base .head > .draws.ibadge .ib-ico { --ibs: 1.55em; box-shadow: 0 0 0 .1em #0b0a14; }
+.card.k-base .head > .draws.ibadge b { font: 900 .95em/1 var(--f-title); }
+
+/* ability costs in the text box read as a clear water chip */
+.card .ab .abc { font-family: var(--f-title); font-weight: 900; }
+
+/* Inter text: a touch smaller than the old condensed face; portrait art keeps a real share of the card
+   and the text box shrinks its font (useFitText) instead of squeezing the picture */
+.card .text { font-size: .8em; line-height: 1.22; }
+.card .ab, .card .trait { letter-spacing: -.005em; }
+.card.has-art:not(.k-base):not(.compact) .art { min-height: 44%; flex: 1 0 44%; }
+.card:not(.k-base):not(.compact) .text { flex: 0 1 auto; min-height: 0; overflow: hidden; }
+.card:not(.compact) .art > .junk.ibadge { --ibs: 2.45em; bottom: -1.2em; }
+.card:not(.compact) .art > .fuse.ibadge .ib-ico { --ibs: 2.35em; }
+.card:not(.compact) .head > .cost.ibadge { width: 2.3em; height: 2.8em; }
+
+/* board cards: no play cost, no junk badge (neither applies on the table) */
+.card.compact .head > .cost.ibadge, .card.compact .art > .junk.ibadge { display: none; }
+
+/* bases: the card-draw chip sits on the art's top-left corner, so the name gets the whole label */
+.card.k-base > .draws.ibadge {
+  position: absolute; top: auto; bottom: .5em; left: .5em; z-index: 7; display: inline-flex; align-items: center; gap: .3em;
+  padding: 0 .55em 0 0; background: rgba(11,10,20,.88); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; color: #fff;
+  box-shadow: 0 .15em .4em rgba(0,0,0,.55);
+}
+.card.k-base > .draws.ibadge .ib-ico { --ibs: 1.7em; box-shadow: 0 0 0 .1em #0b0a14; }
+.card.k-base > .draws.ibadge b { font: 900 1em/1 var(--f-title); }
+.card.k-base.compact > .draws.ibadge { display: none; }
+/* large bases: state stamps sit on the art half, never over the name */
+.card.k-base:not(.compact) .badge-stamp { left: 28%; font-size: .85em; }
+
+/* segmented controls never break a label ("60 s") onto two lines */
+.seg > button { white-space: nowrap; padding-left: .6em; padding-right: .6em; }
