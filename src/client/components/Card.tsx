@@ -1,4 +1,4 @@
-import { useId, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useId, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
 import { CARDS, JUNK_LABEL } from '../../engine/cards';
 import { Icon, JUNK_ICON } from './Icon';
 import { useZoom } from '../zoom';
@@ -130,29 +130,49 @@ function longestWord(name: string): number {
 }
 
 // Width of the longest word of a card name in `em` of the title font, so CSS can size names to fit exactly.
+// The font is read from the --f-title token, so a new title face needs no code change.
 const emCache = new Map<string, number>();
 let measureCtx: CanvasRenderingContext2D | null | undefined;
-function nameEm(name: string): number {
-  const hit = emCache.get(name);
-  if (hit !== undefined) return hit;
+const fontWaiters = new Set<() => void>();
+if (typeof document !== 'undefined' && document.fonts) {
+  document.fonts.addEventListener('loadingdone', () => { for (const f of fontWaiters) f(); });
+}
+function titleFace(): { css: string; first: string } {
+  const css = (typeof document !== 'undefined' && getComputedStyle(document.documentElement).getPropertyValue('--f-title').trim()) || '"Saira Stencil One", sans-serif';
+  return { css, first: css.split(',')[0].trim() };
+}
+function nameEm(name: string): { em: number; exact: boolean } {
+  const face = titleFace();
+  const key = `${face.first}|${name}`;
+  const hit = emCache.get(key);
+  if (hit !== undefined) return { em: hit, exact: true };
   const words = name.toUpperCase().split(/\s+/);
   const longest = Math.max(...words.map((w) => w.length));
-  let em = Math.max(4.2, longest * 0.72); // conservative until the font is ready
   try {
-    const ready = typeof document !== 'undefined' && document.fonts?.check('100px "Saira Stencil One"');
+    const ready = typeof document !== 'undefined' && document.fonts?.check(`800 100px ${face.first}`);
     if (measureCtx === undefined) measureCtx = typeof document !== 'undefined' ? document.createElement('canvas').getContext('2d') : null;
     if (ready && measureCtx) {
-      measureCtx.font = '100px "Saira Stencil One"';
-      em = Math.max(4.2, ...words.map((w) => measureCtx!.measureText(w).width / 100 + w.length * 0.01));
-      emCache.set(name, em);
+      measureCtx.font = `800 100px ${face.css}`;
+      // + letter-spacing (.03em per glyph) and a hair of safety
+      const em = Math.max(3.2, ...words.map((w) => measureCtx!.measureText(w).width / 100 + w.length * 0.035));
+      emCache.set(key, em);
+      return { em, exact: true };
     }
   } catch { /* keep the estimate */ }
-  return em;
+  return { em: Math.max(3.2, longest * 0.62), exact: false }; // until the font is ready
 }
 
 function CardName({ name }: { name: string }) {
+  const [, bump] = useState(0);
+  const { em, exact } = nameEm(name);
+  useEffect(() => {
+    if (exact) return;
+    const f = () => bump((n) => n + 1);
+    fontWaiters.add(f);
+    return () => { fontWaiters.delete(f); };
+  }, [exact]);
   return (
-    <div className="name fit" style={{ ['--nl' as string]: longestWord(name), ['--nem' as string]: nameEm(name).toFixed(3) }}>
+    <div className="name fit" style={{ ['--nl' as string]: longestWord(name), ['--nem' as string]: em.toFixed(3) }}>
       <span className="nm">{name}</span>
     </div>
   );
