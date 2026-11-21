@@ -308,7 +308,7 @@ input.field:focus { outline: 2px solid var(--water); border-color: transparent; 
 /* hand */
 .hand-wrap { position: relative; z-index: 6; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; container-type: inline-size; min-width: 0; }
 .hand { display: flex; align-items: flex-end; justify-content: center; padding: 0 20px; max-width: 100%; }
-.hand .card { --h: calc(var(--hand-h) * 1.3); --w: calc(var(--h) * 0.72); transform: translateY(14%); margin-left: clamp(calc(var(--w) * -0.6), calc((100cqw - 40px - var(--n, 6) * var(--w)) / max(1, var(--n, 6) - 1)), 8px); transform-origin: 50% 120%; }
+.hand .card { --h: calc(var(--hand-h) * 1.24); --w: calc(var(--h) * 0.72); transform: translateY(20%); margin-left: clamp(calc(var(--w) * -0.6), calc((100cqw - 40px - var(--n, 6) * var(--w)) / max(1, var(--n, 6) - 1)), 8px); transform-origin: 50% 120%; }
 .hand .card:first-child { margin-left: 0; }
 .hand .card:hover { transform: translateY(-10%) scale(1.08); z-index: 10; }
 .hand .card.selected { transform: translateY(-12%) scale(1.1); z-index: 11; }
