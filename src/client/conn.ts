@@ -181,6 +181,7 @@ export class NetConn extends Conn {
   chat(text: string) { this.send({ t: 'chat', text }); }
   emote(id: string) { this.send({ t: 'emote', id }); }
   rematch() { this.send({ t: 'rematch' }); }
+  claimWin() { this.send({ t: 'claimWin' }); }
   close() {
     this.closed = true;
     this.send({ t: 'leave' });

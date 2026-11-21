@@ -26,7 +26,12 @@ interface Seat {
   client: Client | null;
   user?: string | null;
   deck?: Record<string, number> | null;
+  /** ms timestamp when the seat's client disconnected (null = connected). */
+  awaySince?: number | null;
 }
+
+export const AUTO_ANSWER_MS = 45_000;
+export const CLAIM_WIN_MS = 120_000;
 
 const CODE_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
@@ -72,7 +77,8 @@ export class Room {
   info(forClient: Client): RoomInfo {
     return {
       code: this.code,
-      seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.client, account: !!s.user } : null)) as RoomInfo['seats'],
+      seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.client, account: !!s.user, awayMs: s.client ? 0 : Date.now() - (s.awaySince ?? Date.now()) } : null)) as RoomInfo['seats'],
+      claimWinMs: CLAIM_WIN_MS,
       you: this.seatOf(forClient),
       spectators: this.spectators.size,
       status: this.status(),
@@ -129,6 +135,7 @@ export class Room {
           s.client.room = null;
         }
         s.client = c;
+        s.awaySince = null;
         s.name = c.name;
         c.room = this;
         this.systemChat(`${c.name} je zpět ve hře.`);
@@ -174,6 +181,7 @@ export class Room {
       const s = this.seats[i];
       if (s && s.client === c) {
         s.client = null;
+        s.awaySince = Date.now();
         if (hard && !this.game) {
           this.seats[i] = null;
           this.systemChat(`${c.name} odešel(a) od stolu.`);
@@ -201,9 +209,9 @@ export class Room {
     this.broadcastState();
   }
 
-  act(c: Client, action: Action) {
+  act(c: Client, action: Action, asSeat?: PlayerIdx) {
     this.lastActivity = Date.now();
-    const seat = this.seatOf(c);
+    const seat = asSeat ?? this.seatOf(c);
     if (seat === null || !this.game) return send(c, { t: 'error', msg: 'Nejsi hráč u tohoto stolu.' });
     const before = this.game.state.phase;
     const res = this.game.act(seat, action);
@@ -217,6 +225,47 @@ export class Room {
       this.giveRewards();
       this.broadcastRoom();
     }
+  }
+
+  /** Periodic housekeeping: auto-answer for absent players, room info refresh. */
+  tick(now: number) {
+    if (!this.game || this.game.state.phase === 'over') return;
+    const st = this.game.state;
+    const away = (i: PlayerIdx) => {
+      const s = this.seats[i];
+      return s && !s.client && s.awaySince ? now - s.awaySince : 0;
+    };
+    const pr = st.pending;
+    if (pr && away(pr.player) >= AUTO_ANSWER_MS) {
+      const ids = pr.options.map((o) => o.id);
+      let choice: string[];
+      if (pr.kind === 'order') choice = ids;
+      else if (pr.kind === 'multi') choice = ids.slice(0, pr.min ?? 0);
+      else if (pr.optional) choice = [];
+      else choice = ids.slice(0, 1);
+      const res = this.game.act(pr.player, { t: 'answer', promptId: pr.id, choice });
+      if (res.ok) {
+        this.history.push({ p: pr.player, a: { t: 'answer', promptId: pr.id, choice } });
+        this.dirty = true;
+        this.systemChat(`${this.seats[pr.player]?.name ?? 'Hráč'} je pryč – volba byla provedena automaticky.`);
+        this.broadcastState();
+      }
+    }
+    if (away(0) > 0 || away(1) > 0) this.broadcastRoom();
+  }
+
+  /** The connected player can claim the win when the opponent has been away too long. */
+  claimWin(c: Client) {
+    const seat = this.seatOf(c);
+    if (seat === null || !this.game || this.game.state.phase === 'over') return;
+    const o = (1 - seat) as PlayerIdx;
+    const s = this.seats[o];
+    if (!s || s.client || !s.awaySince || Date.now() - s.awaySince < CLAIM_WIN_MS) {
+      send(c, { t: 'error', msg: 'Soupeř ještě není dost dlouho pryč.' });
+      return;
+    }
+    this.systemChat(`${c.name} bere výhru – soupeř se nevrátil.`);
+    this.act({ ...c, room: this } as Client, { t: 'concede' }, o);
   }
 
   private giveRewards() {
@@ -336,6 +385,13 @@ export class Lobby {
 
   get(code: string): Room | undefined {
     return this.rooms.get(code.trim().toUpperCase());
+  }
+
+  tick() {
+    const now = Date.now();
+    for (const r of this.rooms.values()) {
+      try { r.tick(now); } catch (e) { console.warn('room tick failed', r.code, e); }
+    }
   }
 
   sweep() {

@@ -38,3 +38,27 @@ describe('room persistence', () => {
     expect(b2.sent.some((m) => m.t === 'state')).toBe(true);
   });
 });
+
+describe('absent players', () => {
+  it('auto-answers a prompt of a disconnected player and allows claiming the win', () => {
+    const lobby = new Lobby();
+    const room = lobby.create({ baseMode: 'random' });
+    const a = fakeClient('ta', 'A');
+    const b = fakeClient('tb', 'B');
+    room.join(a);
+    room.join(b);
+    const g = room.game!;
+    room.act(g.state.coinWinner === 0 ? a : b, { t: 'chooseFirst', first: 0 });
+    // B goes away; give A a raid in slot 1 so that B must choose a base at A's next turn start
+    room.leave(b, false);
+    g.state.players[0].queue[0] = { uid: 'rx', id: 'najezd' };
+    g.state.players[0].raidHome = false;
+    room.act(a, { t: 'endTurn' });
+    // B's turn now; end it for B? B is away -> A waits. Simulate time passing.
+    const seatB = (room as any).seats[1];
+    seatB.awaySince = Date.now() - 200_000;
+    room.claimWin(a);
+    expect(g.state.phase).toBe('over');
+    expect(g.state.winner).toBe(0);
+  });
+});

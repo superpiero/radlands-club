@@ -3,7 +3,7 @@ import { CARDS, JUNK_LABEL, JUNK_TEXT } from '../../engine/cards';
 import type { Action, CardInst, PlayerIdx, PromptOption } from '../../engine/types';
 import type { BaseView, GameView, PersonView, PlayerView } from '../../engine/view';
 import { go } from '../App';
-import type { Conn, ConnState } from '../conn';
+import type { Conn, ConnState, NetConn } from '../conn';
 import { EMOTES, isEmote } from '../../shared/protocol';
 import { getFlag, setFlag } from '../prefs';
 import { isMuted, setMuted, sfx } from '../sound';
@@ -519,7 +519,13 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           <div className="avatar"><Icon name={isMe ? 'gas-mask' : 'death-skull'} /></div>
           <span className="nm">{pl.name}</span>
           {state.room && (state.room.score[0] + state.room.score[1] > 0) && <span className="pill" title="Výhry v této sérii">🏆 {state.room.score[owner]}</span>}
-          {state.room && state.mode === 'online' && state.room.seats[owner] && !state.room.seats[owner]!.connected && <span className="pill" title="Hráč je odpojený">odpojen</span>}
+          {state.room && state.mode === 'online' && state.room.seats[owner] && !state.room.seats[owner]!.connected && (
+            <span className="pill" title="Hráč je odpojený">odpojen {Math.floor((state.room.seats[owner]!.awayMs ?? 0) / 1000)} s</span>
+          )}
+          {!isMe && !spectator && view.phase === 'play' && state.mode === 'online' && state.room?.seats[owner] && !state.room.seats[owner]!.connected
+            && (state.room.seats[owner]!.awayMs ?? 0) >= (state.room.claimWinMs ?? 120000) && (
+            <button className="btn small danger" onClick={() => (conn as NetConn).claimWin()}>Soupeř je pryč – vzít výhru</button>
+          )}
         </div>
         {active && <span className="pill turn">na tahu</span>}
         {!isMe && (
@@ -549,7 +555,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
             <button className="btn small ghost" onClick={() => { setMuted(!muted); setMut(!muted); }} title={muted ? 'Zapnout zvuk' : 'Vypnout zvuk'}><Icon name={muted ? 'speaker-off' : 'speaker'} /></button>
             <button className="btn small ghost hide-sm" onClick={() => { setTipsOn(!tipsOn); setFlag('tips', !tipsOn); }} title="Nápověda pro začátečníky">{tipsOn ? 'Tipy: ZAP' : 'Tipy: VYP'}</button>
             {!spectator && view.phase === 'play' && (
-              <button className="btn small ghost hide-sm" onClick={() => { if (confirm('Opravdu se vzdát? Soupeř vyhraje tuto hru.')) act({ t: 'concede' }); }} title="Vzdát hru"><Icon name="broken-shield" /> Vzdát</button>
+              <button className="btn small ghost" onClick={() => { if (confirm('Opravdu se vzdát? Soupeř vyhraje tuto hru.')) act({ t: 'concede' }); }} title="Vzdát hru"><Icon name="broken-shield" /><span className="hide-sm"> Vzdát</span></button>
             )}
             <button className="btn small ghost" onClick={() => { if (view.phase === 'over' || confirm('Opustit hru? (Online místo zůstane rezervované – můžeš se vrátit stejným odkazem.)')) go('/'); }} title="Odejít"><Icon name="exit-door" /></button>
           </div>

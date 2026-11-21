@@ -221,10 +221,14 @@ function handle(c: Client, msg: ClientMsg) {
     case 'rematch':
       c.room?.requestRematch(c);
       return;
+    case 'claimWin':
+      c.room?.claimWin(c);
+      return;
   }
 }
 
 setInterval(() => lobby.sweep(), 60_000);
+setInterval(() => lobby.tick(), 5_000);
 setInterval(() => {
   try { lobby.save(DATA_FILE); } catch (e) { console.warn('Ukládání stolů selhalo:', e); }
   try { accounts.save(); } catch (e) { console.warn('Ukládání účtů selhalo:', e); }

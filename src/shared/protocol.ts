@@ -14,6 +14,8 @@ export interface SeatInfo {
   connected: boolean;
   /** registered account (not a guest) */
   account: boolean;
+  /** how long the player has been disconnected (ms), 0 = online */
+  awayMs?: number;
 }
 
 export interface RoomInfo {
@@ -24,6 +26,8 @@ export interface RoomInfo {
   status: 'waiting' | 'playing' | 'over';
   options: RoomOptions;
   rematch: [boolean, boolean];
+  /** After this many ms away the other player may claim the win. */
+  claimWinMs?: number;
   /** Wins in this room's series (by seat). */
   score: [number, number];
   gameNo: number;
@@ -37,6 +41,7 @@ export type ClientMsg =
   | { t: 'chat'; text: string }
   | { t: 'emote'; id: string }
   | { t: 'rematch' }
+  | { t: 'claimWin' }
   | { t: 'leave' }
   | { t: 'ping'; ts: number };
 
