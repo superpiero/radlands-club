@@ -2,6 +2,7 @@ import { useId, type CSSProperties, type MouseEvent, type ReactNode } from 'reac
 import { CARDS, JUNK_LABEL } from '../../engine/cards';
 import { Icon, JUNK_ICON } from './Icon';
 import { useZoom } from '../zoom';
+import { ART_IDS, ART_VERSION } from '../gen/art';
 
 export interface CardProps {
   id: string;
@@ -109,19 +110,22 @@ export function Card(p: CardProps) {
   const def = CARDS[p.id];
   const zoom = useZoom();
   if (!def || p.id === 'tulak') return <CardBack {...p} />;
+  const hasArt = ART_IDS.has(def.id);
   const cls = [
     'card', `k-${def.kind}`,
     p.compact && 'compact', p.className, p.onClick && 'clickable', p.damaged && 'damaged', p.destroyed && 'destroyed',
     p.notReady && !p.destroyed && 'notready', p.usable && 'usable', p.selected && 'selected',
     p.target && 'target', p.target && p.target !== 'danger' && p.target, p.dimmed && 'dimmed', p.enter && 'enter',
-    def.rarity && def.collectible !== false && `r-${def.rarity}`, p.rarityFx && 'rfx',
+    def.rarity && def.collectible !== false && `r-${def.rarity}`, p.rarityFx && 'rfx', hasArt && 'has-art',
   ].filter(Boolean).join(' ');
   const hp = p.hp ?? def.hp ?? 2;
   const hover = p.noZoom ? undefined : () => zoom.set({ id: p.id, uid: p.uid });
   const leave = p.noZoom ? undefined : () => zoom.clear(p.id);
   const costVal = p.costOverride ?? def.cost;
 
-  const art = (
+  const art = hasArt ? (
+    <div className="art art-img"><img src={`/art/${def.id}.webp?v=${ART_VERSION}`} alt="" loading="lazy" decoding="async" draggable={false} /></div>
+  ) : (
     <div className="art" style={artStyle(def.hue, def.kind)}>
       <Scene id={def.id} hue={def.hue} kind={def.kind} />
       <div className="halftone" />
@@ -191,10 +195,14 @@ export function Card(p: CardProps) {
           </span>
         )}
       </div>
-      <div className="art" style={artStyle(def.hue, def.kind)}>
-        <Scene id={def.id} hue={def.hue} kind={def.kind} />
-        <div className="halftone" />
-        <Icon name={def.icon} className="glyph" />
+      <div className={`art ${hasArt ? 'art-img' : ''}`} style={hasArt ? undefined : artStyle(def.hue, def.kind)}>
+        {hasArt ? <img src={`/art/${def.id}.webp?v=${ART_VERSION}`} alt="" loading="lazy" decoding="async" draggable={false} /> : (
+          <>
+            <Scene id={def.id} hue={def.hue} kind={def.kind} />
+            <div className="halftone" />
+            <Icon name={def.icon} className="glyph" />
+          </>
+        )}
         {def.junk && def.kind !== 'cistern' && (
           <div className="junk" title={`Rozebrání: ${JUNK_LABEL[def.junk]}`}><Icon name={JUNK_ICON[def.junk]} />{!p.compact && JUNK_LABEL[def.junk]}</div>
         )}
@@ -217,6 +225,7 @@ export function CardBack(p: CardProps & { label?: string }) {
   const cls = ['card', 'k-back', p.compact && 'compact', p.className, p.onClick && 'clickable', p.target && 'target', p.target && p.target !== 'danger' && p.target, p.dimmed && 'dimmed', p.enter && 'enter', p.selected && 'selected'].filter(Boolean).join(' ');
   return (
     <div className={cls} data-uid={p.uid} onClick={p.onClick} style={p.style} onMouseEnter={p.noZoom ? undefined : () => zoom.set({ id: 'tulak', uid: p.uid })} onMouseLeave={p.noZoom ? undefined : () => zoom.clear('tulak')}>
+      {p.id === 'tulak' && ART_IDS.has('tulak') && <div className="art art-img"><img src={`/art/tulak.webp?v=${ART_VERSION}`} alt="" loading="lazy" draggable={false} /></div>}
       <svg className="backlogo" viewBox="0 0 64 64"><path d="M32 6c7 12 17 22 17 33a17 17 0 0 1-34 0c0-11 10-21 17-33z" fill="currentColor" /><path d="M24 41a8 8 0 0 0 8 8" stroke="#15110d" strokeWidth="4" fill="none" strokeLinecap="round" /></svg>
       <div className="backtxt">{p.id === 'tulak' ? 'TULÁK' : 'KAPKA'}</div>
       {p.badges && <div className="badges">{p.badges}</div>}

@@ -11,7 +11,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "docs:cards": "tsx scripts/gen-card-docs.ts",
-    "icons": "tsx scripts/build-icons.ts"
+    "icons": "tsx scripts/build-icons.ts",
+    "art:prompts": "tsx scripts/art/export-prompts.ts",
+    "art:import": "tsx scripts/art/import.ts"
   },
   "engines": {
     "node": ">=20"
@@ -33,6 +35,7 @@
     "@vitejs/plugin-react": "^6.3.0",
     "concurrently": "^10.0.7",
     "esbuild": "^0.28.2",
+    "sharp": "^0.35.5",
     "tsx": "^4.23.15",
     "typescript": "^5.9.3",
     "vite": "^8.3.8",

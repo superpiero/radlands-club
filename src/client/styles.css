@@ -892,3 +892,29 @@ select.field { padding: 7px 8px; font-size: 16px; }
 .summary td:first-child { text-align: left; color: var(--muted); }
 .summary th { color: var(--sand); font-family: var(--f-title); font-weight: 400; }
 .summary td.best { color: var(--gold); font-weight: 800; }
+
+/* ==========================================================================
+   FULL-ART CARDS (AI illustrations in public/art/<id>.webp)
+   ========================================================================== */
+.card .art.art-img { padding: 0; background: #2b2118; }
+.card .art.art-img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; user-select: none; }
+.card.has-art:not(.k-base) .art { position: absolute; inset: 0; margin: 0; border-radius: inherit; min-height: 0; box-shadow: none; z-index: 0; }
+.card.has-art:not(.k-base) .art::after { background: linear-gradient(180deg, rgba(0,0,0,.15) 0%, transparent 22%, transparent 48%, rgba(14,10,7,.82) 78%, rgba(14,10,7,.95) 100%); }
+.card.has-art:not(.k-base) .head { position: relative; z-index: 3; }
+.card.has-art:not(.k-base) .text { margin-top: auto; z-index: 3; color: var(--text); }
+.card.has-art:not(.k-base) .typeline { margin-top: auto; z-index: 3; color: rgba(241,230,210,.75); position: relative; }
+.card.has-art .trait { color: #f1e6d2; border-left-color: var(--ember); background: rgba(20,14,10,.55); border-radius: .25em; padding: .15em .3em; }
+.card.has-art .flavor { color: #d9cbb0; }
+.card.has-art .junk { bottom: auto; top: 2.6em; }
+.card.has-art.k-operation .stamp { display: none; }
+.card.has-art.compact .head { margin: .2em .2em 0; }
+/* bases: landscape art behind the whole plate, text side on a dark gradient */
+.card.has-art.k-base .art { position: absolute; inset: 0; width: auto; margin: 0; border-radius: inherit; box-shadow: none; z-index: 0; }
+.card.has-art.k-base .art::after { background: linear-gradient(90deg, transparent 25%, rgba(14,10,7,.55) 55%, rgba(14,10,7,.9) 100%); }
+.card.has-art.k-base .bside { margin-left: 38%; color: var(--text); }
+.card.has-art.k-base .name { color: #f6ead2; text-shadow: 0 1px 2px #000; }
+.card.has-art.k-base .draws { background: rgba(20,14,10,.8); }
+.card.k-back .art-img { position: absolute; inset: 6%; border-radius: .4em; overflow: hidden; opacity: .55; }
+.card.has-art .junk { top: 3.4em; bottom: auto; }
+.card.has-art.compact .junk { display: none; }
+.card.has-art:not(.k-base) .typeline { display: none; }
