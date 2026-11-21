@@ -69,8 +69,8 @@ export const SURVIVORS: CardDef[] = [
     id: 'pumpar', name: 'Pumpař', cost: 1, junk: 'water', icon: 'water-tower', hue: 195,
     flavor: 'Každá pumpa vrže jinak. On zná všechny.',
     abilities: [{
-      cost: 1, text: 'Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu, lízni další.',
-      *run(g, c) { g.draw(c.p, 1); if (g.handSize(c.p) <= 1) g.draw(c.p, 1); },
+      cost: 1, text: 'Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu (nepočítá se Cisterna), lízni další.',
+      *run(g, c) { g.draw(c.p, 1); if (g.discardableHand(c.p).length <= 1) g.draw(c.p, 1); },
     }],
     tags: ['economy'],
   }),

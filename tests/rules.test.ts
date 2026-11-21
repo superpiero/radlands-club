@@ -312,3 +312,25 @@ describe('round-2 regressions', () => {
     expect(opts).toContain(b1.uid);
   });
 });
+
+describe('round-2 polish', () => {
+  it('Pumpař does not count Cisterna as a card in hand', () => {
+    const g = setupGame();
+    const t = g.state.turn;
+    const pl = g.state.players[0];
+    pl.water = 5;
+    pl.hand = [];
+    ok(g.act(0, { t: 'takeCistern' }));
+    const pump = putPerson(g, 0, 0, 'pumpar', { playedTurn: t - 2 });
+    const before = pl.hand.length;
+    ok(g.act(0, { t: 'ability', uid: pump.uid, idx: 0 }));
+    expect(pl.hand.length).toBe(before + 2);
+  });
+
+  it('a forfeit for absence is not reported as a concession', () => {
+    const g = setupGame();
+    ok(g.act(1, { t: 'concede', absent: true }));
+    expect(g.state.winner).toBe(0);
+    expect(g.state.winReason).toContain('nevrátil');
+  });
+});

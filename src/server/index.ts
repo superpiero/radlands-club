@@ -243,6 +243,7 @@ function handle(c: Client, msg: ClientMsg) {
       return;
     case 'act':
       if (!c.room) return send(c, { t: 'error', msg: 'Nejsi u žádného stolu.' });
+      if (msg.action && typeof msg.action === 'object' && 'absent' in msg.action) delete (msg.action as { absent?: unknown }).absent;
       c.room.act(c, msg.action);
       return;
     case 'chat':

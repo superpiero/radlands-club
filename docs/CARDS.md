@@ -9,7 +9,7 @@ Základen: **29** (každý hráč dostane 6, vybere 3).
 
 | Karta | Cena | Rozebrání | Schopnosti / vlastnosti |
 |---|---|---|---|
-| **Pumpař** `pumpar` | 1💧 | Voda navíc | **[1💧]** Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu, lízni další. |
+| **Pumpař** `pumpar` | 1💧 | Voda navíc | **[1💧]** Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu (nepočítá se Cisterna), lízni další. |
 | **Brokovnice Bára** `bara` | 2💧 | Zranit | **[2💧]** Poškoď. Pokud tím zničíš přeživšího, lízni kartu. |
 | **Kluk s prakem** `prak` | 1💧 | Tulák | **[1💧]** Zraň. Lze použít, jen když tato karta stojí nekrytá. |
 | **Zvěd** `zved` | 1💧 | Líznout | **[1💧]** Vyber soupeřův sloupec. Do konce tahu jsou všechny karty v něm nekryté. |

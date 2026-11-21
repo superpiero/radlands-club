@@ -134,7 +134,7 @@ export class Game {
       switch (action.t) {
         case 'concede': {
           if (st.phase === 'over') return { ok: false, error: 'Hra skončila.' };
-          this.endGame(this.opp(player), `${this.pn(player)} se vzdal(a).`);
+          this.endGame(this.opp(player), (action as { absent?: boolean }).absent ? `${this.pn(player)} se nevrátil(a) ke stolu – kontumační výhra.` : `${this.pn(player)} se vzdal(a).`);
           break;
         }
         case 'draftPick': {

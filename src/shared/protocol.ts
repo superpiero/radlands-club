@@ -62,7 +62,7 @@ export type ServerMsg =
   | { t: 'room'; room: RoomInfo }
   | { t: 'left' }
   | { t: 'state'; view: GameView }
-  | { t: 'error'; msg: string; code?: 'no_room' | 'need_login' | 'bad_deck' }
+  | { t: 'error'; msg: string; code?: 'no_room' | 'need_login' | 'bad_deck' | 'replaced' }
   | { t: 'chat'; line: ChatLine }
   | { t: 'chatHistory'; lines: ChatLine[] }
   | { t: 'emote'; seat: PlayerIdx | null; id: string; from: string }

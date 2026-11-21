@@ -22,6 +22,8 @@ export interface ConnState {
   left?: boolean;
   reward?: { gain: number; result: 'win' | 'loss' | 'draw' };
   fatal?: string;
+  /** this window was replaced by another one holding the same seat */
+  replaced?: boolean;
   /** Local timestamp when the current timed decision runs out (turn timer). */
   turnDeadline?: number | null;
 }
@@ -138,6 +140,12 @@ export class NetConn extends Conn {
         this.set({ view: msg.view });
         break;
       case 'error':
+        if (msg.code === 'replaced') {
+          this.closed = true;
+          this.set({ fatal: msg.msg, replaced: true, room: null, view: null, status: 'connected' });
+          this.ws?.close();
+          break;
+        }
         if (!this.state.room && (msg.code === 'no_room' || /přihlas|Balíček|balíček/.test(msg.msg))) {
           this.fatalStop(msg.msg);
           break;

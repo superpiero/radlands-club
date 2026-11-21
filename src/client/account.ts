@@ -97,7 +97,13 @@ export async function deleteDeck(id: string) {
   set({ profile: r.profile });
 }
 
-export function selectedDeck(): string | null { return lsGet(DECK_KEY); }
+/** The chosen deck id – falls back to the first deck when the stored one no longer exists. */
+export function selectedDeck(): string | null {
+  const id = lsGet(DECK_KEY);
+  const decks = state.profile?.decks;
+  if (!decks) return id;
+  return decks.some((d) => d.id === id) ? id : decks[0]?.id ?? null;
+}
 export function selectDeck(id: string) { lsSet(DECK_KEY, id); }
 
 if (state.session) void refreshProfile();
