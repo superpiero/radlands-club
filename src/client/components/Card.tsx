@@ -1,4 +1,4 @@
-import { useEffect, useId, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from 'react';
 import { CARDS, JUNK_LABEL } from '../../engine/cards';
 import { Icon, JUNK_ICON } from './Icon';
 import { useZoom } from '../zoom';
@@ -135,31 +135,51 @@ const emCache = new Map<string, number>();
 let measureCtx: CanvasRenderingContext2D | null | undefined;
 const fontWaiters = new Set<() => void>();
 if (typeof document !== 'undefined' && document.fonts) {
-  document.fonts.addEventListener('loadingdone', () => { for (const f of fontWaiters) f(); });
+  document.fonts.addEventListener('loadingdone', () => { nameStyleCache = null; for (const f of fontWaiters) f(); });
 }
-function titleFace(): { css: string; first: string } {
-  const css = (typeof document !== 'undefined' && getComputedStyle(document.documentElement).getPropertyValue('--f-title').trim()) || '"Saira Stencil One", sans-serif';
-  return { css, first: css.split(',')[0].trim() };
+interface NameStyle { font: string; first: string; upper: boolean; ls: number }
+let nameStyleCache: NameStyle | null = null;
+/** Reads how card names are actually rendered (the theme may change font, weight, case or tracking). */
+function nameStyle(): NameStyle {
+  if (nameStyleCache) return nameStyleCache;
+  const fallback: NameStyle = { font: '800 100px sans-serif', first: 'sans-serif', upper: true, ls: 0.03 };
+  if (typeof document === 'undefined' || !document.body) return fallback;
+  const probe = document.createElement('div');
+  probe.className = 'card k-survivor';
+  probe.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;--w:200px;--h:280px';
+  probe.innerHTML = '<div class="head"><div class="name fit"><span class="nm">Ab</span></div></div>';
+  document.body.appendChild(probe);
+  try {
+    const nm = probe.querySelector('.nm') as HTMLElement;
+    const cs = getComputedStyle(nm);
+    const size = parseFloat(cs.fontSize) || 16;
+    const ls = cs.letterSpacing === 'normal' ? 0 : (parseFloat(cs.letterSpacing) || 0) / size;
+    const upper = getComputedStyle(probe.querySelector('.name') as HTMLElement).textTransform === 'uppercase' || cs.textTransform === 'uppercase';
+    const family = cs.fontFamily || 'sans-serif';
+    return (nameStyleCache = { font: `${cs.fontStyle === 'italic' ? 'italic ' : ''}${cs.fontWeight} 100px ${family}`, first: family.split(',')[0].trim(), upper, ls });
+  } finally {
+    probe.remove();
+  }
 }
 function nameEm(name: string): { em: number; exact: boolean } {
-  const face = titleFace();
-  const key = `${face.first}|${name}`;
+  const st = nameStyle();
+  const key = `${st.font}|${st.upper}|${name}`;
   const hit = emCache.get(key);
   if (hit !== undefined) return { em: hit, exact: true };
-  const words = name.toUpperCase().split(/\s+/);
+  const words = (st.upper ? name.toUpperCase() : name).split(/\s+/);
   const longest = Math.max(...words.map((w) => w.length));
   try {
-    const ready = typeof document !== 'undefined' && document.fonts?.check(`800 100px ${face.first}`);
-    if (measureCtx === undefined) measureCtx = typeof document !== 'undefined' ? document.createElement('canvas').getContext('2d') : null;
+    const ready = document.fonts?.check(st.font.replace(/^.*?100px /, '100px '));
+    if (measureCtx === undefined) measureCtx = document.createElement('canvas').getContext('2d');
     if (ready && measureCtx) {
-      measureCtx.font = `800 100px ${face.css}`;
-      // + letter-spacing (.03em per glyph) and a hair of safety
-      const em = Math.max(3.2, ...words.map((w) => measureCtx!.measureText(w).width / 100 + w.length * 0.035));
+      measureCtx.font = st.font;
+      // + the rendered letter-spacing and a hair of safety
+      const em = Math.max(3, ...words.map((w) => measureCtx!.measureText(w).width / 100 + w.length * (st.ls + 0.012)));
       emCache.set(key, em);
       return { em, exact: true };
     }
   } catch { /* keep the estimate */ }
-  return { em: Math.max(3.2, longest * 0.62), exact: false }; // until the font is ready
+  return { em: Math.max(3, longest * 0.62), exact: false }; // until the font is ready
 }
 
 function CardName({ name }: { name: string }) {
@@ -184,9 +204,34 @@ export function artStyle(_hue: number, kind: string, id = ''): CSSProperties {
   return { background: `linear-gradient(180deg, ${pal.sky[0]} 0%, ${pal.sky[1]} 55%, ${pal.ground[1]} 100%)` };
 }
 
+/** Shrinks a text box until it fits its height (large bases have a narrow text column). */
+function useFitText(ref: { current: HTMLElement | null }, on: boolean, key: string) {
+  useLayoutEffect(() => {
+    const el = ref.current;
+    if (!on || !el) return;
+    const fit = () => {
+      el.style.fontSize = '';
+      const base = parseFloat(getComputedStyle(el).fontSize) || 12;
+      let scale = 1;
+      while (el.scrollHeight > el.clientHeight + 1 && scale > 0.62) {
+        scale -= 0.05;
+        el.style.fontSize = `${(base * scale).toFixed(2)}px`;
+      }
+    };
+    fit();
+    const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(fit) : null;
+    ro?.observe(el.parentElement ?? el);
+    const onFonts = () => fit();
+    document.fonts?.addEventListener('loadingdone', onFonts);
+    return () => { ro?.disconnect(); document.fonts?.removeEventListener('loadingdone', onFonts); };
+  }, [on, key, ref]);
+}
+
 export function Card(p: CardProps) {
   const def = CARDS[p.id];
   const zoom = useZoom();
+  const baseTextRef = useRef<HTMLDivElement>(null);
+  useFitText(baseTextRef, !!def && def.kind === 'base' && !p.compact, p.id);
   if (!def || p.id === 'tulak') return <CardBack {...p} />;
   const hasArt = ART_IDS.has(def.id);
   const cls = [
@@ -247,7 +292,7 @@ export function Card(p: CardProps) {
           {hp > 2 && (
             <div className="hp">{Array.from({ length: hp - 1 }, (_, i) => <i key={i} className={i < (p.damage ?? 0) ? 'lost' : ''} />)}</div>
           )}
-          <div className="text">
+          <div className="text" ref={baseTextRef}>
             {def.trait && <div className="trait"><span className="trait-text">{def.trait}</span>{p.compact && <span>⟨vlastnost⟩</span>}</div>}
             {abilities}
             {!def.trait && def.abilities.length === 0 && <div className="flavor">{def.flavor}</div>}
