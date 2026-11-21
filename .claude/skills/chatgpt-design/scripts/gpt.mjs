@@ -9,6 +9,7 @@
 //                       [--format png|webp|jpeg] [--ref a.png ...] [--mask m.png]
 //                       [--fidelity high|low] [--style style-lock.txt] [--model id]
 //   node gpt.mjs batch  jobs.json [--concurrency 2] [--force] [--dry-run]
+//   node gpt.mjs cards  [docs/art-prompts.json] --ids pumpar,bara | --kind survivor [--quality medium] [--ref style.png]
 //   node gpt.mjs chat   --prompt "..." [--system "..."] [--image x.png ...] [--json] [--out f.md]
 //   node gpt.mjs gallery <dir>
 //
@@ -326,7 +327,42 @@ async function cmdBatch(argv) {
   });
   const file = positionals[0];
   if (!file || !existsSync(file)) fail('usage: batch jobs.json [--concurrency 2] [--force] [--dry-run] [--only name1,name2]');
-  const spec = JSON.parse(await readFile(file, 'utf8'));
+  await runJobs(JSON.parse(await readFile(file, 'utf8')), v);
+}
+
+/**
+ * Card art straight from the game's own prompt list (docs/art-prompts.json, exported from
+ * scripts/art/prompts.ts): one job per card id, full prompt, portrait 2:3 or landscape 3:2.
+ */
+async function cmdCards(argv) {
+  const { values: v, positionals } = parseArgs({
+    args: argv, allowPositionals: true,
+    options: {
+      ids: { type: 'string' }, kind: { type: 'string' }, quality: { type: 'string' }, n: { type: 'string' },
+      'out-dir': { type: 'string' }, ref: { type: 'string', multiple: true }, fidelity: { type: 'string' }, model: { type: 'string' },
+      extra: { type: 'string' }, concurrency: { type: 'string' }, force: { type: 'boolean' }, 'dry-run': { type: 'boolean' },
+    },
+  });
+  const file = positionals[0] || 'docs/art-prompts.json';
+  if (!existsSync(file)) fail(`${file} not found (regenerate it with: npx tsx scripts/art/export-prompts.ts)`);
+  const data = JSON.parse(await readFile(file, 'utf8'));
+  const ids = v.ids ? new Set(v.ids.split(',').map((x) => x.trim())) : null;
+  const items = (data.items || []).filter((it) => (!ids || ids.has(it.id)) && (!v.kind || it.kind === v.kind));
+  if (ids) for (const id of ids) if (!items.some((it) => it.id === id)) fail(`unknown card id in --ids: ${id}`);
+  if (!items.length) fail('no cards selected (use --ids pumpar,bara or --kind survivor|operation|base)');
+  const refNote = v.ref?.length ? ' Use the reference images only for rendering style, palette and line quality. Do not copy their subject, pose or composition.' : '';
+  const spec = {
+    defaults: { quality: v.quality || 'medium', outDir: v['out-dir'] || 'design/drafts/cards', refs: v.ref, fidelity: v.fidelity, model: v.model, n: v.n },
+    jobs: items.map((it) => ({
+      name: it.id,
+      size: it.landscape ? '1536x1024' : '1024x1536',
+      prompt: `${it.full}${refNote}${v.extra ? ` ${v.extra}` : ''}`,
+    })),
+  };
+  await runJobs(spec, v);
+}
+
+async function runJobs(spec, v) {
   const d = spec.defaults || {};
   const only = v.only ? new Set(v.only.split(',')) : null;
   const styleCache = new Map();
@@ -428,9 +464,9 @@ figcaption span{color:#b6a68c;font-size:13px}details p{white-space:pre-wrap;font
 }
 
 const [cmd, ...rest] = process.argv.slice(2);
-const commands = { check: cmdCheck, models: cmdModels, image: cmdImage, batch: cmdBatch, chat: cmdChat, gallery: cmdGallery };
+const commands = { check: cmdCheck, models: cmdModels, image: cmdImage, batch: cmdBatch, cards: cmdCards, chat: cmdChat, gallery: cmdGallery };
 if (!commands[cmd]) {
-  console.error('usage: node gpt.mjs <check|models|image|batch|chat|gallery> [options]  (see header of this file)');
+  console.error('usage: node gpt.mjs <check|models|image|batch|cards|chat|gallery> [options]  (see header of this file)');
   process.exit(1);
 }
 commands[cmd](rest).catch((e) => { console.error(`error: ${explain(e)}`); process.exit(1); });

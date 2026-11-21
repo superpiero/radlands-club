@@ -9,9 +9,17 @@ Tenhle skill volá OpenAI API uživatelovým klíčem: obrázky přes `gpt-image
 (Responses API). Všechno jde přes jeden skript bez závislostí, `scripts/gpt.mjs` vedle tohoto souboru
 (v repu: `.claude/skills/chatgpt-design/scripts/gpt.mjs`, Node 20+).
 
-Prompty a styl jsou v `references/art-direction.md`. **Přečti ho před prvním promptem** – je tam,
-co „à la Radlands“ znamená a co ne, paleta a písma hry, velikosti pro jednotlivé typy karet,
-startovní style lock a jak udržet sadu konzistentní.
+**Ilustrace karet mají ve hře jeden zdroj pravdy** a ten skill nepřepisuje, jen používá:
+
+- `scripts/art/prompts.ts` – styl (`ART_STYLE`) a námět každé karty (`ART[id].subject`, `landscape`).
+  Úpravy námětů dělej tam a pak `npx tsx scripts/art/export-prompts.ts`, což obnoví
+  `docs/ART-PROMPTS.md` (pro ruční práci v ChatGPT) a `docs/art-prompts.json` (čte ho tenhle skill).
+- `scripts/art/import.ts` – převede hotové obrázky do `public/art/<id>.webp` (720×1080, základny
+  1080×720) a obnoví manifest `src/client/gen/art.ts`. Karta s obrázkem se pak ve hře sama vykreslí
+  jako full-art; bez obrázku zůstane procedurální scéna.
+
+Ostatní (logo, key art, textury, ikony…) a pravidla originality jsou v `references/art-direction.md`.
+**Přečti ho před prvním promptem.**
 
 ## 1. Ověř připojení
 
@@ -42,21 +50,21 @@ stejné verze (třeba `gpt-image-2.6-flare` a `gpt-image-2.6-sunburst`), udělej
 
 ## 2. Pracovní postup
 
-1. **Kontext.** Zjisti, co přesně chce (který výstup, které karty, kolik variant). U karet si vytáhni data
-   z `docs/cards.json`. Podívej se, jestli existuje `design/style-lock.txt` a `design/anchors/` – pokud ano,
-   jsou to schválená rozhodnutí, drž se jich.
-2. **Prompt.** Napiš ho sám podle `references/art-direction.md` (znáš repo a pravidla lépe než GPT).
-   GPT na texty (`chat`) zapoj, když o to uživatel stojí – názvy, slogany, lore, flavor texty, nebo
-   druhý názor na hotový obrázek.
+1. **Kontext.** Zjisti, co přesně chce (který výstup, které karty, kolik variant). Podívej se, co už ve hře
+   je (`public/art/`, `src/client/gen/art.ts`) a jestli existují `design/anchors/` – schválené kotvy stylu.
+2. **Prompt.** U karet použij příkaz `cards` (bere zadání z `docs/art-prompts.json`). U ostatního napiš
+   prompt sám podle `references/art-direction.md` se stylem `ART_STYLE`. GPT na texty (`chat`) zapoj,
+   když o to uživatel stojí – názvy, slogany, lore, flavor texty, nebo druhý názor na hotový obrázek.
 3. **Skici.** `--quality low` nebo `medium`, 2–4 varianty (`--n`). Hotové obrázky si prohlédni nástrojem
    Read (soubory PNG umí zobrazit) a vyřaď zjevné chyby (text v obrázku, rámeček, motiv u okraje)
    dřív, než je ukážeš.
 4. **Ukaž uživateli.** Pár obrázků pošli přes `SendUserFile` (`display: "render"`); u větší sady udělej
    galerii (`gallery <složka>` → `index.html`) a pošli tu. Zeptej se, co upravit.
 5. **Iteruj.** Vybranou variantu dolaď přes `--ref vybrany.png --fidelity high` a prompt popisující jen změnu.
-6. **Zamkni směr.** Když uživatel schválí styl, ulož style lock do `design/style-lock.txt` a 1–3 nejlepší
-   obrázky do `design/anchors/`. Všechny další obrázky pak jedou s `--style` a `--ref` na kotvy.
-7. **Finály.** Schválené kusy přegeneruj v `--quality high` a ulož mimo drafty (viz Výstupy).
+6. **Zamkni směr.** Když uživatel schválí styl, ulož 1–3 nejlepší obrázky do `design/anchors/` a další
+   karty generuj s `--ref` na ně (konzistence celé sady). Změnu stylu samotného prováděj v `ART_STYLE`.
+7. **Finály a import.** Schválené kusy přegeneruj v `--quality high`, pak
+   `npx tsx scripts/art/import.ts design/drafts/cards/` a zkontroluj kartu ve hře (galerie `#/cards`).
 
 Kolik to stojí: orientačně (ceník gpt-image-1, 2025) čtverec 1024 vyjde na ~0,01 $ low,
 ~0,04 $ medium, ~0,17 $ high; formát 1024×1536 zhruba 1,5× víc; reference zvyšují vstupní tokeny.
@@ -70,14 +78,18 @@ Spouštěj z kořene repa (relativní cesty se berou od aktuální složky). Ulo
 po jedné na řádek; ke každému obrázku uloží `.json` s promptem, modelem a parametry.
 
 ```bash
+# ilustrace karet ze zadání hry (na výšku 2:3, základny na šířku 3:2) → design/drafts/cards/<id>.png
+node .claude/skills/chatgpt-design/scripts/gpt.mjs cards --ids pumpar,bara,vodarna --quality low
+node .claude/skills/chatgpt-design/scripts/gpt.mjs cards --kind survivor --quality medium --ref design/anchors/style-1.png --dry-run
+npx tsx scripts/art/import.ts design/drafts/cards/            # schválené do hry
+
 # jeden obrázek / varianty (bez --out jde do design/drafts/<čas>-<slug>.png)
 node .claude/skills/chatgpt-design/scripts/gpt.mjs image \
-  --style design/style-lock.txt --prompt "Card illustration: ..." \
-  --size 1024x1024 --quality low --n 3 --out-dir design/drafts/pumpar
+  --style design/style.txt --prompt "Key art: ..." --size 1536x1024 --quality low --n 3 --out-dir design/drafts/keyart
 
 # úprava nebo „ve stylu“ podle referencí (až 16 obrázků; přepne na images/edits)
 node .claude/skills/chatgpt-design/scripts/gpt.mjs image \
-  --style design/style-lock.txt --ref design/anchors/style-1.png \
+  --style design/style.txt --ref design/anchors/style-1.png \
   --prompt "Use the reference only for style... New subject: ..." --out design/drafts/bara.png
 
 # průhledné pozadí (logo, booster, ikona)
@@ -99,6 +111,10 @@ node .claude/skills/chatgpt-design/scripts/gpt.mjs chat --image design/drafts/pu
 node .claude/skills/chatgpt-design/scripts/gpt.mjs models
 ```
 
+`--style` čte text ze souboru a dá ho před prompt; pro styl hry si ho vytvoř z `docs/art-prompts.json`
+(`node -e "console.log(require('./docs/art-prompts.json').style)" > design/style.txt`).
+`cards` umí i `--n`, `--extra "…"` (doplněk na konec promptu), `--out-dir`, `--force`, `--concurrency`.
+
 Další volby `image`: `--prompt-file`, `--mask m.png` (průhledná oblast = překreslit), `--compression 0-100`
 (webp/jpeg), `--moderation low`, `--model`. `chat`: `--system-file`, `--effort low|medium|high`, `--model`.
 
@@ -107,33 +123,34 @@ Formát dávky (`design/jobs/*.json`); hodnoty z `defaults` platí pro všechny 
 ```json
 {
   "defaults": {
-    "style": "design/style-lock.txt",
+    "style": "design/style.txt",
     "refs": ["design/anchors/style-1.png"],
-    "size": "1024x1024",
+    "size": "1536x1024",
     "quality": "medium",
-    "outDir": "design/drafts/karty-v1"
+    "outDir": "design/drafts/identity"
   },
   "jobs": [
-    { "name": "pumpar", "prompt": "Use the reference images only for ... Card illustration: ..." },
-    { "name": "vodarna", "prompt": "...", "size": "1024x1536" },
-    { "name": "sucho", "prompt": "...", "n": 2 }
+    { "name": "keyart", "prompt": "Use the reference images only for ... Key art: ..." },
+    { "name": "emblem", "prompt": "...", "size": "1024x1024", "background": "transparent" },
+    { "name": "booster", "prompt": "...", "size": "1024x1536", "n": 2 }
   ]
 }
 ```
 
-`name` je název souboru – u karet použij `id` karty z `docs/cards.json`, ať se dá art později spárovat
-s kartou. Selhané joby skript vypíše a skončí kódem 2; stejný příkaz znovu spustí jen ty.
+`name` je název souboru. Obrázky pro hru pojmenuj podle id, které zná `scripts/art/prompts.ts`
+(karty, `playmat`, `cardback`, `booster`, `tulak`), jinak je import přeskočí. Selhané joby skript vypíše a skončí kódem 2; stejný příkaz znovu spustí jen ty.
 
 ## 4. Výstupy
 
 - `design/drafts/` – skici a průzkum (v `.gitignore`, necommitují se).
-- `design/style-lock.txt`, `design/anchors/` – schválený styl a kotvy (commitovat).
-- `design/identity/` – schválené logo, wordmark, key art, paleta, booster, rub.
-- `design/cards/<id>.webp` – schválené ilustrace karet.
+- `design/anchors/` – schválené kotvy stylu (commitovat), `design/gpt.json` – připnuté modely.
+- `public/art/<id>.webp` + `src/client/gen/art.ts` – obrázky ve hře; vznikají **jen** přes
+  `scripts/art/import.ts`, ručně je neupravuj.
+- `design/identity/` – schválené logo, wordmark, key art mimo hru.
 - `design/jobs/` – dávkové soubory, ať jde sada zopakovat.
 
-Do hry (`public/`, `src/client/…`) obrázky zapojuj, jen když o to uživatel požádá – je to samostatná
-změna kódu karet (`Card.tsx` dnes kreslí procedurální scény).
+Obrázky od uživatele (např. vygenerované ručně v ChatGPT) importuj stejným skriptem. Předtím je projdi:
+skeny nebo napodobeniny karet jiné hry do hry nepatří (viz Originalita).
 
 ## 5. Originalita
 

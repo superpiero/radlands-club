@@ -6,9 +6,9 @@ Podklad pro psaní promptů. Prompty pro obrázky piš **anglicky** (gpt-image j
 ## Obsah
 1. Co znamená „à la Radlands“ (a co ne)
 2. Identita hry, ze které vycházíme
-3. Startovní style lock
+3. Styl: `ART_STYLE`
 4. Recepty podle typu výstupu (velikosti, pozadí, kvalita)
-5. Karty: z dat karty na prompt
+5. Náměty karet: jak je psát a měnit
 6. Konzistence celé sady
 7. Časté chyby
 
@@ -20,14 +20,16 @@ Uživatel tím myslí **žánr a pocit**: postapo poušť, vynalézaví přeživ
 s drsností, výrazné čitelné ilustrace, hra o přežití a o vodu. To všechno klidně ber.
 
 Nebereme nic, co patří konkrétní hře: název, logo a písmo loga, rozvržení a ikonografii jejích karet,
-jejich postavy, tábory a názvy karet, ani její ilustrace. Proto:
+rub karet, hrací plochu, jejich postavy, tábory a názvy karet, ani její ilustrace. Proto:
 
 - do promptů nepiš „Radlands“, název vydavatele ani jména žijících ilustrátorů – výsledek má být náš vlastní
   a model by jinak tlačil k napodobenině (a některé prompty taky odmítne),
 - nepoužívej cizí karty/artwork jako `--ref` – reference jsou jen naše vlastní obrázky,
+- obrázky, které uživatel nahraje, před importem projdi: skeny, fotky nebo napodobeniny karet jiné hry
+  do hry neimportuj a řekni proč,
 - když si uživatel vyžádá přesnou kopii („udělej to přesně jako karta X z Radlands“), kopii nedělej
   a nabídni vlastní variantu se stejnou atmosférou. Hra je podle README vlastní projekt
-  s vlastním názvem, kartami i grafikou, tohle k tomu sedí.
+  s vlastním názvem, kartami i grafikou.
 - žádné jiné IP ani značky (Mad Max, Fallout, Coca-Cola…): na plechovkách a cedulích jen vymyšlené
   nečitelné symboly.
 
@@ -37,10 +39,11 @@ cracked earth, heat shimmer, frontier town, caravan, wasteland survivors*.
 
 ## 2. Identita hry
 
-- **Název:** Poslední kapka. Duel dvou hráčů o vodu. Voda (💧) je jediná surovina.
+- **Název:** Poslední kapka. Duel dvou hráčů o vodu. Voda (kapka) je jediná surovina.
 - **Typy karet:** přeživší (postavy), operace (události ve frontě s odpočtem), základny (3 na hráče),
   Nájezd, tulák (rub karty), cisterna.
-- **Paleta** (z `src/client/styles.css`, „sun-bleached desert, rust & tarp; teal water is the only clean colour“):
+- **Paleta** (`src/client/styles.css` a `src/client/design.css`): spálená poušť, rez a plachty;
+  tyrkysová je **jediná čistá barva a patří vodě**.
 
   | token | hex | použití |
   |---|---|---|
@@ -55,104 +58,80 @@ cracked earth, heat shimmer, frontier town, caravan, wasteland survivors*.
   | water-deep | `#1f7686` | stín vody, ikona ceny |
 
 - **Písma:** Saira Stencil One (názvy, šablonové písmo), Barlow Condensed (UI), Special Elite (psací stroj, flavor text).
-- **Současný vzhled karet:** papírová karta, tmavý pruh se schopností, procedurální scéna se siluetou
-  pustiny a ikonou z game-icons.net. Operace mají tmavě olivový podklad (`#4a4630`) a žlutý název (`#ffd36a`).
+- **Karta ve hře:** s obrázkem se kreslí jako full-art (ilustrace přes celou kartu, nahoře štítek s názvem
+  a cenou, dole tmavý panel se schopností). Bez obrázku má procedurální scénu v kurátorovaných paletách
+  (`PALETTES` v `src/client/components/Card.tsx`). Menu mají procedurální panorama (`Backdrop.tsx`).
 
-Před prací na identitě se podívej, jestli už existuje `design/style-lock.txt` a `design/anchors/`.
-Pokud ano, jsou to schválená rozhodnutí – drž se jich, dokud uživatel neřekne jinak.
+## 3. Styl: `ART_STYLE`
 
-## 3. Startovní style lock
+Styl všech ilustrací je jeden a žije v `scripts/art/prompts.ts` jako `ART_STYLE` (exportuje se i do
+`docs/art-prompts.json` → pole `style`). Příkaz `cards` ho přidává sám. Pro jiné výstupy (key art,
+textury, booster…) si ho ulož do souboru a předej přes `--style`:
 
-Když ještě není `design/style-lock.txt`, začni tímhle (ulož do souboru a předávej přes `--style`).
-Je to výchozí bod pro průzkum, ne dogma – po schválení směru ho uprav podle toho, co se uživateli líbilo.
-
-```text
-Original illustration for a tabletop card game about two rival settlements fighting over the last water in a post-apocalyptic desert.
-Hand-painted gouache and ink look: confident brush outlines, chunky readable silhouettes, slightly exaggerated characterful proportions, visible paper grain and a subtle halftone texture.
-Sun-bleached palette of sand, bone, rust orange, ember and dark tarp brown. Clean teal (#3fb8c9) is the only cool colour and appears only on water, or as a glint of hope.
-Salvaged gear everywhere: tarp, corrugated metal, rope, welded pipes, jerrycans, goggles, patched leather.
-Strong value contrast, one clear focal subject, dusty haze in the background.
-No text, no letters, no numbers, no logos, no watermark, no card frame or border.
+```bash
+node -e "console.log(require('./docs/art-prompts.json').style)" > design/style.txt
 ```
 
-Alternativní směry pro průzkum (vyměň druhý a třetí řádek):
-- **Linoryt / sítotisk:** `Bold two-colour linocut and screen-print look, rough carved lines, misregistered ink layers.`
-- **Komiks:** `Clean graphic-novel inking with flat colour fills and hard cel shadows, dynamic foreshortening.`
-- **Malba:** `Painterly concept-art rendering, soft atmospheric perspective, warm rim light at golden hour.`
+Ve zkratce: *painterly digital illustration, sun-bleached Central European wasteland after the rivers dried up,
+ochre / rust / sand / tarp browns, teal only for water, golden-hour rim light, strong silhouette, dust,
+film grain, subject centred, no text / frames / borders.*
+
+Když chce uživatel styl změnit, změň `ART_STYLE`, přegeneruj export (`npx tsx scripts/art/export-prompts.ts`)
+a ukaž mu pár skic dřív, než se pustíš do celé sady – existující obrázky by jinak stylově nesedly.
 
 ## 4. Recepty podle typu výstupu
 
 | Výstup | `--size` | další volby | poznámka |
 |---|---|---|---|
-| Ilustrace přeživšího / operace | `1024x1024` | | okno ilustrace na kartě se ořezává (na stole je skoro na šířku, v kompaktním režimu skoro čtverec) → hlavní motiv do středních ~70 %, nic důležitého u okrajů |
-| Ilustrace základny | `1024x1536` | | na kartě základny je ilustrace úzký sloupec vlevo (~0,7 : 1) → budova vertikálně, na střed |
-| Celá karta – návrh layoutu / rámečku | `1024x1536` | | jen koncept; skutečné texty kreslí hra v HTML/CSS. Text na kartě popiš jako „placeholder text blocks“ |
-| Rub karty | `1024x1536` | | symetrický emblém, bez textu |
+| Přeživší, operace, Nájezd, cisterna, tulák | `1024x1536` | (příkaz `cards`) | full-art na výšku 2:3; import ořízne na 720×1080 „podle pozornosti“; motiv na střed, nahoře místo pro štítek s názvem, dole pro text |
+| Základna | `1536x1024` | (příkaz `cards`) | na šířku 3:2; vlevo motiv, vpravo klidnější plocha pod text |
+| Hrací plocha `playmat` | `1536x1024` | `--quality high` | velmi nízký kontrast, ať jsou karty čitelné; import → 1920×1080 |
+| Rub karty `cardback` | `1024x1536` | | symetrický emblém, bez textu |
+| Booster `booster` | `1024x1536` | | foliový sáček s emblémem kapky, bez textu |
 | Logo / emblém | `1024x1024` | `--background transparent` | jednoduchý tvar čitelný i v 32 px (favicon) |
-| Wordmark „POSLEDNÍ KAPKA“ | `1536x1024` | `--background transparent` | model může pokazit diakritiku – zkontroluj „Í“ a „Á“; finální wordmark je spolehlivější v SVG s písmem Saira Stencil One, GPT verzi ber jako koncept / texturu |
-| Key art / titulní obrázek | `1536x1024` | `--quality high` | pro domovskou stránku, obal, OG obrázek |
-| Moodboard | `1536x1024` | | „a moodboard collage of …“, 6–9 výřezů |
-| Booster balíček | `1024x1536` | `--background transparent` | foliový sáček, vymyšlený emblém, bez textu |
+| Wordmark „POSLEDNÍ KAPKA“ | `1536x1024` | `--background transparent` | model může pokazit diakritiku – zkontroluj „Í“; finální wordmark je spolehlivější v SVG s písmem Saira Stencil One |
+| Key art / titulní obrázek | `1536x1024` | `--quality high` | domovská stránka, OG obrázek, obal |
 | Textura (rez, plachta, papír) | `1024x1024` | | „seamless tileable texture, flat lighting, top-down“ → pozadí v CSS |
-| Ikona stavu / zdroje | `1024x1024` | `--background transparent` | „single flat silhouette icon, one colour, no outline details“; hra už má sadu ikon z game-icons.net, nové ikony jen když o ně uživatel stojí |
+| Ikona | `1024x1024` | `--background transparent` | hra má sadu ikon z game-icons.net; nové jen když o ně uživatel stojí |
 
 Kvalita: `low` na rychlé skici a průzkum, `medium` na výběr a sady, `high` jen na schválené finály.
-Pro web (`public/`) je praktičtější `--format webp --compression 85`.
 
-## 5. Karty: z dat karty na prompt
+## 5. Náměty karet: jak je psát a měnit
 
-Data karet: `docs/cards.json` (vygenerované z `src/engine/cards.ts`; obsahuje `id`, `name`, `kind`, `cost`,
-`abilities[].text`, `trait`, `effectText`, `flavor`, `rarity`, `icon`).
+Náměty jsou v `scripts/art/prompts.ts` (`ART[id].subject`). Když se uživateli ilustrace nelíbí kvůli obsahu,
+oprav námět tam (ne jen v jednorázovém promptu), přegeneruj export a pak kartu znovu vygeneruj
+(`cards --ids <id> --force`). Tak zůstane zadání a obrázek v souladu.
 
-Postup pro jednu kartu:
+Při psaní námětu:
 1. **Kdo/co to je:** z názvu. České tvary prozrazují pohlaví – *Ženistka, Kovářka, Skladnice, Sběračka,
    Starostka, Doktorka, Velitelka, Mechanička, Prospektorka* jsou ženy; *Pumpař, Felčar, Pašerák, Kat,
    Bubeník, Radista…* muži; *Kluk s prakem* je dítě, *Pes Rex* pes.
-2. **Co dělá:** ze schopnosti udělej pózu nebo akci (Felčar → ošetřuje zraněného; Radista → u vysílačky;
-   Granátník → napřahuje se k hodu). Operace jsou scény/události, ne portréty (Sucho, Písečná bouře, Karavana).
-3. **Nálada:** z `flavor` (např. Pumpař – „Každá pumpa vrže jinak. On zná všechny.“ → starý technik,
-   ucho přiložené k vrzající pumpě).
-4. **Vzácnost:** `rare`/`legendary` smí být dramatičtější (silnější světlo, větší měřítko scény), ale ve stejném stylu.
-5. **Pestrost obsazení:** různé věky, postavy, typy a etnicita, ať karty nevypadají jako jedna rodina.
-
-Šablona promptu (za style lock):
-
-```text
-Card illustration: <who, age, build, distinctive gear>, <action that matches the ability>, <setting detail>.
-Mood: <from the flavour line>. Camera: <waist-up portrait | full figure | wide scene>, subject centred with generous margins.
-```
-
-Příklad – Pumpař (`pumpar`, přeživší, 1💧):
-
-```text
-Card illustration: a wiry old pump mechanic in patched overalls and welding goggles pushed up on his forehead,
-pressing his ear against a squeaking hand pump while a thin stream of teal water trickles into a dented bucket,
-corrugated-metal shack and a windmill behind him.
-Mood: quiet expertise, he knows every pump by its sound. Camera: waist-up, subject centred with generous margins.
-```
+2. **Co dělá:** ze schopnosti (`docs/cards.json`) udělej pózu nebo akci. Operace jsou scény/události, ne portréty.
+3. **Nálada:** z `flavor`.
+4. **Vzácnost:** `rare`/`legendary` smí být dramatičtější, ale ve stejném stylu.
+5. **Pestrost obsazení:** různé věky, postavy a typy, ať karty nevypadají jako jedna rodina.
 
 ## 6. Konzistence celé sady
 
-gpt-image nemá seed, takže konzistenci drží tři věci:
+gpt-image nemá seed, takže konzistenci drží:
 
-1. **Stejný style lock** pro všechny obrázky (`--style design/style-lock.txt` / `"style"` v dávce).
-2. **Kotvy (anchors):** 1–3 schválené obrázky v `design/anchors/` předávané jako `--ref`/`"refs"`. Do promptu
-   vždy připiš: `Use the reference images only for rendering style, palette and line quality. Do not copy their subject, pose or composition.`
-   Jinak model kopíruje i obsah.
-3. **Stejné parametry** (velikost, kvalita) v rámci jedné sady.
+1. **Stejný styl** (`ART_STYLE`, příkaz `cards` ho přidá sám).
+2. **Kotvy:** 1–3 schválené obrázky v `design/anchors/` předávané jako `--ref`. Příkaz `cards` k nim sám
+   připíše „use the reference images only for style… do not copy their subject“; u `image` to dopiš ručně.
+3. **Stejný model a parametry** (model připnutý v `design/gpt.json`, stejná kvalita v rámci sady).
 
-Opakující se postava (např. Brokovnice Bára na více obrázcích): nejdřív „character sheet“ (front/side/back view,
+Opakující se postava (např. Brokovnice Bára na více obrázcích): nejdřív „character sheet“ (front/side/back,
 neutral background), ten ulož do `design/anchors/characters/` a předávej jako `--ref` s `--fidelity high`.
 
-Úprava existujícího obrázku (změna detailu, ne nový obrázek): `--ref obrazek.png --fidelity high` a prompt
-popisuje jen změnu („Keep everything identical, only change …“). Pro úpravu jen části obrázku přidej `--mask`
-(PNG stejné velikosti, průhledná oblast = co se má překreslit).
+Úprava existujícího obrázku: `--ref obrazek.png --fidelity high` a prompt popisující jen změnu
+(„Keep everything identical, only change …“). Pro úpravu jen části přidej `--mask` (PNG stejné velikosti,
+průhledná oblast = co se má překreslit).
 
 ## 7. Časté chyby
 
-- **Text v obrázku:** model rád přidává nápisy a čísla. Style lock to zakazuje; když se objeví, zopakuj zákaz
-  na konci promptu. Česká diakritika v obrázku je nespolehlivá.
-- **Rámeček v ilustraci:** ilustrace pro okno karty nesmí mít vlastní rámeček ani zaoblené rohy – rámeček kreslí hra.
-- **Motiv u okraje:** okno karty ořezává; drž motiv uprostřed.
-- **Moc teal barvy:** teal je jen voda. Když je ho v obrázku hodně, karta ztrácí čitelnost (voda = cena, akce).
-- **Odmítnutí moderací:** přeformuluj bez krve/zranění detailně, bez skutečných značek a IP. Zranění stačí naznačit (obvaz, záplata).
+- **Text v obrázku:** model rád přidává nápisy a čísla. `ART_STYLE` to zakazuje; když se objeví, přidej
+  `--extra "Absolutely no text or letters anywhere."` a vygeneruj znovu.
+- **Rámeček v ilustraci:** rámeček i štítky kreslí hra, ilustrace je full-bleed bez okrajů.
+- **Motiv u okraje nebo v místě textu:** import ořezává a dole je panel se schopností – drž motiv uprostřed.
+- **Moc tyrkysové:** tyrkys je jen voda. Když je ho v obrázku hodně, karta ztrácí čitelnost (voda = cena, akce).
+- **Odmítnutí moderací:** přeformuluj bez detailní krve/zranění a bez skutečných značek a IP.
