@@ -17,7 +17,7 @@ md += `## Přeživší (${SURVIVORS.length})\n\n| Karta | Cena | Rozebrání | S
 for (const c of SURVIVORS) md += `| **${c.name}** \`${c.id}\` | ${c.cost}💧 | ${JUNK_LABEL[c.junk!]} | ${row(c)} |\n`;
 
 md += `\n## Operace (${OPERATIONS.length})\n\n| Karta | Cena | Odpočet | Rozebrání | Efekt |\n|---|---|---|---|---|\n`;
-for (const c of OPERATIONS) md += `| **${c.name}** \`${c.id}\` | ${c.cost}💧 | ${c.countdown === 0 ? '⚡ ihned' : c.countdown} | ${JUNK_LABEL[c.junk!]} | ${c.effectText}${c.playNeeds ? ` _(Podmínka: ${c.playNeeds.toLowerCase()})_` : ''} |\n`;
+for (const c of OPERATIONS) md += `| **${c.name}** \`${c.id}\` | ${c.cost}💧 | ${c.countdown === 0 ? '⚡ ihned' : c.countdown} | ${JUNK_LABEL[c.junk!]} | ${c.effectText}${c.playNeeds ? ` _(Nelze zahrát, pokud ${c.playNeeds.charAt(0).toLowerCase() + c.playNeeds.slice(1).replace(/\.$/, '')}.)_` : ''} |\n`;
 
 md += `\n## Základny (${BASES.length})\n\n| Základna | Zásoby (karty) | Odolnost | Schopnost / vlastnost |\n|---|---|---|---|\n`;
 for (const c of BASES) md += `| **${c.name}** \`${c.id}\` | ${c.draw} | ${c.hp ?? 2} | ${row(c)} |\n`;

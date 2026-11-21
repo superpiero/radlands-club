@@ -50,7 +50,7 @@ Když balíček dojde podruhé, hra končí **remízou**.
 - Sloupec **odkrytý Zvědem** je do konce tahu celý nekrytý.
 - **Poškodit** (bez dalšího upřesnění) = vyber nekrytou soupeřovu kartu (přeživší nebo nezničenou základnu).
 - **Zranit** = poškodit nekrytého soupeřova přeživšího.
-- Nepoškozená karta → **poškozená**. Poškozená → **zničená**. Pevnost vydrží 3 poškození.
+- Nepoškozená karta → **poškozená**. Poškozená → **zničená**. Pevnost je zničena až třetím poškozením.
 - Zničený přeživší jde do odhazovacího balíčku. Zničený tulák jde lícem dolů navrch balíčku. Zničená základna zůstává ve hře jako zničená (do sloupce lze dál hrát).
 - Když je zničen přeživší vzadu, ten vepředu se posune k základně.
 - **Opravit** = odstranit 1 poškození z vlastní karty, nebo zneškodnit soupeřovu nálož na vlastní základně (obojí naráz, pokud platí obojí). Opravený přeživší není v tomto tahu připravený (výjimka: Felčar).

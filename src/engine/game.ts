@@ -68,13 +68,12 @@ export function freshState(opts: GameOptions): GameState {
   if (opts.decks) {
     for (const p of [0, 1] as PlayerIdx[]) {
       const pl = st.players[p];
-      pl.deck = shuffleInPlace(st.rng, opts.decks[p].map((id) => ({ uid: `c${++st.seq}`, id })));
+      pl.deck = shuffleInPlace(st.rng, [...opts.decks[p]]).map((id) => ({ uid: `c${++st.seq}`, id }));
       pl.discard = [];
       pl.reshuffles = 0;
     }
   } else {
-    st.deck = deckList().map((id) => ({ uid: `c${++st.seq}`, id }));
-    shuffleInPlace(st.rng, st.deck);
+    st.deck = shuffleInPlace(st.rng, deckList()).map((id) => ({ uid: `c${++st.seq}`, id }));
   }
   // Bases: deal 6 to each
   const baseIds = shuffleInPlace(st.rng, BASES.map((b) => b.id));
@@ -117,8 +116,14 @@ export class Game {
   // =========================================================================
 
   act(player: PlayerIdx, action: Action): { ok: true } | { ok: false; error: string } {
+    if (player !== 0 && player !== 1) return { ok: false, error: 'Neplatný hráč.' };
+    const bad = sanitizeAction(action);
+    if (bad) return { ok: false, error: bad };
     const st = this.state;
     if (st.phase === 'over' && action.t !== 'concede') return { ok: false, error: 'Hra skončila.' };
+    // safety net: any unexpected engine error rolls the whole state back
+    const preAct = structuredClone(st);
+    const preGen = this.gen;
     st.fx = [];
     try {
       switch (action.t) {
@@ -182,10 +187,21 @@ export class Game {
       if (e instanceof GameOver) {
         this.endGame(e.winner, e.reason);
       } else {
-        throw e;
+        console.error('Engine error – rolling back action', action, e);
+        if (this.actionStart && preGen) {
+          // the generator is dead: roll back to the start of the whole action
+          this.restore(this.actionStart);
+        } else {
+          this.restore(preAct);
+        }
+        this.gen = null;
+        this.actionStart = null;
+        this.actionLog = [];
+        this.state.rev++;
+        return { ok: false, error: 'Interní chyba – akce byla vrácena.' };
       }
     }
-    st.rev++;
+    this.state.rev++;
     return { ok: true };
   }
 
@@ -258,10 +274,13 @@ export class Game {
   private restore(snap: GameState) {
     const rev = this.state.rev;
     const log = this.state.log;
+    const curTotal = this.state.logTotal ?? 0;
     this.state = structuredClone(snap);
     this.state.rev = rev;
-    // keep the log tail (we want to see that an undo happened) but drop entries added after the snapshot
-    this.state.log = log.slice(0, snap.log.length);
+    // drop exactly the log entries added after the snapshot (robust to the log cap)
+    const added = Math.max(0, curTotal - (snap.logTotal ?? 0));
+    this.state.log = added > 0 ? log.slice(0, Math.max(0, log.length - added)) : log;
+    this.state.logTotal = snap.logTotal;
     this.state.fx = [];
     this.state.pending = null;
   }
@@ -396,7 +415,7 @@ export class Game {
         let col = a.col;
         let pos = a.pos;
         if (col === undefined || pos === undefined || !this.slotValid(p, col, pos)) {
-          const slot = yield* this.chooseSlot(p, `Kam postavíš: ${def.name}?`, inst.id);
+          const slot = yield* this.chooseSlot(p, 'Kam postavíš přeživšího?', inst.id);
           if (!slot) return;
           col = slot.col;
           pos = slot.pos;
@@ -416,6 +435,7 @@ export class Game {
         pl.water -= def.cost ?? 0;
         this.fx({ t: 'event', uid: inst.uid, player: p, id: inst.id });
         if ((def.countdown ?? 0) === 0) {
+          this.revealed = true;
           this.log(p, 'event', `${this.pn(p)} spouští operaci ${def.name}.`, [inst.id]);
           yield* this.resolveEvent(p, inst);
           return;
@@ -428,6 +448,8 @@ export class Game {
       case 'junk': {
         const inst = this.takeFromHand(p, a.uid);
         const def = cardDef(inst.id);
+        // the junked card is shown to the opponent -> no cancel/undo afterwards
+        if (inst.id !== 'cisterna') this.revealed = true;
         if (inst.id === 'cisterna') pl.cisternHome = true;
         else this.discardOf(p).push(inst);
         this.fx({ t: 'junk', player: p, id: inst.id });
@@ -493,7 +515,7 @@ export class Game {
         if (def.kind !== 'survivor') return 'To není přeživší.';
         if (this.personCost(p, def) > pl.water) return 'Nemáš dost vody.';
         if (!this.hasFreeSlot(p)) return 'Nemáš volné místo (max. 6 přeživších).';
-        if (a.col !== undefined && a.pos !== undefined && !this.slotValid(p, a.col, a.pos)) return 'Na toto místo nelze hrát.';
+        if ((a.col !== undefined || a.pos !== undefined) && !this.slotValid(p, a.col as number, a.pos as string)) return 'Na toto místo nelze hrát.';
         return null;
       }
       case 'playEvent': {
@@ -528,9 +550,12 @@ export class Game {
         } else return 'Karta nenalezena.';
         const def = cardDef(pp ? pp.person.id : bb!.base.id);
         const ab = def.abilities[a.idx];
-        if (!ab) return 'Karta takovou schopnost nemá.';
+        if (!Number.isInteger(a.idx) || a.idx < 0 || a.idx >= def.abilities.length || !ab) return 'Karta takovou schopnost nemá.';
         if (this.abilityCost(p, ab.cost) > pl.water) return 'Nemáš dost vody.';
-        if (ab.canUse && !ab.canUse(this, { p, uid: a.uid })) return ab.needs ?? 'Schopnost teď nemá platný cíl.';
+        if (ab.canUse && !ab.canUse(this, { p, uid: a.uid })) {
+          const n = ab.needs;
+          return typeof n === 'function' ? n(this, { p, uid: a.uid }) : n ?? 'Schopnost teď nemá platný cíl.';
+        }
         return null;
       }
       case 'endTurn':
@@ -696,6 +721,11 @@ export class Game {
     return this.state.players[owner].columns[col].some((x) => !x.faceDown && !x.damaged && x.id === 'strazce');
   }
 
+  /** Bedřich's trait: undamaged Bedřich ignores injure. */
+  bedrichShield(x: PersonInPlay): boolean {
+    return !x.faceDown && !x.damaged && x.id === 'bedrich';
+  }
+
   bunkerImmune(owner: PlayerIdx, col: number): boolean {
     const b = this.state.players[owner].bases[col];
     return b.id === 'bunkr' && !b.destroyed && this.state.players[owner].columns[col].length >= 2;
@@ -726,6 +756,8 @@ export class Game {
   }
 
   slotValid(p: PlayerIdx, col: number, pos: string): boolean {
+    if (!Number.isInteger(col) || col < 0 || col > 2) return false;
+    if (pos !== 'back' && pos !== 'front' && pos !== 'only') return false;
     const column = this.state.players[p].columns[col];
     if (!column) return false;
     if (column.length === 0) return pos === 'only' || pos === 'front' || pos === 'back';
@@ -743,7 +775,7 @@ export class Game {
       column.forEach((x, idx) => {
         const unprot = idx === column.length - 1 || this.isExposed(o, col);
         if (!unprot) return;
-        if (kind === 'injure' && !x.faceDown && x.id === 'bedrich') return;
+        if (kind === 'injure' && this.bedrichShield(x)) return;
         out.push(x.uid);
       });
     });
@@ -783,10 +815,14 @@ export class Game {
 
   stunTargets(p: PlayerIdx): string[] {
     const o = this.opp(p);
-    return this.damageTargets(p, 'injure').filter((uid) => {
-      const x = this.findPerson(uid);
-      return x && x.owner === o && !x.person.faceDown && x.person.stunnedTurn !== this.state.turn + 1;
+    const out: string[] = [];
+    this.state.players[o].columns.forEach((column, col) => {
+      column.forEach((x, idx) => {
+        const unprot = idx === column.length - 1 || this.isExposed(o, col);
+        if (unprot && !x.faceDown && x.stunnedTurn !== this.state.turn + 1) out.push(x.uid);
+      });
     });
+    return out;
   }
 
   usedBases(p: PlayerIdx): string[] {
@@ -796,7 +832,10 @@ export class Game {
 
   usedPeople(p: PlayerIdx, exclude: string): string[] {
     const t = this.state.turn;
-    return this.state.players[p].columns.flat().filter((x) => !x.faceDown && !x.damaged && x.usedTurn === t && x.uid !== exclude && cardDef(x.id).abilities.length > 0).map((x) => x.uid);
+    return this.state.players[p].columns.flat()
+      .filter((x) => !x.faceDown && !x.damaged && x.usedTurn === t && x.uid !== exclude && x.stunnedTurn !== t && x.playedTurn !== t && x.restoredTurn !== t)
+      .filter((x) => cardDef(x.id).abilities.some((ab) => !ab.canUse || ab.canUse(this, { p, uid: x.uid })))
+      .map((x) => x.uid);
   }
 
   advanceableEvents(p: PlayerIdx): string[] {
@@ -819,7 +858,7 @@ export class Game {
     this.state.players[o].columns.forEach((column) => {
       if (column.length === 2) {
         const x = column[0];
-        if (!(x.id === 'bedrich' && !x.faceDown)) out.push(x.uid);
+        if (!this.bedrichShield(x)) out.push(x.uid);
       }
     });
     return out;
@@ -941,6 +980,7 @@ export class Game {
   }
 
   log(player: PlayerIdx | null, kind: LogKind, text: string, cards?: string[], priv?: LogEntry['priv']) {
+    this.state.logTotal = (this.state.logTotal ?? 0) + 1;
     this.state.log.push({ turn: this.state.turn, player, kind, text, cards, priv });
     if (this.state.log.length > 400) this.state.log.splice(0, this.state.log.length - 400);
   }
@@ -986,7 +1026,7 @@ export class Game {
       } else if (personal) {
         throw new GameOver(this.opp(p), `${this.pn(p)} došly karty (vyčerpání).`);
       } else {
-        throw new GameOver('draw', 'Balíček došel podruhé.');
+        throw new GameOver('draw', resh === 0 ? 'Došly všechny karty v balíčku i v odhazovacím balíčku.' : 'Balíček došel podruhé.');
       }
     }
     return deck.shift()!;
@@ -1056,7 +1096,7 @@ export class Game {
     const pp = this.findPerson(uid);
     if (pp) {
       const { owner, col, person } = pp;
-      if (o.kind === 'injure' && !person.faceDown && person.id === 'bedrich') {
+      if (o.kind === 'injure' && this.bedrichShield(person)) {
         this.log(owner, 'info', 'Bedřich Pancéř zranění ignoruje.');
         return null;
       }
@@ -1554,7 +1594,7 @@ export class Game {
     const opt = (col: number): PromptOption => ({ id: String(col), label: `${COL_NAME[col]} sloupec (${cols[col].length} přeživší)`, ref: { t: 'column', player: c.p, col } });
     const a = yield* this.pick(c.p, 'Hangár: první sloupec k prohození', [0, 1, 2].map(opt), { sourceUid: c.uid });
     if (a === null) return;
-    const b = yield* this.pick(c.p, 'Hangár: druhý sloupec k prohození', [0, 1, 2].filter((x) => x !== Number(a)).map(opt), { sourceUid: c.uid });
+    const b = yield* this.pick(c.p, 'Hangár: druhý sloupec k prohození', [0, 1, 2].filter((x) => x !== Number(a) && (cols[x].length > 0 || cols[Number(a)].length > 0)).map(opt), { sourceUid: c.uid });
     if (b === null) return;
     const i = Number(a);
     const j = Number(b);
@@ -1594,6 +1634,37 @@ export class Game {
   /** Random float from the game RNG (bots must NOT use this; it changes state). */
   random(): number {
     return nextRandom(this.state.rng);
+  }
+}
+
+const ACTION_TYPES = new Set(['draftPick', 'chooseFirst', 'playPerson', 'playEvent', 'junk', 'drawCard', 'takeCistern', 'ability', 'endTurn', 'undo', 'cancel', 'answer', 'concede']);
+const isId = (x: unknown) => typeof x === 'string' && x.length > 0 && x.length <= 40 && /^[\w:.-]+$/.test(x);
+
+/** Strict shape check for actions coming from untrusted clients. */
+export function sanitizeAction(a: unknown): string | null {
+  if (!a || typeof a !== 'object' || Array.isArray(a)) return 'Neplatná akce.';
+  const x = a as Record<string, unknown>;
+  if (typeof x.t !== 'string' || !ACTION_TYPES.has(x.t)) return 'Neznámá akce.';
+  switch (x.t) {
+    case 'draftPick':
+      return Array.isArray(x.bases) && x.bases.length === 3 && x.bases.every(isId) ? null : 'Neplatný výběr základen.';
+    case 'chooseFirst':
+      return x.first === 0 || x.first === 1 ? null : 'Neplatná volba.';
+    case 'playPerson':
+      if (!isId(x.uid)) return 'Neplatná karta.';
+      if (x.col !== undefined && !(Number.isInteger(x.col) && (x.col as number) >= 0 && (x.col as number) <= 2)) return 'Neplatný sloupec.';
+      if (x.pos !== undefined && x.pos !== 'back' && x.pos !== 'front' && x.pos !== 'only') return 'Neplatná pozice.';
+      return null;
+    case 'playEvent':
+    case 'junk':
+      return isId(x.uid) ? null : 'Neplatná karta.';
+    case 'ability':
+      return isId(x.uid) && Number.isInteger(x.idx) && (x.idx as number) >= 0 && (x.idx as number) < 8 ? null : 'Neplatná schopnost.';
+    case 'answer':
+      if (!Number.isInteger(x.promptId)) return 'Neplatná odpověď.';
+      return Array.isArray(x.choice) && x.choice.length <= 30 && x.choice.every(isId) ? null : 'Neplatná odpověď.';
+    default:
+      return null;
   }
 }
 

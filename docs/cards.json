@@ -156,7 +156,7 @@
     "cost": 2,
     "junk": "draw",
     "abilities": [],
-    "trait": "Jednou za kolo: když soupeř poškodí nebo zraní jinou tvou kartu v tomto sloupci, můžeš zranit nekrytého nepřítele.",
+    "trait": "Jednou za tah: když soupeř poškodí nebo zraní jinou tvou kartu v tomto sloupci, můžeš zranit nekrytého nepřítele.",
     "copies": 2,
     "flavor": "Nespí. Nikdy."
   },
@@ -342,11 +342,115 @@
     "abilities": [
       {
         "cost": 2,
-        "text": "Zniči poškozeného nepřítele (i krytého)."
+        "text": "Znič poškozeného nepřítele (i krytého)."
       }
     ],
     "copies": 2,
     "flavor": "Dokončí, co jiní začali."
+  },
+  {
+    "id": "honak",
+    "name": "Honák Vítek",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "raid",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Nájezd: zahraj nebo posuň svůj Nájezd."
+      }
+    ],
+    "copies": 0,
+    "flavor": "Žene stádo motorek přes duny."
+  },
+  {
+    "id": "doktorka",
+    "name": "Doktorka Iva",
+    "kind": "survivor",
+    "cost": 3,
+    "junk": "restore",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Oprav až 2 své poškozené karty."
+      }
+    ],
+    "copies": 0,
+    "flavor": "Diplom spálila. Ruce si nechala."
+  },
+  {
+    "id": "strazce",
+    "name": "Strážce studny",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "water",
+    "abilities": [],
+    "trait": "Dokud je Strážce nepoškozený, základnu v jeho sloupci nelze poškodit Nájezdem.",
+    "copies": 0,
+    "flavor": "Kdo chce vodu, musí přes něj."
+  },
+  {
+    "id": "baron",
+    "name": "Vodní baron",
+    "kind": "survivor",
+    "cost": 3,
+    "junk": "water",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Lízni 2 karty."
+      }
+    ],
+    "trait": "Na začátku tvého tahu získáš 1 vodu navíc.",
+    "copies": 0,
+    "flavor": "Vlastní poslední čerpadlo. A ví to."
+  },
+  {
+    "id": "matka",
+    "name": "Matka Prachu",
+    "kind": "survivor",
+    "cost": 3,
+    "junk": "drifter",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Naverbuj 2 tuláky."
+      }
+    ],
+    "trait": "Tvoji tuláci vydrží dvě poškození (první je jen poškodí).",
+    "copies": 0,
+    "flavor": "Každý ztracený má u ní místo."
+  },
+  {
+    "id": "prorok",
+    "name": "Prorok Bouře",
+    "kind": "survivor",
+    "cost": 4,
+    "junk": "injure",
+    "abilities": [
+      {
+        "cost": 3,
+        "text": "Poškoď každou nekrytou soupeřovu kartu (přeživší i základny)."
+      }
+    ],
+    "copies": 0,
+    "flavor": "„Nebe vám to spočítá.“"
+  },
+  {
+    "id": "velitelka",
+    "name": "Velitelka Ocel",
+    "kind": "survivor",
+    "cost": 3,
+    "junk": "raid",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Nájezd: zahraj nebo posuň svůj Nájezd."
+      }
+    ],
+    "trait": "Když tvůj Nájezd poškodí základnu, lízni 2 karty.",
+    "copies": 0,
+    "flavor": "Plán má vždycky. Záložní taky."
   },
   {
     "id": "sucho",
@@ -491,6 +595,42 @@
     "effect": "Odhoď až 2 karty z ruky. Pak lízni o 1 kartu víc, než kolik jsi odhodil.",
     "copies": 2,
     "flavor": "Dva šrouby za jednu konzervu. Fér."
+  },
+  {
+    "id": "kyselydest",
+    "name": "Kyselý déšť",
+    "kind": "operation",
+    "cost": 2,
+    "junk": "injure",
+    "countdown": 2,
+    "abilities": [],
+    "effect": "Poškoď každou nekrytou soupeřovu základnu.",
+    "copies": 0,
+    "flavor": "Z mraků teče rez."
+  },
+  {
+    "id": "vysadek",
+    "name": "Výsadek",
+    "kind": "operation",
+    "cost": 1,
+    "junk": "drifter",
+    "countdown": 1,
+    "abilities": [],
+    "effect": "Naverbuj 2 tuláky. Pak lízni kartu.",
+    "copies": 0,
+    "flavor": "Padáky ze starých plachet. Většinou drží."
+  },
+  {
+    "id": "oaza",
+    "name": "Oáza",
+    "kind": "operation",
+    "cost": 2,
+    "junk": "water",
+    "countdown": 3,
+    "abilities": [],
+    "effect": "Oprav všechny své karty a získej 3 vody navíc.",
+    "copies": 0,
+    "flavor": "Možná je to přelud. Ale voda je mokrá."
   },
   {
     "id": "vodarna",

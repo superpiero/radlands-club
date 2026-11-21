@@ -2,10 +2,10 @@
 
 > Generováno z `src/engine/cards.ts` (`npm run docs:cards`). Neupravovat ručně.
 
-Balíček: **72 karet** – 24 druhů přeživších a 12 druhů operací, každá 2×.  
+Balíček: **72 karet** – 31 druhů přeživších a 15 druhů operací, každá 2×.  
 Základen: **29** (každý hráč dostane 6, vybere 3).
 
-## Přeživší (24)
+## Přeživší (31)
 
 | Karta | Cena | Rozebrání | Schopnosti / vlastnosti |
 |---|---|---|---|
@@ -19,7 +19,7 @@ Základen: **29** (každý hráč dostane 6, vybere 3).
 | **Pašerák** `paserak` | 1💧 | Voda navíc | **[1💧]** Prohlédni si vrchní 2 karty balíčku. Jednu si vezmi do ruky, druhou dej dospod balíčku. |
 | **Náborář** `naborar` | 1💧 | Tulák | **[1💧]** Naverbuj tuláka. Lze použít, jen když máš ve hře méně přeživších než soupeř. |
 | **Vymahač** `vymahac` | 2💧 | Zranit | **[1💧]** Omrač nekrytého nepřítele: během soupeřova příštího tahu nebude připravený. |
-| **Hlídkař** `hlidkar` | 2💧 | Líznout | _Vlastnost:_ Jednou za kolo: když soupeř poškodí nebo zraní jinou tvou kartu v tomto sloupci, můžeš zranit nekrytého nepřítele. |
+| **Hlídkař** `hlidkar` | 2💧 | Líznout | _Vlastnost:_ Jednou za tah: když soupeř poškodí nebo zraní jinou tvou kartu v tomto sloupci, můžeš zranit nekrytého nepřítele. |
 | **Skladnice Marta** `marta` | 2💧 | Voda navíc | **[1💧]** Tato voda zůstane na Martě jako zásoba. Na začátku tvého příštího tahu získáš 2 vody navíc (pokud je Marta stále ve hře). |
 | **Bedřich Pancéř** `bedrich` | 2💧 | Opravit | **[1💧]** Přesuň Bedřicha do jiného sloupce s volným místem, na přední pozici.<br>_Vlastnost:_ Zranění na Bedřicha nepůsobí (lze ho jen poškodit nebo zničit). |
 | **Pes Rex** `rex` | 1💧 | Tulák | _Vlastnost:_ I když je poškozený: když je Rex zničen, naverbuj tuláka. |
@@ -32,9 +32,16 @@ Základen: **29** (každý hráč dostane 6, vybere 3).
 | **Starostka Ludmila** `ludmila` | 2💧 | Líznout | _Vlastnost:_ Na začátku tvého tahu: pokud nemáš ve frontě žádnou operaci, lízni kartu. |
 | **Prospektorka** `prospektorka` | 1💧 | Voda navíc | **[1💧]** Lízni 2 karty, pak 1 kartu z ruky odhoď. |
 | **Minometčík** `minometcik` | 3💧 | Nájezd | **[2💧]** Zraň krytého přeživšího, který stojí vzadu v soupeřově sloupci. |
-| **Kat** `kat` | 3💧 | Zranit | **[2💧]** Zniči poškozeného nepřítele (i krytého). |
+| **Kat** `kat` | 3💧 | Zranit | **[2💧]** Znič poškozeného nepřítele (i krytého). |
+| **Honák Vítek** `honak` | 2💧 | Nájezd | **[1💧]** Nájezd: zahraj nebo posuň svůj Nájezd. |
+| **Doktorka Iva** `doktorka` | 3💧 | Opravit | **[2💧]** Oprav až 2 své poškozené karty. |
+| **Strážce studny** `strazce` | 2💧 | Voda navíc | _Vlastnost:_ Dokud je Strážce nepoškozený, základnu v jeho sloupci nelze poškodit Nájezdem. |
+| **Vodní baron** `baron` | 3💧 | Voda navíc | **[2💧]** Lízni 2 karty.<br>_Vlastnost:_ Na začátku tvého tahu získáš 1 vodu navíc. |
+| **Matka Prachu** `matka` | 3💧 | Tulák | **[2💧]** Naverbuj 2 tuláky.<br>_Vlastnost:_ Tvoji tuláci vydrží dvě poškození (první je jen poškodí). |
+| **Prorok Bouře** `prorok` | 4💧 | Zranit | **[3💧]** Poškoď každou nekrytou soupeřovu kartu (přeživší i základny). |
+| **Velitelka Ocel** `velitelka` | 3💧 | Nájezd | **[1💧]** Nájezd: zahraj nebo posuň svůj Nájezd.<br>_Vlastnost:_ Když tvůj Nájezd poškodí základnu, lízni 2 karty. |
 
-## Operace (12)
+## Operace (15)
 
 | Karta | Cena | Odpočet | Rozebrání | Efekt |
 |---|---|---|---|---|
@@ -43,13 +50,16 @@ Základen: **29** (každý hráč dostane 6, vybere 3).
 | **Dělostřelectvo** `delostrelectvo` | 2💧 | 2 | Zranit | Dvakrát poškoď (můžeš i stejnou kartu). |
 | **Sanitka** `sanitka` | 2💧 | 2 | Opravit | Oprav všechny své poškozené karty (přeživší i základny) a zneškodni nálože na svých základnách. |
 | **Písečná bouře** `boure` | 2💧 | 2 | Líznout | Omrač všechny soupeřovy přeživší (během jeho příštího tahu nebudou připravení). |
-| **Sabotáž** `sabotaz` | 1💧 | ⚡ ihned | Nájezd | Odstraň jednu soupeřovu operaci z jeho fronty. (Nájezd se mu vrátí, jiné operace odhoď.) _(Podmínka: soupeř nemá žádnou operaci ve frontě.)_ |
+| **Sabotáž** `sabotaz` | 1💧 | ⚡ ihned | Nájezd | Odstraň jednu soupeřovu operaci z jeho fronty. (Nájezd se mu vrátí, jiné operace odhoď.) _(Nelze zahrát, pokud soupeř nemá žádnou operaci ve frontě.)_ |
 | **Podkop** `podkop` | 1💧 | 3 | Zranit | Poškoď libovolnou soupeřovu základnu (i krytou). |
 | **Skrytý pramen** `pramen` | 0💧 | 3 | Voda navíc | Získej 3 vody navíc. |
 | **Noční přepad** `prepad` | 1💧 | 1 | Zranit | Zraň. Pokud má soupeř 4 nebo více přeživších, zraň znovu. |
-| **Evakuace** `evakuace` | 1💧 | ⚡ ihned | Tulák | Vrať svého přeživšího (ne tuláka) do ruky. Pak naverbuj tuláka. _(Podmínka: nemáš žádného přeživšího lícem nahoru.)_ |
+| **Evakuace** `evakuace` | 1💧 | ⚡ ihned | Tulák | Vrať svého přeživšího (ne tuláka) do ruky. Pak naverbuj tuláka. _(Nelze zahrát, pokud nemáš žádného přeživšího lícem nahoru.)_ |
 | **Poslední kapka** `poslednikapka` | 3💧 | 3 | Voda navíc | Poškoď dvě různé soupeřovy základny (i kryté). |
 | **Výměnný obchod** `vymena` | 0💧 | ⚡ ihned | Líznout | Odhoď až 2 karty z ruky. Pak lízni o 1 kartu víc, než kolik jsi odhodil. |
+| **Kyselý déšť** `kyselydest` | 2💧 | 2 | Zranit | Poškoď každou nekrytou soupeřovu základnu. |
+| **Výsadek** `vysadek` | 1💧 | 1 | Tulák | Naverbuj 2 tuláky. Pak lízni kartu. |
+| **Oáza** `oaza` | 2💧 | 3 | Voda navíc | Oprav všechny své karty a získej 3 vody navíc. |
 
 ## Základny (29)
 

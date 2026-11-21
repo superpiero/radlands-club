@@ -17,8 +17,8 @@ export interface AbilityDef {
   text: string;
   /** Extra precondition (targets available, positional requirement...). */
   canUse?: (g: Game, ctx: Ctx) => boolean;
-  /** Human readable reason shown when canUse fails. */
-  needs?: string;
+  /** Human readable reason shown when canUse fails (string or computed). */
+  needs?: string | ((g: Game, ctx: Ctx) => string);
   run: (g: Game, ctx: Ctx) => Gen;
 }
 
@@ -92,7 +92,7 @@ export const SURVIVORS: CardDef[] = [
     flavor: 'Malý, rychlý a vždycky v první řadě.',
     abilities: [{
       cost: 1, text: 'Zraň. Lze použít, jen když tato karta stojí nekrytá.',
-      needs: 'Musí stát nekrytý (vepředu).',
+      needs: (g, c) => (g.isUnprotected(c.uid) ? 'Soupeř nemá nekrytého přeživšího, kterého by šlo zranit.' : 'Musí stát nekrytý (vepředu).'),
       canUse: (g, c) => g.isUnprotected(c.uid) && g.hasDamageTarget(c.p, 'injure'),
       *run(g, c) { yield* g.damageChoose(c, { kind: 'injure' }); },
     }],
@@ -152,7 +152,7 @@ export const SURVIVORS: CardDef[] = [
     flavor: '„Jídlo, voda, střecha. Podepiš tady.“',
     abilities: [{
       cost: 1, text: 'Naverbuj tuláka. Lze použít, jen když máš ve hře méně přeživších než soupeř.',
-      needs: 'Musíš mít méně přeživších než soupeř.',
+      needs: (g, c) => (g.peopleCount(c.p) < g.peopleCount(g.opp(c.p)) ? 'Nemáš volné místo pro tuláka.' : 'Musíš mít méně přeživších než soupeř.'),
       canUse: (g, c) => g.peopleCount(c.p) < g.peopleCount(g.opp(c.p)) && g.hasFreeSlot(c.p),
       *run(g, c) { yield* g.gainDrifter(c.p); },
     }],
@@ -172,7 +172,7 @@ export const SURVIVORS: CardDef[] = [
     id: 'hlidkar', name: 'Hlídkař', cost: 2, junk: 'draw', icon: 'sentry-gun', hue: 60,
     flavor: 'Nespí. Nikdy.',
     abilities: [],
-    trait: 'Jednou za kolo: když soupeř poškodí nebo zraní jinou tvou kartu v tomto sloupci, můžeš zranit nekrytého nepřítele.',
+    trait: 'Jednou za tah: když soupeř poškodí nebo zraní jinou tvou kartu v tomto sloupci, můžeš zranit nekrytého nepřítele.',
     tags: ['defense'],
   }),
   S({
@@ -297,7 +297,7 @@ export const SURVIVORS: CardDef[] = [
     id: 'kat', name: 'Kat', cost: 3, junk: 'injure', icon: 'executioner-hood', hue: 355,
     flavor: 'Dokončí, co jiní začali.',
     abilities: [{
-      cost: 2, text: 'Zniči poškozeného nepřítele (i krytého).',
+      cost: 2, text: 'Znič poškozeného nepřítele (i krytého).',
       canUse: (g, c) => g.damagedEnemies(c.p).length > 0,
       *run(g, c) { yield* g.executeChoose(c); },
     }],
@@ -367,8 +367,9 @@ export const OPERATIONS: CardDef[] = [
     effectText: 'Zraň. Pokud má soupeř 4 nebo více přeživších, zraň znovu.',
     flavor: 'Bez světla, bez zvuku, bez slitování.',
     *resolve(g, c) {
+      const many = g.peopleCount(g.opp(c.p)) >= 4;
       yield* g.damageChoose(c, { kind: 'injure', title: 'Noční přepad: zraň nepřítele' });
-      if (g.peopleCount(g.opp(c.p)) >= 4) yield* g.damageChoose(c, { kind: 'injure', title: 'Noční přepad: druhé zranění' });
+      if (many) yield* g.damageChoose(c, { kind: 'injure', title: 'Noční přepad: druhé zranění' });
     },
   }),
   O({
@@ -513,6 +514,8 @@ export const BASES: CardDef[] = [
     flavor: 'Šum, šum, šum… a pak varování.',
     abilities: [{
       cost: 1, text: 'Prohlédni si vrchní 3 karty balíčku a vrať je v libovolném pořadí.',
+      canUse: (g, c) => g.deckOf(c.p).length > 0,
+      needs: 'Balíček je prázdný.',
       *run(g, c) { yield* g.reorderTop(c.p, 3); },
     }],
   }),
@@ -647,6 +650,7 @@ export const BASES: CardDef[] = [
     abilities: [{
       cost: 1, text: 'Prohoď přeživší ve dvou svých sloupcích (všichni se přesunou k druhé základně).',
       canUse: (g, c) => g.peopleCount(c.p) > 0,
+      needs: 'Nemáš žádné přeživší k přesunu.',
       *run(g, c) { yield* g.swapColumnsChoose(c); },
     }],
   }),

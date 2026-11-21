@@ -166,6 +166,8 @@ export interface GameState {
   winReason: string | null;
   reshuffles: number;
   log: LogEntry[];
+  /** Total log entries ever written (log itself is capped). */
+  logTotal?: number;
   seq: number;
   promptSeq: number;
   /** Monotonic counter, bumps on every successful act(). */

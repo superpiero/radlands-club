@@ -53,7 +53,7 @@ export type ServerMsg =
   | { t: 'room'; room: RoomInfo }
   | { t: 'left' }
   | { t: 'state'; view: GameView }
-  | { t: 'error'; msg: string }
+  | { t: 'error'; msg: string; code?: 'no_room' | 'need_login' | 'bad_deck' }
   | { t: 'chat'; line: ChatLine }
   | { t: 'chatHistory'; lines: ChatLine[] }
   | { t: 'emote'; seat: PlayerIdx | null; id: string; from: string }
@@ -61,6 +61,10 @@ export type ServerMsg =
   | { t: 'reward'; gain: number; result: 'win' | 'loss' | 'draw' };
 
 export const PROTOCOL_VERSION = '1';
+
+export function isEmote(id: unknown): id is string {
+  return typeof id === 'string' && Object.prototype.hasOwnProperty.call(EMOTES, id);
+}
 
 export const EMOTES: Record<string, string> = {
   hi: 'Ahoj! 👋',

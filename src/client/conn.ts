@@ -5,7 +5,7 @@ import { botMove } from '../engine/bot';
 import { Game } from '../engine/game';
 import type { Action, PlayerIdx } from '../engine/types';
 import { buildView, type GameView } from '../engine/view';
-import type { ChatLine, ClientMsg, RoomInfo, RoomOptions, ServerMsg } from '../shared/protocol';
+import { isEmote, type ChatLine, type ClientMsg, type RoomInfo, type RoomOptions, type ServerMsg } from '../shared/protocol';
 import { account, refreshProfile } from './account';
 
 export interface EmoteEvent { seat: PlayerIdx | null; id: string; from: string; ts: number }
@@ -21,6 +21,7 @@ export interface ConnState {
   botThinking: boolean;
   left?: boolean;
   reward?: { gain: number; result: 'win' | 'loss' | 'draw' };
+  fatal?: string;
 }
 
 type Listener = (s: ConnState) => void;
@@ -133,6 +134,10 @@ export class NetConn extends Conn {
         this.set({ view: msg.view });
         break;
       case 'error':
+        if (!this.state.room && (msg.code === 'no_room' || /přihlas|Balíček|balíček/.test(msg.msg))) {
+          this.fatalStop(msg.msg);
+          break;
+        }
         this.error(msg.msg);
         break;
       case 'chat':
@@ -142,6 +147,7 @@ export class NetConn extends Conn {
         this.set({ chat: msg.lines });
         break;
       case 'emote':
+        if (!isEmote(msg.id)) break;
         this.set({ emotes: [...this.state.emotes, { seat: msg.seat, id: msg.id, from: msg.from, ts: Date.now() }].slice(-10) });
         break;
       case 'left':
@@ -152,6 +158,13 @@ export class NetConn extends Conn {
         void refreshProfile();
         break;
     }
+  }
+
+  /** Unrecoverable join error: stop reconnecting and show it. */
+  private fatalStop(msg: string) {
+    this.closed = true;
+    this.set({ fatal: msg, status: 'connected' });
+    this.ws?.close();
   }
 
   private send(m: ClientMsg) {

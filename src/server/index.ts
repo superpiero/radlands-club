@@ -113,8 +113,16 @@ const server = createServer((req, res) => {
 
 const wss = new WebSocketServer({ server, path: '/ws', maxPayload: 64 * 1024 });
 
+wss.on('error', (e) => console.warn('wss error:', e.message));
+server.on('clientError', (_e, sock) => { try { sock.destroy(); } catch { /* ignore */ } });
+process.on('uncaughtException', (e) => console.error('uncaughtException (server keeps running):', e));
+process.on('unhandledRejection', (e) => console.error('unhandledRejection:', e));
+
+const createHits = new WeakMap<object, number[]>();
+
 wss.on('connection', (ws) => {
   const client: Client = { ws, token: '', name: 'Poutník', room: null, lastMsgs: [] };
+  ws.on('error', (e) => console.warn('ws error:', e.message));
   let alive = true;
   ws.on('pong', () => { alive = true; });
   const hb = setInterval(() => {
@@ -136,13 +144,14 @@ wss.on('connection', (ws) => {
     const now = Date.now();
     client.lastMsgs = client.lastMsgs.filter((t) => now - t < 5000);
     client.lastMsgs.push(now);
-    if (client.lastMsgs.length > 60) return send(client, { t: 'error', msg: 'Zpomal trochu :)' });
+    if (client.lastMsgs.length > 40) return send(client, { t: 'error', msg: 'Zpomal trochu :)' });
+    if (!msg || typeof msg !== 'object' || typeof (msg as { t?: unknown }).t !== 'string') return;
 
     try {
       handle(client, msg);
     } catch (e) {
-      console.error('handler error', e);
-      send(client, { t: 'error', msg: 'Chyba serveru.' });
+      console.error('handler error:', e instanceof Error ? e.message : e);
+      send(client, { t: 'error', msg: 'Neplatný požadavek.' });
     }
   });
 
@@ -170,6 +179,11 @@ function handle(c: Client, msg: ClientMsg) {
       return send(c, { t: 'pong', ts: msg.ts });
     case 'create': {
       if (!c.token) return send(c, { t: 'error', msg: 'Chybí identifikace.' });
+      const now = Date.now();
+      const hits = (createHits.get(c) ?? []).filter((t) => now - t < 60_000);
+      if (hits.length >= 4) return send(c, { t: 'error', msg: 'Zakládáš stoly moc rychle, chvilku počkej.' });
+      hits.push(now);
+      createHits.set(c, hits);
       if (c.room) c.room.leave(c, true);
       const deckMode = msg.options?.deckMode === 'collection' ? 'collection' : 'classic';
       if (deckMode === 'collection' && !c.account) return send(c, { t: 'error', msg: 'Sběratelský stůl může založit jen přihlášený hráč.' });
@@ -184,7 +198,7 @@ function handle(c: Client, msg: ClientMsg) {
     case 'join': {
       if (!c.token) return send(c, { t: 'error', msg: 'Chybí identifikace.' });
       const room = lobby.get(String(msg.code ?? ''));
-      if (!room) return send(c, { t: 'error', msg: `Stůl s kódem „${String(msg.code ?? '').toUpperCase()}“ neexistuje.` });
+      if (!room) return send(c, { t: 'error', code: 'no_room', msg: `Stůl s kódem „${String(msg.code ?? '').toUpperCase().slice(0, 8)}“ neexistuje (možná vypršel nebo se restartoval server).` });
       if (c.room && c.room !== room) c.room.leave(c, true);
       const err = room.join(c, !!msg.spectate, msg.deckId ? String(msg.deckId) : undefined);
       if (err) send(c, { t: 'error', msg: err, });

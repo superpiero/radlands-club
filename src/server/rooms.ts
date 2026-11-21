@@ -6,7 +6,7 @@ import type { WebSocket } from 'ws';
 import { Game } from '../engine/game';
 import type { Action, PlayerIdx } from '../engine/types';
 import { buildView } from '../engine/view';
-import { EMOTES, type ChatLine, type RoomInfo, type RoomOptions, type ServerMsg } from '../shared/protocol';
+import { isEmote, type ChatLine, type RoomInfo, type RoomOptions, type ServerMsg } from '../shared/protocol';
 import { deckToList } from '../shared/collection';
 import type { Accounts } from './accounts';
 
@@ -142,7 +142,7 @@ export class Room {
         let deck: Record<string, number> | null = null;
         if (this.collection) {
           const user = c.account && this.accounts ? this.accounts.get(c.account) : null;
-          if (!user) return 'Sběratelský stůl: nejdřív se přihlas (nahoře na úvodní stránce).';
+          if (!user) return 'Sběratelský stůl: nejdřív se přihlas (nahoře na úvodní stránce) – nebo se připoj jako divák.';
           const d = this.accounts!.deckFor(user, deckId);
           if ('error' in d) return d.error;
           deck = d.cards;
@@ -247,7 +247,7 @@ export class Room {
   }
 
   emoteFrom(c: Client, id: string) {
-    if (!EMOTES[id]) return;
+    if (!isEmote(id)) return;
     for (const o of this.allClients()) send(o, { t: 'emote', seat: this.seatOf(c), id, from: c.name });
   }
 

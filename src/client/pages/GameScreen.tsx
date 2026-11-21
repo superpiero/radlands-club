@@ -88,10 +88,22 @@ function WaitingRoom({ state }: { state: ConnState }) {
     <div className="waiting">
       <div className="panel">
         {!room ? (
-          <>
-            <h2 className="stencil" style={{ margin: 0 }}>{state.errors.length ? 'Nepodařilo se připojit' : 'Připojuji…'}</h2>
-            <p className="muted">{state.errors.length ? state.errors[state.errors.length - 1].msg : 'Hledám stůl na serveru.'}</p>
-          </>
+          state.fatal ? (
+            <>
+              <h2 className="stencil" style={{ margin: 0 }}>Ke stolu se nejde připojit</h2>
+              <p>{state.fatal}</p>
+              <div className="row" style={{ justifyContent: 'center' }}>
+                <button className="btn primary" onClick={() => { location.hash = '/new'; }}>Založit nový stůl</button>
+                {/přihlas/.test(state.fatal) && <button className="btn" onClick={() => go('/login')}>Přihlásit se</button>}
+                {/přihlas/.test(state.fatal) && location.hash.includes('/room/') && <button className="btn" onClick={() => { location.hash = location.hash.replace(/\?.*$/, '') + '?watch=1'; location.reload(); }}>Sledovat jako divák</button>}
+              </div>
+            </>
+          ) : (
+            <>
+              <h2 className="stencil" style={{ margin: 0 }}>Připojuji…</h2>
+              <p className="muted">Hledám stůl na serveru.</p>
+            </>
+          )
         ) : (
           <>
             <div className="muted" style={{ fontWeight: 700, letterSpacing: '.1em' }}>KÓD STOLU</div>

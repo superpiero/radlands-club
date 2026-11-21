@@ -4,7 +4,7 @@ import type { Action, CardInst, PlayerIdx, PromptOption } from '../../engine/typ
 import type { BaseView, GameView, PersonView, PlayerView } from '../../engine/view';
 import { go } from '../App';
 import type { Conn, ConnState } from '../conn';
-import { EMOTES } from '../../shared/protocol';
+import { EMOTES, isEmote } from '../../shared/protocol';
 import { getFlag, setFlag } from '../prefs';
 import { isMuted, setMuted, sfx } from '../sound';
 import { zoomStore } from '../zoom';
@@ -307,7 +307,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   const emoteFor = (seat: PlayerIdx) => {
     const now = Date.now();
     const e = [...state.emotes].reverse().find((x) => x.seat === seat && now - x.ts < 2600);
-    return e ? <div key={e.ts} className="emote-bubble" style={{ left: 60, top: seat === me ? -36 : 44 }}>{EMOTES[e.id]}</div> : null;
+    return e && isEmote(e.id) ? <div key={e.ts} className="emote-bubble" style={{ left: 60, top: seat === me ? -36 : 44 }}>{EMOTES[e.id]}</div> : null;
   };
   // re-render to expire emote bubbles
   const [, force] = useState(0);

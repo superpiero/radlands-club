@@ -6,6 +6,7 @@ import { GameRoute } from './pages/GameRoute';
 import { AccountPage } from './pages/AccountPage';
 import { Boosters } from './pages/Boosters';
 import { Decks } from './pages/Decks';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export type Route =
   | { page: 'home' }
@@ -62,7 +63,7 @@ export function App() {
       {route.page === 'boosters' && <Boosters />}
       {route.page === 'decks' && <Decks />}
       {(route.page === 'room' || route.page === 'new' || route.page === 'bot' || route.page === 'hotseat') && (
-        <GameRoute key={JSON.stringify(route)} route={route} />
+        <ErrorBoundary><GameRoute key={JSON.stringify(route)} route={route} /></ErrorBoundary>
       )}
     </div>
   );
