@@ -8,7 +8,7 @@
     "abilities": [
       {
         "cost": 1,
-        "text": "Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu, lízni další."
+        "text": "Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu (nepočítá se Cisterna), lízni další."
       }
     ],
     "copies": 2,

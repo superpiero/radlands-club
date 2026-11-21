@@ -132,7 +132,7 @@ export class Room {
       const s = this.seats[i];
       if (s && s.token === c.token) {
         if (s.client && s.client !== c) {
-          send(s.client, { t: 'error', msg: 'Připojil(a) ses z jiného okna – toto okno bylo odpojeno.' });
+          send(s.client, { t: 'error', code: 'replaced', msg: 'Hra pokračuje v jiném okně nebo zařízení.' });
           s.client.room = null;
         }
         s.client = c;
@@ -362,7 +362,7 @@ export class Room {
       return;
     }
     this.systemChat(`${c.name} bere výhru – soupeř se nevrátil.`);
-    this.act({ ...c, room: this } as Client, { t: 'concede' }, o);
+    this.act({ ...c, room: this } as Client, { t: 'concede', absent: true }, o);
   }
 
   /** Rewards need two different registered players who both really played. */

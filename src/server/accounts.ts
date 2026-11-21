@@ -177,8 +177,8 @@ export class Accounts {
 
   /** Returns a playable deck list or an error. */
   deckFor(u: UserRec, deckId: string | undefined): { cards: Record<string, number> } | { error: string } {
-    const d = u.decks.find((x) => x.id === deckId) ?? u.decks[0];
-    if (!d) return { error: 'Nemáš žádný balíček.' };
+    const d = deckId ? u.decks.find((x) => x.id === deckId) : u.decks[0];
+    if (!d) return { error: deckId ? 'Vybraný balíček nebyl nalezen – vyber jiný v Kolekci a balíčcích.' : 'Nemáš žádný balíček.' };
     const errs = validateDeck(d.cards, u.collection);
     if (errs.length) return { error: `Balíček „${d.name}“ není platný: ${errs[0]}` };
     return { cards: d.cards };

@@ -133,7 +133,7 @@ export type Action =
   | { t: 'undo' }
   | { t: 'cancel' }
   | { t: 'answer'; promptId: number; choice: Answer }
-  | { t: 'concede' };
+  | { t: 'concede'; absent?: boolean };
 
 export type Phase = 'draft' | 'chooseFirst' | 'play' | 'over';
 export type Step = 'start' | 'events' | 'replenish' | 'actions';

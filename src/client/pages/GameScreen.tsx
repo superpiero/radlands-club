@@ -192,10 +192,11 @@ function WaitingRoom({ state }: { state: ConnState }) {
         {!room ? (
           state.fatal ? (
             <>
-              <h2 className="stencil" style={{ margin: 0 }}>Ke stolu se nejde připojit</h2>
+              <h2 className="stencil" style={{ margin: 0 }}>{state.replaced ? 'Hraješ v jiném okně' : 'Ke stolu se nejde připojit'}</h2>
               <p>{state.fatal}</p>
               <div className="row" style={{ justifyContent: 'center' }}>
-                <button className="btn primary" onClick={() => { location.hash = '/new'; }}>Založit nový stůl</button>
+                {state.replaced && <button className="btn primary" onClick={() => location.reload()}>Převzít hru zde</button>}
+                <button className={`btn ${state.replaced ? '' : 'primary'}`} onClick={() => { location.hash = '/new'; }}>Založit nový stůl</button>
                 {/přihlas/.test(state.fatal) && <button className="btn" onClick={() => go('/login')}>Přihlásit se</button>}
                 {/přihlas/.test(state.fatal) && location.hash.includes('/room/') && <button className="btn" onClick={() => { location.hash = location.hash.replace(/\?.*$/, '') + '?watch=1'; location.reload(); }}>Sledovat jako divák</button>}
               </div>
