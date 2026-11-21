@@ -54,6 +54,8 @@ export abstract class Conn {
   }
 
   abstract act(action: Action): void;
+  /** Pause local bots (e.g. while reading the tutorial). */
+  pause(_p: boolean): void { /* online: no-op */ }
   abstract chat(text: string): void;
   abstract emote(id: string): void;
   abstract rematch(): void;
@@ -198,6 +200,12 @@ export class LocalConn extends Conn {
   private timer: ReturnType<typeof setTimeout> | null = null;
   private names: [string, string];
   private gameNo = 1;
+  private paused = false;
+
+  override pause(p: boolean) {
+    this.paused = p;
+    if (!p) this.scheduleBot();
+  }
   private score: [number, number] = [0, 0];
   private counted = false;
 
@@ -254,7 +262,7 @@ export class LocalConn extends Conn {
   }
 
   private scheduleBot() {
-    if (this.state.mode !== 'bot' || this.timer) return;
+    if (this.state.mode !== 'bot' || this.timer || this.paused) return;
     const st = this.game.state;
     if (st.phase === 'over') return;
     const bot: PlayerIdx = 1;

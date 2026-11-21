@@ -1,8 +1,11 @@
+import { useState } from 'react';
 import { go } from '../App';
+import { HowToPlay } from '../components/HowToPlay';
 import { Card, CardBack } from '../components/Card';
 import { Icon } from '../components/Icon';
 
 export function Rules() {
+  const [show, setShow] = useState(false);
   return (
     <div className="page">
       <div className="inner">
@@ -11,6 +14,8 @@ export function Rules() {
           <button className="btn small" onClick={() => go('/cards')}><Icon name="magnifying-glass" /> Databáze karet</button>
         </div>
         <h1>Pravidla</h1>
+        <p><button className="btn primary" onClick={() => setShow(true)}><Icon name="play-button" /> Jak hrát za 2 minuty</button></p>
+        {show && <HowToPlay onClose={() => setShow(false)} />}
         <p className="note">
           <b>Cíl hry:</b> zničit všechny tři soupeřovy základny. Kdo to dokáže, vyhrává okamžitě – i uprostřed tahu.
         </p>

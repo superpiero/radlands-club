@@ -12,6 +12,7 @@ import { Card, CardBack } from './Card';
 import { FxLayer } from './FxLayer';
 import { Icon, JUNK_ICON } from './Icon';
 import { Sidebar } from './Sidebar';
+import { HowToPlay } from './HowToPlay';
 import { confetti, Particles } from './Particles';
 
 type Sel =
@@ -39,6 +40,8 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   const [banner, setBanner] = useState<{ text: string; mine: boolean; key: number } | null>(null);
   const [sideOpen, setSideOpen] = useState(false);
   const [inspect, setInspect] = useState<string | null>(null);
+  const [howto, setHowto] = useState(() => !spectator && !getFlag('howtoSeen', false));
+  useEffect(() => { conn.pause(howto); }, [howto, conn]);
   const [handOpen, setHandOpen] = useState(false);
   const [muted, setMut] = useState(isMuted());
   const [tipsOn, setTipsOn] = useState(getFlag('tips', true));
@@ -586,6 +589,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       <button className="btn small ghost mobile-only" onClick={() => setSideOpen(true)} title="Záznam a chat"><Icon name="hamburger-menu" /></button>
       <button className="btn small ghost" onClick={() => { setMuted(!muted); setMut(!muted); }} title={muted ? 'Zapnout zvuk' : 'Vypnout zvuk'}><Icon name={muted ? 'speaker-off' : 'speaker'} /></button>
       <button className="btn small ghost hide-sm" onClick={() => { setTipsOn(!tipsOn); setFlag('tips', !tipsOn); }} title="Nápověda pro začátečníky">{tipsOn ? 'Tipy ✓' : 'Tipy ✗'}</button>
+      <button className="btn small ghost" onClick={(e) => { e.stopPropagation(); setHowto(true); }} title="Jak hrát"><Icon name="info" /></button>
       {!spectator && view.phase === 'play' && (
         <button className="btn small ghost" onClick={() => { if (confirm('Opravdu se vzdát? Soupeř vyhraje tuto hru.')) act({ t: 'concede' }); }} title="Vzdát hru"><Icon name="broken-shield" /></button>
       )}
@@ -667,6 +671,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       {popover()}
       {modal()}
       {revealMin && pending && <div style={{ position: 'fixed', top: 70, left: '50%', transform: 'translateX(-50%)', zIndex: 61 }}><button className="btn primary" onClick={() => setRevealMin(false)}>Zpět k výběru</button></div>}
+      {howto && view.phase !== 'over' && <HowToPlay onClose={() => { setHowto(false); setFlag('howtoSeen', true); }} />}
       {inspect && (
         <div className="overlay inspect" onClick={(e) => { e.stopPropagation(); setInspect(null); }}>
           <div className="inspect-inner">
