@@ -7,3 +7,6 @@ playwright-report
 /tmp
 data
 .dist-test
+
+# chatgpt-design skill: drafts are not committed
+design/drafts/
