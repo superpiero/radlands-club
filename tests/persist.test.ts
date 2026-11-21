@@ -82,3 +82,30 @@ describe('turn timer', () => {
     expect(room.chat.some((l) => l.text.includes('čas vypršel'))).toBe(true);
   });
 });
+
+describe('Upstash persistence', () => {
+  it('round-trips accounts and rooms through the REST API', async () => {
+    const { UpstashPersist } = await import('../src/server/persist');
+    const kv = new Map<string, string>();
+    const realFetch = globalThis.fetch;
+    globalThis.fetch = (async (_url: string, init: { body: string; headers: Record<string, string> }) => {
+      expect(init.headers.authorization).toBe('Bearer tok');
+      const [cmd, key, val] = JSON.parse(init.body);
+      const result = cmd === 'SET' ? (kv.set(key, val), 'OK') : kv.get(key) ?? null;
+      return { ok: true, json: async () => ({ result }) } as Response;
+    }) as unknown as typeof fetch;
+    try {
+      const p = new UpstashPersist('https://x.upstash.io', 'tok');
+      const lobby = new Lobby();
+      const room = lobby.create({ baseMode: 'random' });
+      room.join(fakeClient('u1', 'A'));
+      room.join(fakeClient('u2', 'B'));
+      await p.save('rooms', lobby.dumps(true)!);
+      const lobby2 = new Lobby();
+      expect(lobby2.loads((await p.load('rooms'))!)).toBe(1);
+      expect(await p.load('accounts')).toBeNull();
+    } finally {
+      globalThis.fetch = realFetch;
+    }
+  });
+});

@@ -11,6 +11,7 @@ import { WebSocketServer } from 'ws';
 import type { ClientMsg } from '../shared/protocol';
 import { PROTOCOL_VERSION } from '../shared/protocol';
 import { Accounts } from './accounts';
+import { pickPersist } from './persist';
 import { type Client, Lobby, send } from './rooms';
 
 const PORT = Number(process.env.PORT ?? 8080);
@@ -33,10 +34,35 @@ const MIME: Record<string, string> = {
   '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.webmanifest': 'application/manifest+json', '.mp3': 'audio/mpeg',
 };
 
-const accounts = new Accounts(join(DATA_DIR, 'accounts.json'));
+const persist = pickPersist(DATA_DIR);
+const accounts = new Accounts(null);
 const lobby = new Lobby(accounts);
-const restored = lobby.load(DATA_FILE);
-if (restored) console.log(`  Obnoveno ${restored} rozehraných stolů z ${DATA_FILE}`);
+void DATA_FILE;
+try {
+  const a = await persist.load('accounts');
+  if (a) accounts.loads(a);
+  const r = await persist.load('rooms');
+  const n = r ? lobby.loads(r) : 0;
+  console.log(`  Úložiště: ${persist.name} (stoly: ${n}).`);
+} catch (e) {
+  console.error('Načtení uložených dat selhalo – startuji s prázdnými daty:', e);
+}
+
+let saving = false;
+async function persistNow(force = false) {
+  if (saving) return;
+  saving = true;
+  try {
+    const r = lobby.dumps(force);
+    if (r) await persist.save('rooms', r);
+    const a = accounts.dumps(force);
+    if (a) await persist.save('accounts', a);
+  } catch (e) {
+    console.warn('Ukládání selhalo:', e);
+  } finally {
+    saving = false;
+  }
+}
 
 function json(res: import('node:http').ServerResponse, code: number, body: unknown) {
   res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
@@ -236,15 +262,11 @@ function handle(c: Client, msg: ClientMsg) {
 
 setInterval(() => lobby.sweep(), 60_000);
 setInterval(() => lobby.tick(), 1_000);
-setInterval(() => {
-  try { lobby.save(DATA_FILE); } catch (e) { console.warn('Ukládání stolů selhalo:', e); }
-  try { accounts.save(); } catch (e) { console.warn('Ukládání účtů selhalo:', e); }
-}, 3000);
+setInterval(() => { void persistNow(); }, 3000);
 for (const sig of ['SIGINT', 'SIGTERM'] as const) {
   process.on(sig, () => {
-    try { lobby.save(DATA_FILE, true); } catch { /* ignore */ }
-    try { accounts.save(true); } catch { /* ignore */ }
-    process.exit(0);
+    void persistNow(true).finally(() => process.exit(0));
+    setTimeout(() => process.exit(0), 4000);
   });
 }
 

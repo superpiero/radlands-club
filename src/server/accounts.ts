@@ -42,18 +42,34 @@ export class Accounts {
   private store: Store = { v: 1, users: {}, sessions: {} };
   private dirty = false;
 
-  constructor(private file: string) {
-    if (existsSync(file)) {
+  constructor(private file: string | null = null) {
+    if (file && existsSync(file)) {
       try {
-        this.store = JSON.parse(readFileSync(file, 'utf8'));
-        this.store.sessions ??= {};
+        this.loads(readFileSync(file, 'utf8'));
       } catch (e) {
         console.warn('Nelze načíst účty:', e);
       }
     }
   }
 
+  /** Replace the store from serialized JSON. */
+  loads(json: string) {
+    const s = JSON.parse(json) as Store;
+    s.sessions ??= {};
+    s.users ??= {};
+    this.store = s;
+    this.dirty = false;
+  }
+
+  /** Serialized store, or null when nothing changed (unless forced). Marks clean. */
+  dumps(force = false): string | null {
+    if (!this.dirty && !force) return null;
+    this.dirty = false;
+    return JSON.stringify(this.store);
+  }
+
   save(force = false) {
+    if (!this.file) return;
     if (!this.dirty && !force) return;
     mkdirSync(dirname(this.file), { recursive: true });
     writeFileSync(`${this.file}.tmp`, JSON.stringify(this.store));

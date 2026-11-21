@@ -459,6 +459,32 @@ export class Lobby {
   removed = false;
 
   /** Persist all rooms (replay logs) to a JSON file if anything changed. */
+  /** Serialized rooms (replay logs), or null when nothing changed. Marks clean. */
+  dumps(force = false): string | null {
+    const changed = this.removed || [...this.rooms.values()].some((r) => r.dirty);
+    if (!changed && !force) return null;
+    const data = [...this.rooms.values()].map((r) => r.snapshot());
+    for (const r of this.rooms.values()) r.dirty = false;
+    this.removed = false;
+    return JSON.stringify({ v: 1, rooms: data });
+  }
+
+  loads(json: string): number {
+    const data = JSON.parse(json) as { rooms: RoomSnapshot[] };
+    let n = 0;
+    for (const s of data.rooms ?? []) {
+      try {
+        const r = Room.fromSnapshot(s);
+        r.accounts = this.accounts;
+        this.rooms.set(s.code, r);
+        n++;
+      } catch (e) {
+        console.warn('Nelze obnovit stůl', s.code, e);
+      }
+    }
+    return n;
+  }
+
   save(file: string, force = false) {
     const changed = this.removed || [...this.rooms.values()].some((r) => r.dirty);
     if (!changed && !force) return;
