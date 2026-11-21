@@ -69,9 +69,21 @@ Proměnné prostředí: `PORT` (výchozí 8080), `HOST` (výchozí 0.0.0.0).
 ## Herní režimy
 | Režim | Kde běží | Poznámka |
 |---|---|---|
-| Online stůl | server | odkaz/kód, znovupřipojení po výpadku, chat, emoce, odveta, diváci (`?watch=1`) |
+| Online – Klasika | server | jeden společný balíček 72 karet; odkaz/kód, znovupřipojení, chat, emoce, odveta, diváci (`?watch=1`) |
+| Online – Sběratelský | server + účet | každý hraje se svým balíčkem (30–40 karet) z vlastní kolekce |
 | Proti botovi | jen prohlížeč | 3 obtížnosti |
 | Jeden počítač | jen prohlížeč | před předáním zařízení se ruka skryje |
+
+## Účty, boostery a kolekce
+- **Registrace** (jméno + heslo, uložené na herním serveru v `data/accounts.json`, heslo zahashované scryptem).
+- Po registraci dostaneš **startovní sadu** (všechny běžné karty 2× + pár neobvyklých) a **3 uvítací boostery**.
+- **Booster** = 5 karet: 3 běžné, 1 neobvyklá (15 % šance na vzácnou), 1 vzácná (25 % šance na legendární). Ochrana proti duplikátům: přednostně padají karty, které ještě nemáš v maximálním počtu; když máš všechno, slot se povýší, a teprve pak se nadbytečná karta rozpustí na kapky.
+- **Kapky** získáš za online hry (výhra 100, prohra 50, remíza 60; hra musí mít aspoň 6 tahů). Booster stojí 100 kapek.
+- **Balíček**: 30–40 karet, max. 2 kopie od karty, legendární 1×. Tlačítko *Doplnit automaticky* sestaví balíček z kolekce.
+- Sběratelský režim má vlastní pravidlo: **když ti podruhé dojde balíček, prohráváš (vyčerpání)**.
+- Kolekce obsahuje 46 karet: 36 ze základní sady + 10 vzácných a legendárních karet jen pro sběratelský režim.
+
+Data serveru (stoly i účty) jsou ve složce `data/` (nebo `DATA_DIR`). Zálohuj ji, pokud hostuješ dlouhodobě.
 
 ## Vývoj
 

@@ -69,7 +69,13 @@ Když balíček dojde podruhé, hra končí **remízou**.
 | Odkrytý sloupec | Zvěd | konec tahu |
 | Sucho | operace Sucho | sníží příští doplnění vody |
 
-## 10. Další pravidla
+## 10. Sběratelský režim (vlastní balíčky)
+- Každý hráč hraje se svým balíčkem (30–40 karet, max. 2 kopie, legendární 1×) a má vlastní odhazovací balíček.
+- Tuláci se berou z vlastního balíčku a po zničení se vrací na jeho vršek. Karty, které „berou z odhazovacího balíčku“ (Sběračka Myška), berou z vlastního.
+- Když ti dojde balíček, zamíchá se tvůj odhazovací balíček (jednou). **Když dojde podruhé, prohráváš (vyčerpání).**
+- Za odehrané online hry dostávají registrovaní hráči kapky na nákup boosterů.
+
+## 11. Další pravidla
 - Vlastnosti přeživších platí, jen dokud nejsou poškození (výjimka: Pes Rex). Vlastnosti základen platí, dokud nejsou zničené.
 - Balíček dojde → odhazovací balíček se zamíchá jako nový (jednou). Dojde podruhé → remíza.
 - Ruka nemá limit. Z odhazovacího balíčku je vidět jen vrchní karta.

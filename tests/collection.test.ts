@@ -107,3 +107,35 @@ describe('accounts', () => {
     expect(acc2.get('pepa')!.kapky).toBe(100);
   });
 });
+
+describe('all collectible cards in personal decks (fuzz)', () => {
+  it('random games with every collectible card never break invariants', () => {
+    const all = byRarity('common').concat(byRarity('uncommon'), byRarity('rare'), byRarity('legendary'));
+    const list: string[] = [];
+    for (const c of all) for (let i = 0; i < maxCopies(c.id); i++) list.push(c.id);
+    let over = 0;
+    for (let seed = 500; seed < 700; seed++) {
+      const g = Game.create({ names: ['A', 'B'], seed, baseMode: seed % 2 ? 'draft' : 'random', decks: [list, list] });
+      const r = mulberry(seed);
+      let n = 0;
+      while (g.state.phase !== 'over' && n++ < 5000) {
+        let acted = false;
+        for (const p of [0, 1] as PlayerIdx[]) {
+          const a = randomMove(g, p, r, 0.12);
+          if (!a) continue;
+          const res = g.act(p, a);
+          if (!res.ok) throw new Error(`seed ${seed}: ${JSON.stringify(a)} ${res.error}`);
+          acted = true;
+          break;
+        }
+        expect(acted).toBe(true);
+        for (const pl of g.state.players) {
+          for (const col of pl.columns) expect(col.length).toBeLessThanOrEqual(2);
+          expect(Number.isFinite(pl.water)).toBe(true);
+        }
+      }
+      if (g.state.phase === 'over') over++;
+    }
+    expect(over).toBeGreaterThan(180);
+  });
+});
