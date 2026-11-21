@@ -918,3 +918,72 @@ select.field { padding: 7px 8px; font-size: 16px; }
 .card.has-art .junk { top: 3.4em; bottom: auto; }
 .card.has-art.compact .junk { display: none; }
 .card.has-art:not(.k-base) .typeline { display: none; }
+
+/* ==========================================================================
+   TABLETOP – wooden table, original canvas playmat, physical cards & tokens
+   ========================================================================== */
+.game {
+  background-color: #4a2f1c;
+  background-image:
+    radial-gradient(ellipse at 50% 35%, rgba(255,196,128,.16), transparent 62%),
+    radial-gradient(ellipse at 50% 120%, rgba(0,0,0,.55), transparent 60%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='w'><feTurbulence type='fractalNoise' baseFrequency='0.006 0.16' numOctaves='4' seed='7'/><feColorMatrix values='0 0 0 0 0.36  0 0 0 0 0.22  0 0 0 0 0.12  0 0 0 1.4 -0.2'/></filter><rect width='100%' height='100%' filter='url(%23w)'/></svg>"),
+    repeating-linear-gradient(90deg, #5b3a22 0 210px, #533420 210px 330px, #603e25 330px 520px);
+}
+.table {
+  margin: 10px 0 0 10px; border-radius: 26px 26px 0 0;
+  background-color: #2c2219;
+  background-image:
+    radial-gradient(ellipse at 50% 50%, rgba(233,185,73,.08), transparent 70%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='300' viewBox='0 0 420 300'><g fill='none' stroke='%23e8d5b0' stroke-opacity='.06' stroke-width='1.2'><path d='M-20 60 C60 20 140 90 220 50 S360 20 440 60'/><path d='M-20 90 C70 50 150 120 230 80 S370 50 440 92'/><path d='M-20 125 C80 90 160 150 240 112 S380 85 440 126'/><path d='M-20 170 C60 140 150 200 230 160 S360 140 440 175'/><path d='M-20 210 C70 180 160 240 240 200 S370 185 440 215'/><path d='M-20 250 C80 225 170 280 250 240 S380 228 440 255'/><ellipse cx='320' cy='150' rx='38' ry='22'/><ellipse cx='320' cy='150' rx='20' ry='11'/><ellipse cx='90' cy='230' rx='30' ry='16'/></g></svg>"),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 .1 0 0 0 0 .08 0 0 0 0 .06 0 0 0 .5 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+  box-shadow: 0 24px 50px rgba(0,0,0,.65), 0 2px 0 rgba(255,255,255,.06) inset, inset 0 0 0 2px rgba(0,0,0,.45), inset 0 0 80px rgba(0,0,0,.45);
+  outline: 2px dashed rgba(232,213,176,.18); outline-offset: -9px;
+}
+.table::before { display: none; }
+@media (max-height: 560px), (max-width: 860px) { .table { margin: 0; border-radius: 0; outline-offset: -4px; } }
+
+/* printed centre line with the drop emblem */
+.status::before { content: ''; position: absolute; left: -40%; right: -40%; top: 50%; height: 2px; background: repeating-linear-gradient(90deg, rgba(232,213,176,.16) 0 14px, transparent 14px 24px); z-index: -1; }
+
+/* printed zones on the mat */
+.col .slotp.empty::before { inset: 4px; border: 1.5px dashed rgba(232,213,176,.16); border-radius: 8px; background: rgba(0,0,0,.08); }
+.qwrap .qslot { border: 1.5px dashed rgba(232,213,176,.2); background: rgba(0,0,0,.12); }
+.qwrap .qslot .qn { font-family: var(--f-title); color: rgba(232,213,176,.45); }
+.hz .home-zone .token.away { opacity: .3; }
+
+/* physical cards on the mat */
+.cols .card { rotate: var(--tilt, 0deg); box-shadow: 0 7px 14px rgba(0,0,0,.55), 0 1px 2px rgba(0,0,0,.6); }
+.cols .card.damaged { rotate: calc(var(--tilt, 0deg) - 7deg); }
+.cols .card.usable { box-shadow: 0 0 0 2px var(--water), 0 0 18px rgba(63,184,201,.65), 0 7px 14px rgba(0,0,0,.55); }
+.cols .card.target { box-shadow: 0 0 0 3px var(--danger), 0 0 22px rgba(224,71,60,.85), 0 7px 14px rgba(0,0,0,.55); }
+.cols .card.target.good { box-shadow: 0 0 0 3px var(--good), 0 0 22px rgba(127,195,93,.85), 0 7px 14px rgba(0,0,0,.55); }
+.cols .card.target.neutral { box-shadow: 0 0 0 3px var(--gold), 0 0 22px rgba(233,185,73,.85), 0 7px 14px rgba(0,0,0,.55); }
+.hand .card { box-shadow: 0 10px 24px rgba(0,0,0,.6), 0 2px 3px rgba(0,0,0,.5); }
+
+/* deck with visible thickness, discard as a loose pile */
+.piles .pile.deck { box-shadow: 1px 1px 0 #0c0907, 2px 2px 0 #2a6470, 3px 3px 0 #0c0907, 4px 4px 0 #1f4f58, 5px 5px 0 #0c0907, 8px 10px 16px rgba(0,0,0,.6); }
+.piles .pile.discard .card { rotate: 4deg; box-shadow: -3px 2px 0 rgba(0,0,0,.35), 0 6px 12px rgba(0,0,0,.5); }
+
+/* glass water tokens */
+.wtok { width: 18px; height: 18px; border-radius: 50%; display: inline-block; flex: none;
+  background: radial-gradient(circle at 35% 30%, #e9fdff 0 12%, #8fe3ef 22%, #2fa9bb 55%, #0f5f6c 100%);
+  box-shadow: 0 2px 3px rgba(0,0,0,.6), inset 0 -2px 3px rgba(0,0,0,.35); transition: transform .25s, opacity .25s; }
+.wtok.extra { background: radial-gradient(circle at 35% 30%, #fff 0 12%, #bff4fb 24%, #57cbdb 58%, #1b7d8c 100%); }
+.wtok.spent { background: radial-gradient(circle at 35% 30%, #6b6258 0 10%, #3a332c 40%, #221c17 100%); box-shadow: inset 0 1px 2px rgba(0,0,0,.6); opacity: .7; transform: scale(.85); }
+.pinfo .waterpool { gap: 4px; }
+@media (max-height: 560px), (max-width: 860px) { .wtok { width: 13px; height: 13px; } }
+
+/* "used" marker: a water token placed on the card */
+.card .token-used { position: absolute; z-index: 7; right: .35em; bottom: .35em; width: 1.4em; height: 1.4em; border-radius: 50%; pointer-events: auto;
+  background: radial-gradient(circle at 35% 30%, #e9fdff 0 12%, #8fe3ef 22%, #2fa9bb 55%, #0f5f6c 100%); box-shadow: 0 2px 3px rgba(0,0,0,.7), inset 0 -2px 3px rgba(0,0,0,.35); }
+.card .badges .token-used { position: static; }
+
+/* side panel = clipboard on the table */
+.sidebar { background: linear-gradient(180deg, #2b1f15, #1e160f); border-left: 0; box-shadow: -10px 0 30px rgba(0,0,0,.45); margin: 10px 10px 0 12px; border-radius: 14px 14px 0 0; }
+@media (max-width: 860px), (max-height: 560px) { .sidebar { margin: 0; border-radius: 0; } }
+.table.has-mat { background-image: linear-gradient(rgba(20,14,10,.35), rgba(20,14,10,.35)), var(--mat); background-size: cover; background-position: center; }
+.card.k-back .art-img.back-full { inset: 0; opacity: 1; border-radius: inherit; }
+.card.k-back:has(.back-full) .backlogo, .card.k-back:has(.back-full) .backtxt { display: none; }
+.pack .pack-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.pack:has(.pack-art) .pack-label, .pack:has(.pack-art) .pack-tape { display: none; }

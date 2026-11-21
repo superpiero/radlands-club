@@ -97,4 +97,9 @@ export const ART: Record<string, ArtSpec> = {
   najezd: { subject: 'A raiding convoy of spiked cars and motorbikes charging over a dune toward the viewer, flames and dust, war cries.' },
   cisterna: { subject: 'A battered water tanker barrel on a cart with a turquoise tap dripping, sun glare on the metal.' },
   tulak: { subject: 'A lone hooded wanderer seen from behind walking into the endless desert, face hidden, long shadow, mysterious.' },
+
+  // ---------------- table & product art ----------------
+  playmat: { landscape: true, subject: 'Top-down view of an empty worn canvas game mat lying on a wooden table: a faded hand-drawn map of a dry wasteland (dried riverbeds, dunes, ruined roads, contour lines) printed on sand-coloured canvas, coffee stains, stitched edges; very low contrast so cards placed on it stay readable; no zones, no text. Format 16:9 wide.' },
+  cardback: { subject: 'Card back design: a symmetrical emblem of a single turquoise water drop inside a rusty riveted metal ring, surrounded by stencil-like ornamental patterns on dark teal-and-rust textured background, centred and symmetrical, no text.' },
+  booster: { subject: 'Product shot of a sealed foil booster pack shaped like a small battered jerrycan wrapper, teal and rust colours, a water-drop emblem in the centre, hazard tape across the top, dramatic studio lighting on a dark background, no text.' },
 };

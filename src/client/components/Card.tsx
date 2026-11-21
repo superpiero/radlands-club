@@ -226,6 +226,7 @@ export function CardBack(p: CardProps & { label?: string }) {
   return (
     <div className={cls} data-uid={p.uid} onClick={p.onClick} style={p.style} onMouseEnter={p.noZoom ? undefined : () => zoom.set({ id: 'tulak', uid: p.uid })} onMouseLeave={p.noZoom ? undefined : () => zoom.clear('tulak')}>
       {p.id === 'tulak' && ART_IDS.has('tulak') && <div className="art art-img"><img src={`/art/tulak.webp?v=${ART_VERSION}`} alt="" loading="lazy" draggable={false} /></div>}
+      {p.id !== 'tulak' && ART_IDS.has('cardback') && <div className="art art-img back-full"><img src={`/art/cardback.webp?v=${ART_VERSION}`} alt="" loading="lazy" draggable={false} /></div>}
       <svg className="backlogo" viewBox="0 0 64 64"><path d="M32 6c7 12 17 22 17 33a17 17 0 0 1-34 0c0-11 10-21 17-33z" fill="currentColor" /><path d="M24 41a8 8 0 0 0 8 8" stroke="#15110d" strokeWidth="4" fill="none" strokeLinecap="round" /></svg>
       <div className="backtxt">{p.id === 'tulak' ? 'TULÁK' : 'KAPKA'}</div>
       {p.badges && <div className="badges">{p.badges}</div>}

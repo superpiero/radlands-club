@@ -13,6 +13,7 @@ import { FxLayer } from './FxLayer';
 import { Icon, JUNK_ICON } from './Icon';
 import { Sidebar } from './Sidebar';
 import { plural } from '../../shared/plural';
+import { ART_IDS, ART_VERSION } from '../gen/art';
 import { HowToPlay } from './HowToPlay';
 import { confetti, Particles } from './Particles';
 
@@ -23,6 +24,14 @@ type Sel =
   | { kind: 'endturn'; x: number; y: number };
 
 const COLS = ['levý', 'prostřední', 'pravý'];
+
+/** Small deterministic "placed by hand" rotation per card. */
+function tiltStyle(uid: string, scale = 1): React.CSSProperties {
+  let h = 0;
+  for (let i = 0; i < uid.length; i++) h = (h * 31 + uid.charCodeAt(i)) | 0;
+  const deg = (((h >>> 0) % 1000) / 1000 - 0.5) * 3 * scale;
+  return { ['--tilt' as string]: `${deg.toFixed(2)}deg` };
+}
 
 export function Board({ conn, state, view }: { conn: Conn; state: ConnState; view: GameView }) {
   const me: PlayerIdx = view.you ?? 0;
@@ -229,9 +238,13 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     if (protectedNow) badges.push(<span key="sh" className="badge b-shield" title="Krytý – nelze běžně zasáhnout"><Icon name="shield" /></span>);
     if (x.stunPending || x.stunned) badges.push(<span key="st" className="badge b-stun" title="Omráčený – v příštím tahu majitele nebude připravený"><Icon name="knockout" /></span>);
     if (x.stash > 0) badges.push(<span key="w" className="badge b-water" title="Uložená voda – +2 na začátku tahu"><Icon name="water-drop" />+2</span>);
-    if (!x.faceDown && x.notReady && !x.damaged && (mine || x.stunned)) badges.push(<span key="nr" className="badge" title={x.notReady}><Icon name="hourglass" /></span>);
+    if (!x.faceDown && x.notReady && !x.damaged && (mine || x.stunned)) {
+      badges.push(x.notReady === 'Schopnost už použita'
+        ? <span key="nr" className="token-used" title="Schopnost už byla v tomto tahu použita" />
+        : <span key="nr" className="badge" title={x.notReady}><Icon name="hourglass" /></span>);
+    }
     const common = {
-      uid: x.uid, compact: true, onClick: (e: MouseEvent) => clickCard(x.uid, e, 'board'),
+      uid: x.uid, compact: true, onClick: (e: MouseEvent) => clickCard(x.uid, e, 'board'), style: tiltStyle(x.uid),
       target: o ? (pending?.kind === 'multi' && multi.includes(o.id) ? 'neutral' as const : (o.tone ?? 'neutral')) : null,
       dimmed: !!pending && !o && optByUid.size > 0,
       enter: x.justPlayed,
@@ -252,9 +265,9 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     if (b.immune) badges.push(<span key="im" className="badge b-immune" title="Bunkr je teď nezranitelný">NEZRANITELNÝ</span>);
     if (b.charge !== null) badges.push(<span key="ch" className="badge b-charge" title={`Nálož hráče ${view.players[b.charge].name} – vybuchne na začátku jeho tahu`}><Icon name="time-dynamite" />NÁLOŽ</span>);
     if (b.stored > 0) badges.push(<span key="st" className="badge b-water" title="Uložená voda"><Icon name="water-drop" />{b.stored}</span>);
-    if (mine && !b.destroyed && !b.ready && CARDS[b.id].abilities.length) badges.push(<span key="nr" className="badge" title="Schopnost už byla v tomto tahu použita"><Icon name="hourglass" /></span>);
+    if (mine && !b.destroyed && !b.ready && CARDS[b.id].abilities.length) badges.push(<span key="nr" className="token-used" title="Schopnost už byla v tomto tahu použita" />);
     return (
-      <Card id={b.id} uid={b.uid} compact damage={b.damage} hp={b.hp} destroyed={b.destroyed}
+      <Card id={b.id} uid={b.uid} compact damage={b.damage} hp={b.hp} destroyed={b.destroyed} style={tiltStyle(b.uid, 0.6)}
         onClick={(e) => clickCard(b.uid, e, 'board')}
         target={o ? (o.tone ?? 'neutral') : null}
         dimmed={!!pending && !o && optByUid.size > 0}
@@ -347,7 +360,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     return (
       <div className="waterpool" data-water={owner} title={`Voda k utracení v tomto tahu: ${n}`}>
         {Array.from({ length: Math.min(drops, 8) }, (_, i) => (
-          <Icon key={i} name="water-drop" className={`wd ${i < n ? (i >= 3 ? 'extra' : '') : 'spent'}`} />
+          <span key={i} className={`wtok ${i < n ? (i >= 3 ? 'extra' : '') : 'spent'}`} />
         ))}
         {drops > 8 && <span className="wcount">×{n}</span>}
         {pl.waterPenalty > 0 && <span className="pill" title="Sucho – příští tah o vodu méně">−{pl.waterPenalty} 💧</span>}
@@ -660,7 +673,8 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
 
   return (
     <div className="game" onClick={() => setSel(null)}>
-      <div className="table" data-active={view.phase === 'play' ? (view.active === me ? 'me' : 'opp') : 'none'}>
+      <div className={`table ${ART_IDS.has('playmat') ? 'has-mat' : ''}`} data-active={view.phase === 'play' ? (view.active === me ? 'me' : 'opp') : 'none'}
+        style={ART_IDS.has('playmat') ? { ['--mat' as string]: `url(/art/playmat.webp?v=${ART_VERSION})` } : undefined}>
         {pinfo(opp)}
         {controls}
         <div className="qwrap opp">{queue(opp)}</div>

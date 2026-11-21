@@ -9,6 +9,7 @@ const groups: [string, (id: string) => boolean][] = [
   ['Operace', (id) => CARDS[id]?.kind === 'operation'],
   ['Základny (na šířku)', (id) => CARDS[id]?.kind === 'base'],
   ['Speciální', (id) => ['najezd', 'cisterna', 'tulak'].includes(id)],
+  ['Herní stůl a produkt', (id) => ['playmat', 'cardback', 'booster'].includes(id)],
 ];
 
 export function fullPrompt(id: string): string {

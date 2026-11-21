@@ -48,8 +48,9 @@ for (const f of files) {
   const id = idFor(f);
   if (!id) { skipped.push(basename(f)); continue; }
   const land = !!ART[id].landscape;
+  const big = id === 'playmat';
   await sharp(f)
-    .resize(land ? 1080 : 720, land ? 720 : 1080, { fit: 'cover', position: sharp.strategy.attention })
+    .resize(big ? 1920 : land ? 1080 : 720, big ? 1080 : land ? 720 : 1080, { fit: 'cover', position: big ? 'centre' : sharp.strategy.attention })
     .webp({ quality: 80, effort: 5 })
     .toFile(join(OUT, `${id}.webp`));
   ok++;

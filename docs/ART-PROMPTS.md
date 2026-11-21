@@ -1,6 +1,6 @@
 # Zadání ilustrací pro ChatGPT – Poslední kapka
 
-Celkem **78 obrázků**. Ke každé kartě je jedno zadání a název souboru.
+Celkem **81 obrázků**. Ke každé kartě je jedno zadání a název souboru.
 
 ## Postup
 1. V ChatGPT založ **nový chat** (aby se styl nemíchal s ničím jiným).
@@ -1193,5 +1193,52 @@ Portrait 2:3. A lone hooded wanderer seen from behind walking into the endless d
 
 ```
 Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A lone hooded wanderer seen from behind walking into the endless desert, face hidden, long shadow, mysterious.
+```
+</details>
+
+## Herní stůl a produkt (3)
+
+### playmat → `playmat.png` (na šířku 3:2)
+
+Krátce (když už je styl v chatu):
+
+```
+Landscape 3:2. Top-down view of an empty worn canvas game mat lying on a wooden table: a faded hand-drawn map of a dry wasteland (dried riverbeds, dunes, ruined roads, contour lines) printed on sand-coloured canvas, coffee stains, stitched edges; very low contrast so cards placed on it stay readable; no zones, no text. Format 16:9 wide.
+```
+
+<details><summary>Celé zadání</summary>
+
+```
+Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. Top-down view of an empty worn canvas game mat lying on a wooden table: a faded hand-drawn map of a dry wasteland (dried riverbeds, dunes, ruined roads, contour lines) printed on sand-coloured canvas, coffee stains, stitched edges; very low contrast so cards placed on it stay readable; no zones, no text. Format 16:9 wide.
+```
+</details>
+
+### cardback → `cardback.png` (na výšku 2:3)
+
+Krátce (když už je styl v chatu):
+
+```
+Portrait 2:3. Card back design: a symmetrical emblem of a single turquoise water drop inside a rusty riveted metal ring, surrounded by stencil-like ornamental patterns on dark teal-and-rust textured background, centred and symmetrical, no text.
+```
+
+<details><summary>Celé zadání</summary>
+
+```
+Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Card back design: a symmetrical emblem of a single turquoise water drop inside a rusty riveted metal ring, surrounded by stencil-like ornamental patterns on dark teal-and-rust textured background, centred and symmetrical, no text.
+```
+</details>
+
+### booster → `booster.png` (na výšku 2:3)
+
+Krátce (když už je styl v chatu):
+
+```
+Portrait 2:3. Product shot of a sealed foil booster pack shaped like a small battered jerrycan wrapper, teal and rust colours, a water-drop emblem in the centre, hazard tape across the top, dramatic studio lighting on a dark background, no text.
+```
+
+<details><summary>Celé zadání</summary>
+
+```
+Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Product shot of a sealed foil booster pack shaped like a small battered jerrycan wrapper, teal and rust colours, a water-drop emblem in the centre, hazard tape across the top, dramatic studio lighting on a dark background, no text.
 ```
 </details>
