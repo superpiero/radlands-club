@@ -178,6 +178,8 @@ export class LocalConn extends Conn {
   private timer: ReturnType<typeof setTimeout> | null = null;
   private names: [string, string];
   private gameNo = 1;
+  private score: [number, number] = [0, 0];
+  private counted = false;
 
   constructor(mode: 'bot' | 'hotseat', names: [string, string], private options: RoomOptions & { botLevel?: 'easy' | 'normal' | 'hard' }) {
     super(mode);
@@ -192,7 +194,7 @@ export class LocalConn extends Conn {
       code: this.state.mode === 'bot' ? 'BOT' : 'LOKÁL',
       seats: [{ name: this.names[0], connected: true }, { name: this.names[1], connected: true }],
       you: 0, spectators: 0, status: this.game.state.phase === 'over' ? 'over' : 'playing',
-      options: this.options, rematch: [false, false], gameNo: this.gameNo,
+      options: this.options, rematch: [false, false], gameNo: this.gameNo, score: this.score,
     };
   }
 
@@ -206,7 +208,16 @@ export class LocalConn extends Conn {
     return st.active;
   }
 
+  private countScore() {
+    const st = this.game.state;
+    if (st.phase === 'over' && !this.counted) {
+      this.counted = true;
+      if (st.winner === 0 || st.winner === 1) this.score[st.winner]++;
+    }
+  }
+
   private refresh() {
+    this.countScore();
     const v = buildView(this.game, this.viewer());
     this.set({ view: v, room: this.fakeRoom() });
     this.scheduleBot();
@@ -250,6 +261,7 @@ export class LocalConn extends Conn {
         const fallback = this.game.state.pending?.player === bot ? null : { t: 'endTurn' } as Action;
         if (fallback) this.game.act(bot, fallback);
       }
+      this.countScore();
       const view = buildView(this.game, 0);
       this.set({ view, room: this.fakeRoom() });
       this.scheduleBot();
@@ -267,6 +279,7 @@ export class LocalConn extends Conn {
   }
   rematch() {
     this.gameNo++;
+    this.counted = false;
     this.game = Game.create({ names: this.names, baseMode: this.options.baseMode });
     this.refresh();
   }

@@ -20,6 +20,8 @@ export interface RoomInfo {
   status: 'waiting' | 'playing' | 'over';
   options: RoomOptions;
   rematch: [boolean, boolean];
+  /** Wins in this room's series (by seat). */
+  score: [number, number];
   gameNo: number;
 }
 

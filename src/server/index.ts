@@ -13,6 +13,7 @@ import { PROTOCOL_VERSION } from '../shared/protocol';
 import { type Client, Lobby, send } from './rooms';
 
 const PORT = Number(process.env.PORT ?? 8080);
+const DATA_FILE = join(process.env.DATA_DIR ?? join(process.cwd(), 'data'), 'rooms.json');
 const HOST = process.env.HOST ?? '0.0.0.0';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -26,6 +27,8 @@ const MIME: Record<string, string> = {
 };
 
 const lobby = new Lobby();
+const restored = lobby.load(DATA_FILE);
+if (restored) console.log(`  Obnoveno ${restored} rozehraných stolů z ${DATA_FILE}`);
 
 const server = createServer((req, res) => {
   const url = new URL(req.url ?? '/', 'http://x');
@@ -146,6 +149,15 @@ function handle(c: Client, msg: ClientMsg) {
 }
 
 setInterval(() => lobby.sweep(), 60_000);
+setInterval(() => {
+  try { lobby.save(DATA_FILE); } catch (e) { console.warn('Ukládání stolů selhalo:', e); }
+}, 3000);
+for (const sig of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(sig, () => {
+    try { lobby.save(DATA_FILE, true); } catch { /* ignore */ }
+    process.exit(0);
+  });
+}
 
 server.listen(PORT, HOST, () => {
   const addrs: string[] = [];

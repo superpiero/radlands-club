@@ -1,0 +1,12 @@
+# One-click deploy on https://render.com (Blueprint). Free plan supports WebSockets.
+services:
+  - type: web
+    name: posledni-kapka
+    runtime: node
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "22"

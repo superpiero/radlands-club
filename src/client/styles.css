@@ -455,3 +455,8 @@ input.field:focus { outline: 2px solid var(--water); border-color: transparent; 
 }
 .mobile-only { display: none; }
 @media (max-width: 860px), (max-height: 560px) { .mobile-only { display: inline-flex; } }
+
+/* opponent turn recap */
+.recap { position: fixed; z-index: 44; top: 64px; left: 50%; transform: translateX(-50%); padding: 10px 14px; max-width: min(560px, 92vw); cursor: pointer; animation: toastIn .3s ease-out; border-color: rgba(224,115,60,.5); }
+.recap-title { font-family: var(--f-title); color: var(--opp); font-size: 16px; display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.recap-line { font-size: 15px; color: #e6dac4; padding: 1px 0; }

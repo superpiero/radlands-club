@@ -140,10 +140,34 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     return () => window.removeEventListener('keydown', on);
   }, [sel, view.canCancel, view.canUndo, act]);
 
+  const viewRef = useRef(view);
+  viewRef.current = view;
+  const [recap, setRecap] = useState<{ lines: string[]; key: number } | null>(null);
   const onTurn = useCallback((p: PlayerIdx) => {
     if (spectator) return;
-    setBanner({ text: p === me ? 'TVŮJ TAH' : `TAH: ${view.players[p].name}`, mine: p === me, key: Date.now() });
-  }, [me, spectator, view.players]);
+    setBanner({ text: p === me ? 'TVŮJ TAH' : `TAH: ${viewRef.current.players[p].name}`, mine: p === me, key: Date.now() });
+    if (p === me && state.mode !== 'hotseat') {
+      // summarise what the opponent did since their turn started
+      const log = viewRef.current.log;
+      let start = -1;
+      for (let i = log.length - 1; i >= 0; i--) {
+        if (log[i].kind === 'turn' && log[i].player === opp && log[i].text.startsWith('—')) { start = i; break; }
+      }
+      if (start >= 0) {
+        const lines = log.slice(start + 1)
+          .filter((e) => ['play', 'event', 'damage', 'destroy', 'win'].includes(e.kind) || (e.kind === 'info' && /Sabotáž|nálož|vrací|odkryl|Radar/.test(e.text)))
+          .filter((e) => !(e.kind === 'turn'))
+          .map((e) => e.text)
+          .slice(-8);
+        if (lines.length) setRecap({ lines, key: Date.now() });
+      }
+    }
+  }, [me, opp, spectator, state.mode]);
+  useEffect(() => {
+    if (!recap) return;
+    const t = setTimeout(() => setRecap(null), 9000);
+    return () => clearTimeout(t);
+  }, [recap]);
   useEffect(() => {
     if (!banner) return;
     const t = setTimeout(() => setBanner(null), 1600);
@@ -493,6 +517,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         <div className="who">
           <div className="avatar"><Icon name={isMe ? 'gas-mask' : 'death-skull'} /></div>
           <span className="nm">{pl.name}</span>
+          {state.room && (state.room.score[0] + state.room.score[1] > 0) && <span className="pill" title="Výhry v této sérii">🏆 {state.room.score[owner]}</span>}
           {state.room && state.mode === 'online' && state.room.seats[owner] && !state.room.seats[owner]!.connected && <span className="pill" title="Hráč je odpojený">odpojen</span>}
         </div>
         {active && <span className="pill turn">na tahu</span>}
@@ -521,7 +546,10 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
             <button className="btn small ghost mobile-only" onClick={() => setSideOpen(true)}><Icon name="hamburger-menu" /></button>
             <button className="btn small ghost" onClick={() => { setMuted(!muted); setMut(!muted); }} title={muted ? 'Zapnout zvuk' : 'Vypnout zvuk'}><Icon name={muted ? 'speaker-off' : 'speaker'} /></button>
             <button className="btn small ghost hide-sm" onClick={() => { setTipsOn(!tipsOn); setFlag('tips', !tipsOn); }} title="Nápověda pro začátečníky">{tipsOn ? 'Tipy: ZAP' : 'Tipy: VYP'}</button>
-            <button className="btn small ghost" onClick={() => { if (view.phase === 'over' || confirm('Opustit hru?')) go('/'); }} title="Odejít"><Icon name="exit-door" /></button>
+            {!spectator && view.phase === 'play' && (
+              <button className="btn small ghost hide-sm" onClick={() => { if (confirm('Opravdu se vzdát? Soupeř vyhraje tuto hru.')) act({ t: 'concede' }); }} title="Vzdát hru"><Icon name="broken-shield" /> Vzdát</button>
+            )}
+            <button className="btn small ghost" onClick={() => { if (view.phase === 'over' || confirm('Opustit hru? (Online místo zůstane rezervované – můžeš se vrátit stejným odkazem.)')) go('/'); }} title="Odejít"><Icon name="exit-door" /></button>
           </div>
         )}
       </div>
@@ -586,6 +614,12 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       {revealMin && pending && <div style={{ position: 'fixed', top: 70, left: '50%', transform: 'translateX(-50%)', zIndex: 61 }}><button className="btn primary" onClick={() => setRevealMin(false)}>Zpět k výběru</button></div>}
       {view.phase === 'chooseFirst' && <ChooseFirst view={view} me={me} act={act} />}
       {view.phase === 'over' && <GameOver view={view} me={me} state={state} conn={conn} />}
+      {recap && (
+        <div className="recap panel" key={recap.key} onClick={(e) => { e.stopPropagation(); setRecap(null); }} title="Klikni pro zavření">
+          <div className="recap-title"><Icon name="eye-target" /> Co udělal(a) {O.name}</div>
+          {recap.lines.map((l, i) => <div key={i} className="recap-line">{l}</div>)}
+        </div>
+      )}
       {banner && <div className="banner" key={banner.key}><div className={`inner ${banner.mine ? 'mine' : ''}`}>{banner.text}</div></div>}
       <FxLayer view={view} me={me} onTurn={onTurn} />
     </div>

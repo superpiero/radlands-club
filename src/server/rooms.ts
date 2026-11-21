@@ -1,5 +1,7 @@
 // Room management: seats, reconnection, broadcasting per-player views.
 
+import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { dirname } from 'node:path';
 import type { WebSocket } from 'ws';
 import { Game } from '../engine/game';
 import type { Action, PlayerIdx } from '../engine/types';
@@ -30,8 +32,11 @@ export class Room {
   game: Game | null = null;
   history: { p: PlayerIdx; a: Action }[] = [];
   seed = 0;
+  names: [string, string] = ['', ''];
+  dirty = true;
   chat: ChatLine[] = [];
   rematch: [boolean, boolean] = [false, false];
+  score: [number, number] = [0, 0];
   gameNo = 0;
   lastActivity = Date.now();
 
@@ -60,6 +65,7 @@ export class Room {
       status: this.status(),
       options: this.options,
       rematch: this.rematch,
+      score: this.score,
       gameNo: this.gameNo,
     };
   }
@@ -161,6 +167,8 @@ export class Room {
 
   startGame() {
     const names: [string, string] = [this.seats[0]!.name, this.seats[1]!.name];
+    this.names = names;
+    this.dirty = true;
     this.seed = Math.floor(Math.random() * 2 ** 31);
     this.game = Game.create({ names, seed: this.seed, baseMode: this.options.baseMode });
     this.history = [];
@@ -179,8 +187,13 @@ export class Room {
     const res = this.game.act(seat, action);
     if (!res.ok) return send(c, { t: 'error', msg: res.error });
     this.history.push({ p: seat, a: action });
+    this.dirty = true;
     this.broadcastState();
-    if (before !== 'over' && this.game.state.phase === 'over') this.broadcastRoom();
+    if (before !== 'over' && this.game.state.phase === 'over') {
+      const w = this.game.state.winner;
+      if (w === 0 || w === 1) this.score[w]++;
+      this.broadcastRoom();
+    }
   }
 
   requestRematch(c: Client) {
@@ -203,11 +216,58 @@ export class Room {
     for (const o of this.allClients()) send(o, { t: 'emote', seat: this.seatOf(c), id, from: c.name });
   }
 
+  snapshot(): RoomSnapshot {
+    return {
+      code: this.code, options: this.options,
+      seats: this.seats.map((s) => (s ? { token: s.token, name: s.name } : null)) as RoomSnapshot['seats'],
+      seed: this.seed, names: this.names, history: this.history, chat: this.chat.slice(-50),
+      score: this.score, gameNo: this.gameNo, rematch: this.rematch, lastActivity: this.lastActivity, started: !!this.game,
+    };
+  }
+
+  static fromSnapshot(s: RoomSnapshot): Room {
+    const r = new Room(s.code, s.options);
+    r.seats = s.seats.map((x) => (x ? { token: x.token, name: x.name, client: null } : null)) as Room['seats'];
+    r.seed = s.seed;
+    r.names = s.names;
+    r.chat = s.chat ?? [];
+    r.score = s.score ?? [0, 0];
+    r.gameNo = s.gameNo ?? 0;
+    r.rematch = s.rematch ?? [false, false];
+    r.lastActivity = s.lastActivity ?? Date.now();
+    if (s.started) {
+      const g = Game.create({ names: s.names, seed: s.seed, baseMode: s.options.baseMode });
+      for (const h of s.history) {
+        const res = g.act(h.p, h.a);
+        if (!res.ok) throw new Error(`replay failed in room ${s.code}: ${res.error}`);
+      }
+      r.game = g;
+      r.history = [...s.history];
+    }
+    r.dirty = false;
+    return r;
+  }
+
   isDead(now: number): boolean {
     const anyone = this.allClients().length > 0;
     const idle = now - this.lastActivity;
     return (!anyone && idle > 1000 * 60 * 60 * 3) || idle > 1000 * 60 * 60 * 24;
   }
+}
+
+export interface RoomSnapshot {
+  code: string;
+  options: RoomOptions;
+  seats: [{ token: string; name: string } | null, { token: string; name: string } | null];
+  seed: number;
+  names: [string, string];
+  history: { p: PlayerIdx; a: Action }[];
+  chat: ChatLine[];
+  score: [number, number];
+  gameNo: number;
+  rematch: [boolean, boolean];
+  lastActivity: number;
+  started: boolean;
 }
 
 export function send(c: Client, msg: ServerMsg) {
@@ -237,6 +297,40 @@ export class Lobby {
 
   sweep() {
     const now = Date.now();
-    for (const [code, r] of this.rooms) if (r.isDead(now)) this.rooms.delete(code);
+    for (const [code, r] of this.rooms) if (r.isDead(now)) { this.rooms.delete(code); this.removed = true; }
+  }
+
+  removed = false;
+
+  /** Persist all rooms (replay logs) to a JSON file if anything changed. */
+  save(file: string, force = false) {
+    const changed = this.removed || [...this.rooms.values()].some((r) => r.dirty);
+    if (!changed && !force) return;
+    const data = [...this.rooms.values()].map((r) => r.snapshot());
+    mkdirSync(dirname(file), { recursive: true });
+    writeFileSync(`${file}.tmp`, JSON.stringify({ v: 1, rooms: data }));
+    renameSync(`${file}.tmp`, file);
+    for (const r of this.rooms.values()) r.dirty = false;
+    this.removed = false;
+  }
+
+  load(file: string): number {
+    if (!existsSync(file)) return 0;
+    try {
+      const data = JSON.parse(readFileSync(file, 'utf8')) as { rooms: RoomSnapshot[] };
+      let n = 0;
+      for (const s of data.rooms ?? []) {
+        try {
+          this.rooms.set(s.code, Room.fromSnapshot(s));
+          n++;
+        } catch (e) {
+          console.warn('Nelze obnovit stůl', s.code, e);
+        }
+      }
+      return n;
+    } catch (e) {
+      console.warn('Nelze načíst uložené stoly:', e);
+      return 0;
+    }
   }
 }
