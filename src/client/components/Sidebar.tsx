@@ -8,8 +8,9 @@ import { useZoomTarget } from '../zoom';
 import { Card } from './Card';
 import { Icon } from './Icon';
 
-export function Sidebar({ view, state, me, onChat, onEmote, mobileOpen, onClose }: {
+export function Sidebar({ view, state, me, onChat, onEmote, mobileOpen, onClose, recap }: {
   view: GameView; state: ConnState; me: PlayerIdx; onChat: (t: string) => void; onEmote: (id: string) => void; mobileOpen: boolean; onClose: () => void;
+  recap?: { title: string; lines: string[] } | null;
 }) {
   const [tab, setTab] = useState<'log' | 'chat'>('log');
   const [text, setText] = useState('');
@@ -33,7 +34,12 @@ export function Sidebar({ view, state, me, onChat, onEmote, mobileOpen, onClose 
   return (
     <aside className={`sidebar ${mobileOpen ? 'mobile-open' : ''}`}>
       <div className="zoomhost hide-sm">
-        {zoomId ? <Card id={zoomId} noZoom /> : <div className="zoomhint">Najeď myší na kartu – tady uvidíš její plný text.</div>}
+        {zoomId ? <Card id={zoomId} noZoom /> : recap ? (
+          <div className="recap-dock">
+            <div className="recap-title"><Icon name="eye-target" /> {recap.title}</div>
+            {recap.lines.map((l, i) => <div key={i} className="recap-line">{l}</div>)}
+          </div>
+        ) : <div className="zoomhint">Najeď myší na kartu – tady uvidíš její plný text.</div>}
       </div>
       <div className="tabs">
         <button className={tab === 'log' ? 'on' : ''} onClick={() => setTab('log')}><Icon name="rule-book" /> Záznam</button>

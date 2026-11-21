@@ -41,7 +41,7 @@ function flip(el: HTMLElement, from: R, to: R, ms = 420) {
   } catch { /* older browsers */ }
 }
 
-export function FxLayer({ view, me, onTurn }: { view: GameView; me: PlayerIdx; onTurn: (p: PlayerIdx) => void }) {
+export function FxLayer({ view, me, onTurn, onThirst }: { view: GameView; me: PlayerIdx; onTurn: (p: PlayerIdx) => void; onThirst?: (p: PlayerIdx, first: boolean) => void }) {
   const prevRects = useRef<Map<string, R>>(new Map());
   const lastRev = useRef<number>(-1);
   const prevWater = useRef<number>(view.players[me].water);
@@ -157,6 +157,7 @@ export function FxLayer({ view, me, onTurn }: { view: GameView; me: PlayerIdx; o
             break;
           }
           case 'turn': onTurn(f.player); if (f.player === me) sounds.push({ s: 'turn', at: 0 }); break;
+          case 'thirst': onThirst?.(f.player, !!f.first); sounds.push({ s: 'raid', at: 0 }); break;
         }
       }
 

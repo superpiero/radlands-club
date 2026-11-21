@@ -996,3 +996,82 @@ select.field { padding: 7px 8px; font-size: 16px; }
   .pulled-row { flex-wrap: nowrap; overflow-x: auto; justify-content: flex-start; padding: 10px 16px 34px; scroll-snap-type: x mandatory; }
   .pulled-card { --h: min(64vh, 240px); scroll-snap-align: center; flex: none; }
 }
+
+/* ==========================================================================
+   ROUND 2 polish
+   ========================================================================== */
+/* hand lives in the centre column so it never covers the rails / end-turn button */
+@media (min-width: 861px) and (min-height: 561px) {
+  .table { grid-template-areas:
+    "oinfo ocols ctrl"
+    "oq    ocols oh"
+    "piles status turn"
+    "mq    mcols mh"
+    "minfo mcols act"
+    "minfo hand  act"; }
+}
+.actions, .pinfo.me { position: relative; z-index: 8; }
+
+/* placement ghost: whole slot = in front, bottom strip = behind */
+.ghost-slot { position: relative; overflow: hidden; }
+.ghost-back { position: absolute; left: 0; right: 0; bottom: 0; border-radius: 0 0 8px 8px; border: 0; border-top: 1px dashed var(--gold); padding: 3px 0; font-size: 11px; }
+
+/* booster reveal: real pixel sizes for the card inside the flip */
+.pulled-card { --ph: min(36vh, 300px); --h: var(--ph); --w: calc(var(--ph) * .72); }
+.pulled-card .face .card { --h: var(--ph); --w: calc(var(--ph) * .72); }
+@media (max-width: 600px) { .pulled-card { --ph: min(calc(44vw / .72), 250px); } }
+@media (max-height: 560px) { .pulled-card { --ph: min(64vh, 240px); } }
+
+/* overlays can scroll on short screens */
+.overlay { overflow-y: auto; place-items: safe center; }
+@media (max-height: 560px) {
+  .gameover .panel { padding: 12px 18px; gap: 6px; }
+  .gameover h1 { font-size: 34px; }
+  .gameover .panel > .icon { width: 40px; height: 40px; }
+  .summary { font-size: 13px; }
+  .summary th, .summary td { padding: 1px 8px; }
+  .howto .ht-visual { min-height: 110px; }
+  .howto .ht-visual .card { --h: 110px; --w: 80px; }
+  .ht-body { font-size: 15px; }
+}
+
+/* contrast */
+.pop .opt.primary small { color: rgba(255,255,255,.9); }
+.pop .opt.primary:disabled small { color: rgba(255,255,255,.6); }
+.qwrap .qslot .qn { color: rgba(232,213,176,.7); }
+
+/* names: fit by longest word, 2 lines max, never an ellipsis mid-word */
+.card { --nr: 3.4; }
+.card.k-operation { --nr: 6.2; }
+.card.compact { --nr: 2.6; }
+.card .name { text-overflow: clip; font-size: min(1.05em, calc((var(--w) - var(--nr) * 1em) * 1.4 / var(--nl, 9))); overflow-wrap: normal; }
+.card.compact .name { font-size: min(1.15em, calc(var(--w) * 1.42 / var(--nl, 9))); }
+
+/* foil keeps silhouettes black */
+.card .foil { mix-blend-mode: overlay; opacity: .85; background: linear-gradient(115deg, transparent 35%, rgba(255,248,228,.55) 45%, rgba(160,225,236,.45) 52%, transparent 62%), repeating-linear-gradient(60deg, rgba(255,255,255,.06) 0 2px, transparent 2px 7px); background-size: 250% 250%, auto; }
+
+/* procedural bases also go full-bleed when shown large (gallery, draft, zoom, showcase) */
+.card.k-base:not(.compact):not(.has-art) .art { position: absolute; inset: 0; width: auto; margin: 0; border-radius: inherit; box-shadow: none; z-index: 0; }
+.card.k-base:not(.compact):not(.has-art) .art::after { background: linear-gradient(90deg, transparent 28%, rgba(14,10,7,.5) 52%, rgba(14,10,7,.88) 100%); }
+.card.k-base:not(.compact):not(.has-art) .bside { margin-left: 34%; color: var(--text); }
+.card.k-base:not(.compact):not(.has-art) .name { color: #f6ead2; text-shadow: 0 1px 2px #000; }
+.card.k-base:not(.compact):not(.has-art) .trait { color: #f1e6d2; background: rgba(20,14,10,.55); border-radius: .25em; padding: .15em .3em; }
+.card.k-base:not(.compact):not(.has-art) .art svg.glyph { width: 36%; height: 60%; margin-left: -50%; }
+
+/* showcase: skippable */
+.showcase { pointer-events: auto; cursor: pointer; }
+@keyframes scIn { 0% { transform: translateY(-30vh) scale(.4) rotate(-6deg); opacity: 0; } 18% { transform: scale(1.04); opacity: 1; } 26%, 88% { transform: none; opacity: 1; } 100% { transform: scale(.85) translateY(8vh); opacity: 0; } }
+.showcase .sc-inner { animation: scIn 1.5s cubic-bezier(.2,1.1,.3,1) both; }
+
+/* recap docked in the sidebar */
+.recap-dock { width: 100%; padding: 4px 2px; }
+.recap-dock .recap-title { font-family: var(--f-title); color: var(--opp); font-size: 16px; display: flex; gap: 6px; align-items: center; margin-bottom: 4px; }
+.recap-dock .recap-line { font-size: 14px; color: #e6dac4; padding: 1px 0; border-left: 2px solid rgba(224,115,60,.5); padding-left: 6px; margin: 2px 0; }
+@media (min-width: 861px) and (min-height: 561px) { .table > .recap { display: none; } }
+@media (max-width: 860px), (max-height: 560px) { .recap { top: auto; bottom: 44px; left: 50%; transform: translateX(-50%); width: min(420px, 92vw); } }
+
+/* forms */
+select, option { font-family: inherit; }
+select.field { appearance: none; padding-right: 30px; color: var(--text); background: #120e0b url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' stroke='%23cdb78e' stroke-width='2' fill='none'/></svg>") no-repeat right 10px center; }
+input[type=checkbox] { accent-color: var(--water); width: 18px; height: 18px; }
+@media (max-width: 600px) { .pulled-row { row-gap: 34px; padding-bottom: 30px; } .pulled-card .rarity-name { bottom: -26px; } }

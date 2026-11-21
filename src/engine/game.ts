@@ -478,6 +478,7 @@ export class Game {
       case 'takeCistern': {
         pl.water -= 1;
         pl.cisternHome = false;
+        pl.cisternTurn = st.turn;
         pl.hand.push({ uid: `w${++st.seq}`, id: 'cisterna' });
         this.log(p, 'water', `${this.pn(p)} bere Cisternu do ruky.`, ['cisterna']);
         return;
@@ -548,6 +549,7 @@ export class Game {
         return this.drawCost(p) <= pl.water ? null : 'Nemáš dost vody.';
       case 'takeCistern':
         if (!pl.cisternHome) return 'Cisternu už máš v ruce.';
+        if (pl.cisternTurn === st.turn) return 'Cisternu lze vzít jen jednou za tah.';
         return pl.water >= 1 ? null : 'Nemáš dost vody.';
       case 'ability': {
         const pp = this.findPerson(a.uid);
@@ -1082,6 +1084,7 @@ export class Game {
         shuffleInPlace(st.rng, deck);
         pl.reshuffles = (pl.reshuffles ?? 0) + 1;
         this.revealed = true;
+        this.fx({ t: 'thirst', player: p, first: pl.reshuffles < 2 });
         if (pl.reshuffles >= 2) this.thirst(p);
         else this.log(p, 'info', `${this.pn(p)}: balíček došel – odhozené karty se zamíchaly zpět. Každé další zamíchání stojí poškození základny (Žízeň).`);
       } else if (st.reshuffles === 0 && discard.length > 0) {

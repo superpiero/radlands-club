@@ -195,6 +195,10 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   const viewRef = useRef(view);
   viewRef.current = view;
   const [recap, setRecap] = useState<{ lines: string[]; key: number } | null>(null);
+  const onThirst = useCallback((p: PlayerIdx, first: boolean) => {
+    const who = p === me ? 'Tvůj' : 'Soupeřův';
+    setBanner({ text: first ? `${who} balíček došel – zamíchán. Příště už to bude bolet (Žízeň).` : `Žízeň! ${who} balíček se znovu zamíchal a základna utrpěla.`, mine: p === me, key: Date.now() });
+  }, [me]);
   const onTurn = useCallback((p: PlayerIdx) => {
     if (spectator) return;
     setBanner({ text: p === me ? 'TVŮJ TAH' : `TAH: ${viewRef.current.players[p].name}`, mine: p === me, key: Date.now() });
@@ -219,7 +223,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   }, [me, opp, spectator, state.mode]);
   useEffect(() => {
     if (!recap) return;
-    const t = setTimeout(() => setRecap(null), 9000);
+    const t = setTimeout(() => setRecap(null), 20000);
     return () => clearTimeout(t);
   }, [recap]);
   useEffect(() => {
@@ -295,7 +299,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           <div className="ghost-slot" onClick={(e) => { e.stopPropagation(); answer([main.id]); }}>
             <span>{main.ref?.t === 'slot' && main.ref.pos === 'front' ? 'SEM vepředu' : 'SEM'}</span>
             {front && back && (
-              <button className="ghost-back" onClick={(e) => { e.stopPropagation(); answer([back.id]); }} title="Postavit za stávajícího přeživšího (bude krytý)">↧ vzadu</button>
+              <button className="ghost-back" onClick={(e) => { e.stopPropagation(); answer([back.id]); }} title="Postavit za stávajícího přeživšího (bude krytý)">nebo vzadu ↧</button>
             )}
           </div>
         </div>,
@@ -630,7 +634,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
             <span className="pill" title={`Karet v ruce: ${pl.handCount}`}><Icon name="card-draw" />{pl.handCount}</span>
           )}
           <span className="pill" title="Přeživších ve hře (max 6)"><Icon name="hooded-figure" />{pl.peopleCount}/6</span>
-          {view.personal && <span className="pill" title={`Vlastní balíček: ${pl.deckCount} karet, odhozeno ${pl.discardCount}`}><Icon name="stockpiles" />{pl.deckCount}</span>}
+          {view.personal && <span className={`pill ${pl.deckCount <= 3 && (pl.reshuffles ?? 0) >= 1 ? 'warn' : ''}`} title={`Vlastní balíček: ${pl.deckCount} karet, odhozeno ${pl.discardCount}${(pl.reshuffles ?? 0) >= 1 ? ' · další zamíchání poškodí základnu (Žízeň)' : ''}`}><Icon name="stockpiles" />{pl.deckCount}</span>}
           {state.room && (state.room.score[0] + state.room.score[1] > 0) && <span className="pill" title="Výhry v této sérii">🏆 {state.room.score[owner]}</span>}
           {state.mode === 'online' && seat && !seat.connected && <span className="pill warn" title="Hráč je odpojený">odpojen {Math.floor((seat.awayMs ?? 0) / 1000)} s</span>}
           {timerFor === owner && timeLeft !== null && (
@@ -681,7 +685,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         <div className="hz opp">{homeZone(opp)}</div>
         <div className="cols opp">{[0, 1, 2].map((c) => column(opp, c))}</div>
         <div className="piles">
-          <div className="pile deck" data-uid="deck-pile" title={`Balíček: ${view.deckCount} karet${view.reshuffles ? (view.personal ? ' (už jednou zamíchán – až dojde, prohráváš!)' : ' (už jednou zamíchán – až dojde, je remíza!)') : ''}`}>
+          <div className="pile deck" data-uid="deck-pile" title={`Balíček: ${view.deckCount} karet${view.reshuffles ? (view.personal ? ' (už zamíchán – každé další zamíchání poškodí základnu)' : ' (už jednou zamíchán – až dojde, hra končí a rozhodují základny)') : ''}`}>
             <Icon name="stockpiles" /><span className="pc">{view.deckCount}</span>
           </div>
           <div className="pile discard" title="Odhazovací balíček (vrchní karta)" onClick={(e) => { e.stopPropagation(); if (view.discardTop) setInspect(view.discardTop.id); }}>
@@ -728,7 +732,8 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           </div>
         )}
       </div>
-      <Sidebar view={view} state={state} me={me} onChat={(t) => conn.chat(t)} onEmote={(id) => conn.emote(id)} mobileOpen={sideOpen} onClose={() => setSideOpen(false)} />
+      <Sidebar view={view} state={state} me={me} onChat={(t) => conn.chat(t)} onEmote={(id) => conn.emote(id)} mobileOpen={sideOpen} onClose={() => setSideOpen(false)}
+        recap={recap ? { title: `Co udělal(a) ${O.name}`, lines: recap.lines } : null} />
       {popover()}
       {modal()}
       {revealMin && pending && <div style={{ position: 'fixed', top: 70, left: '50%', transform: 'translateX(-50%)', zIndex: 61 }}><button className="btn primary" onClick={() => setRevealMin(false)}>Zpět k výběru</button></div>}
@@ -744,7 +749,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       {view.phase === 'chooseFirst' && <ChooseFirst view={view} me={me} act={act} state={state} />}
       {view.phase === 'over' && <GameOver view={view} me={me} state={state} conn={conn} />}
       {banner && <div className={`banner ${pending ? 'small' : ''}`} key={`banner-${banner.key}`}><div className={`inner ${banner.mine ? 'mine' : ''}`}>{banner.text}</div></div>}
-      <FxLayer view={view} me={me} onTurn={onTurn} />
+      <FxLayer view={view} me={me} onTurn={onTurn} onThirst={onThirst} />
       <Particles />
     </div>
   );

@@ -56,6 +56,8 @@ export interface PlayerState {
   /** exposedTurn[c] === current turn => column c counts as unprotected. */
   exposedTurn: number[];
   drawDiscountTurn: number;
+  /** Turn in which the Cistern was taken (once per turn). */
+  cisternTurn?: number;
   personDiscountTurn: number;
   sentryTurn: number;
   draftOptions: string[];
@@ -200,5 +202,6 @@ export type Fx =
   | { t: 'junk'; player: PlayerIdx; id: string }
   | { t: 'ability'; uid: string; player: PlayerIdx }
   | { t: 'turn'; player: PlayerIdx }
+  | { t: 'thirst'; player: PlayerIdx; first?: boolean }
   | { t: 'boom'; uid: string }
   | { t: 'stun'; uid: string };

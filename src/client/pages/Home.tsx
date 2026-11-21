@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { go } from '../App';
 import { Icon } from '../components/Icon';
-import { getName, randomName, setName } from '../prefs';
+import { getFlag, getName, randomName, setName } from '../prefs';
 import { logout, selectDeck, selectedDeck, useAccount } from '../account';
 import { deckSize, validateDeck } from '../../shared/collection';
 
@@ -9,7 +9,7 @@ export function Home() {
   const [name, setNm] = useState(getName() || '');
   const [code, setCode] = useState('');
   const [bases, setBases] = useState<'draft' | 'random'>('draft');
-  const [level, setLevel] = useState<'easy' | 'normal' | 'hard'>('normal');
+  const [level, setLevel] = useState<'easy' | 'normal' | 'hard'>(() => (getFlag('botWon', false) ? 'normal' : 'easy'));
   const acc = useAccount();
   const prof = acc.profile;
   const [deckModeSel, setDeckMode] = useState<'classic' | 'collection' | null>(null);

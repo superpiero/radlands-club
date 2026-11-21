@@ -37,7 +37,7 @@ Když balíček dojde podruhé, hra končí: vyhrává hráč s více stojícím
    - **Rozebrat kartu**: odhoď kartu z ruky a proveď její efekt rozebrání (zdarma).
    - **Použít schopnost** připravené karty: zaplať cenu; karta je pak do konce tahu nepřipravená.
    - **Líznout kartu** za 2 vody.
-   - **Vzít Cisternu** do ruky za 1 vodu. Rozebráním Cisterny získáš 1 vodu navíc a Cisterna se vrátí do zóny.
+   - **Vzít Cisternu** do ruky za 1 vodu (nejvýš jednou za tah). Rozebráním Cisterny získáš 1 vodu navíc a Cisterna se vrátí do zóny.
 5. **Konec tahu** – nevyužitá voda propadá.
 
 ## 6. Připravenost
@@ -53,7 +53,7 @@ Když balíček dojde podruhé, hra končí: vyhrává hráč s více stojícím
 - Nepoškozená karta → **poškozená**. Poškozená → **zničená**. Pevnost je zničena až třetím poškozením.
 - Zničený přeživší jde do odhazovacího balíčku. Zničený tulák jde lícem dolů navrch balíčku. Zničená základna zůstává ve hře jako zničená (do sloupce lze dál hrát).
 - Když je zničen přeživší vzadu, ten vepředu se posune k základně.
-- **Opravit** = odstranit 1 poškození z vlastní karty, nebo zneškodnit soupeřovu nálož na vlastní základně (obojí naráz, pokud platí obojí). Opravený přeživší není v tomto tahu připravený (výjimka: Felčar).
+- **Opravit** = odstranit 1 poškození z vlastního přeživšího, nebo zneškodnit soupeřovu nálož na vlastní základně. Poškozenou **základnu** opravují jen karty, které to výslovně uvádějí (např. Kovářka Rez, Doktorka Iva, Ruiny nemocnice). Opravený přeživší není v tomto tahu připravený (výjimka: Felčar).
 - Útočné efekty nelze použít na vlastní karty.
 
 ## 8. Nájezd
