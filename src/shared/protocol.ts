@@ -1,0 +1,67 @@
+// Wire protocol between browser and game server (JSON over WebSocket).
+
+import type { Action, PlayerIdx } from '../engine/types';
+import type { GameView } from '../engine/view';
+
+export interface RoomOptions {
+  baseMode: 'draft' | 'random';
+}
+
+export interface SeatInfo {
+  name: string;
+  connected: boolean;
+}
+
+export interface RoomInfo {
+  code: string;
+  seats: [SeatInfo | null, SeatInfo | null];
+  you: PlayerIdx | null;
+  spectators: number;
+  status: 'waiting' | 'playing' | 'over';
+  options: RoomOptions;
+  rematch: [boolean, boolean];
+  gameNo: number;
+}
+
+export type ClientMsg =
+  | { t: 'hello'; token: string; name: string }
+  | { t: 'create'; options: RoomOptions }
+  | { t: 'join'; code: string; spectate?: boolean }
+  | { t: 'act'; action: Action }
+  | { t: 'chat'; text: string }
+  | { t: 'emote'; id: string }
+  | { t: 'rematch' }
+  | { t: 'leave' }
+  | { t: 'ping'; ts: number };
+
+export interface ChatLine {
+  from: string;
+  seat: PlayerIdx | null;
+  text: string;
+  ts: number;
+  system?: boolean;
+}
+
+export type ServerMsg =
+  | { t: 'welcome'; version: string }
+  | { t: 'room'; room: RoomInfo }
+  | { t: 'left' }
+  | { t: 'state'; view: GameView }
+  | { t: 'error'; msg: string }
+  | { t: 'chat'; line: ChatLine }
+  | { t: 'chatHistory'; lines: ChatLine[] }
+  | { t: 'emote'; seat: PlayerIdx | null; id: string; from: string }
+  | { t: 'pong'; ts: number };
+
+export const PROTOCOL_VERSION = '1';
+
+export const EMOTES: Record<string, string> = {
+  hi: 'Ahoj! 👋',
+  gg: 'Dobrá hra! 🤝',
+  wow: 'Páni! 😮',
+  oops: 'Jejda… 😅',
+  think: 'Hmm… 🤔',
+  fire: 'Hoří to! 🔥',
+  water: 'Žízeň… 💧',
+  angry: 'Grrr! 😤',
+};

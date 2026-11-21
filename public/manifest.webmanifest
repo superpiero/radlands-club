@@ -1,0 +1,9 @@
+{
+  "name": "Poslední kapka",
+  "short_name": "Kapka",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#17120e",
+  "theme_color": "#17120e",
+  "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}

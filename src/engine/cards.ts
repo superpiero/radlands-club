@@ -460,7 +460,7 @@ export const BASES: CardDef[] = [
     }],
   }),
   B({
-    id: 'trhaviny', name: 'Sklad trhavin', draw: 1, icon: 'tnt', hue: 5,
+    id: 'trhaviny', name: 'Sklad trhavin', draw: 1, icon: 'explosive-materials', hue: 5,
     flavor: 'Kouření přísně zakázáno.',
     abilities: [{
       cost: 1, text: 'Polož nálož na nekrytou soupeřovu základnu (bez nálože). Na začátku tvého příštího tahu vybuchne a základnu poškodí, i když bude krytá.',
@@ -491,7 +491,7 @@ export const BASES: CardDef[] = [
     abilities: [],
   }),
   B({
-    id: 'srotiste', name: 'Šrotiště', draw: 1, icon: 'scrap-metal', hue: 28,
+    id: 'srotiste', name: 'Šrotiště', draw: 1, icon: 'gear-hammer', hue: 28,
     flavor: 'Všechno se dá rozebrat. Dvakrát.',
     abilities: [{
       cost: 1, text: 'Rozeber kartu z ruky: její efekt rozebrání se provede dvakrát.',
@@ -547,7 +547,7 @@ export const BASES: CardDef[] = [
     }],
   }),
   B({
-    id: 'rusicka', name: 'Rušička', draw: 1, icon: 'radio-tower', hue: 290,
+    id: 'rusicka', name: 'Rušička', draw: 1, icon: 'static-waves', hue: 290,
     flavor: 'Bzzzzzz.',
     abilities: [{
       cost: 2, text: 'Soupeř náhodně odhodí kartu z ruky. (Cisterna se mu vrátí do zóny.)',
@@ -557,7 +557,7 @@ export const BASES: CardDef[] = [
     }],
   }),
   B({
-    id: 'hangar', name: 'Hangár', draw: 2, icon: 'hangar', hue: 215,
+    id: 'hangar', name: 'Hangár', draw: 2, icon: 'mechanic-garage', hue: 215,
     flavor: 'Kola, pásy, nebo aspoň trakař.',
     abilities: [{
       cost: 1, text: 'Prohoď přeživší ve dvou svých sloupcích (všichni se přesunou k druhé základně).',
@@ -572,7 +572,7 @@ export const BASES: CardDef[] = [
     abilities: [],
   }),
   B({
-    id: 'krater', name: 'Kráter', draw: 3, icon: 'crater', hue: 25,
+    id: 'krater', name: 'Kráter', draw: 3, icon: 'hole', hue: 25,
     flavor: 'Nic tu není. Proto tu nikdo neotravuje.',
     abilities: [],
   }),
@@ -618,7 +618,7 @@ export const BASES: CardDef[] = [
     }],
   }),
   B({
-    id: 'skrys', name: 'Skrýš', draw: 2, icon: 'trapdoor', hue: 120,
+    id: 'skrys', name: 'Skrýš', draw: 2, icon: 'floor-hatch', hue: 120,
     flavor: 'Pod podlahou je místo pro jednoho.',
     abilities: [{
       cost: 1, text: 'Vrať svého nepoškozeného přeživšího (ne tuláka) do ruky.',
