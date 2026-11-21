@@ -7,6 +7,8 @@ export interface RoomOptions {
   baseMode: 'draft' | 'random';
   /** classic = one shared deck; collection = each player brings a deck from their collection. */
   deckMode?: 'classic' | 'collection';
+  /** Optional turn time limit in seconds (0/undefined = off). */
+  turnSeconds?: number;
 }
 
 export interface SeatInfo {
@@ -28,6 +30,8 @@ export interface RoomInfo {
   rematch: [boolean, boolean];
   /** After this many ms away the other player may claim the win. */
   claimWinMs?: number;
+  /** Remaining time of the current turn / decision in ms (turn timer), null = no timer. */
+  turnLeftMs?: number | null;
   /** Wins in this room's series (by seat). */
   score: [number, number];
   gameNo: number;

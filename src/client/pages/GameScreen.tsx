@@ -7,6 +7,8 @@ import type { Conn, ConnState } from '../conn';
 import { sfx } from '../sound';
 import { Card } from '../components/Card';
 import type { GameView } from '../../engine/view';
+import { HowToPlay } from '../components/HowToPlay';
+import { getFlag, setFlag } from '../prefs';
 
 interface Showcase { id: string; label: string; key: number }
 
@@ -33,11 +35,12 @@ function showcaseFor(v: GameView, mode: string): Showcase | null {
 }
 
 /** Buffers incoming views so opponent actions are revealed one by one (card showcase first). */
-function useBufferedView(view: GameView | null, mode: string): { shown: GameView | null; showcase: Showcase | null } {
+function useBufferedView(view: GameView | null, mode: string): { shown: GameView | null; showcase: Showcase | null; skip: () => void } {
   const [shown, setShown] = useState<GameView | null>(view);
   const [showcase, setShowcase] = useState<Showcase | null>(null);
   const queue = useRef<GameView[]>([]);
   const busy = useRef(false);
+  const skipRef = useRef<(() => void) | null>(null);
   const pump = useRef<() => void>(() => {});
   pump.current = () => {
     if (busy.current) return;
@@ -50,25 +53,41 @@ function useBufferedView(view: GameView | null, mode: string): { shown: GameView
       return;
     }
     busy.current = true;
-    setShowcase(sc);
-    setTimeout(() => {
+    const turnStart = next.fx.some((f) => f.t === 'turn');
+    const lead = turnStart ? 1150 : 0; // let the turn banner finish first
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      skipRef.current = null;
       setShowcase(null);
       setShown(next);
       busy.current = false;
-      setTimeout(() => pump.current(), 260);
-    }, 900);
+      setTimeout(() => pump.current(), 220);
+    };
+    setTimeout(() => {
+      setShowcase(sc);
+      skipRef.current = finish;
+      setTimeout(finish, 1500);
+    }, lead);
   };
   useEffect(() => {
     if (!view) return;
     queue.current.push(view);
     pump.current();
   }, [view]);
-  return { shown: shown ?? view, showcase };
+  return { shown: shown ?? view, showcase, skip: () => skipRef.current?.() };
 }
 
 export function GameScreen({ conn, state }: { conn: Conn; state: ConnState }) {
   const { room } = state;
-  const { shown: view, showcase } = useBufferedView(state.view, state.mode);
+  const { shown: view, showcase, skip } = useBufferedView(state.view, state.mode);
+  const [howtoDone, setHowtoDone] = useState(() => getFlag('howtoSeen', false));
+  // first win against the bot unlocks "Střední" as the default difficulty
+  const v0 = state.view;
+  useEffect(() => {
+    if (state.mode === 'bot' && v0?.phase === 'over' && v0.you !== null && v0.winner === v0.you) setFlag('botWon', true);
+  }, [state.mode, v0?.phase, v0?.winner, v0?.you]);
   const [handoverOk, setHandoverOk] = useState<number | null>(null);
   const gameNo = state.room?.gameNo ?? 0;
   useEffect(() => { setHandoverOk(null); }, [gameNo]);
@@ -133,6 +152,7 @@ export function GameScreen({ conn, state }: { conn: Conn; state: ConnState }) {
       <>
         {toasts}
         <Draft view={view} onPick={(bases) => conn.act({ t: 'draftPick', bases })} mode={state.mode} />
+        {!howtoDone && <HowToPlay onClose={() => { setFlag('howtoSeen', true); setHowtoDone(true); }} />}
       </>
     );
   }
@@ -142,7 +162,7 @@ export function GameScreen({ conn, state }: { conn: Conn; state: ConnState }) {
       {toasts}
       <Board conn={conn} state={state} view={view} />
       {showcase && (
-        <div className="showcase dim" key={showcase.key}>
+        <div className="showcase dim" key={showcase.key} onClick={skip} title="Klikni pro přeskočení">
           <div className="sc-inner">
             <div className="sc-label">{showcase.label}</div>
             <Card id={showcase.id} noZoom rarityFx />
@@ -190,7 +210,7 @@ function WaitingRoom({ state }: { state: ConnState }) {
           <>
             <div className="muted" style={{ fontWeight: 700, letterSpacing: '.1em' }}>KÓD STOLU</div>
             <div className="room-code">{room.code}</div>
-            <div className="pill" style={{ alignSelf: 'center' }}>{room.options.deckMode === 'collection' ? 'Sběratelský stůl – každý hraje se svým balíčkem' : 'Klasika – společný balíček'}</div>
+            <div className="pill" style={{ alignSelf: 'center' }}>{room.options.deckMode === 'collection' ? 'Sběratelský stůl – každý hraje se svým balíčkem' : 'Klasika – společný balíček'}{room.options.turnSeconds ? ` · ⏱ ${room.options.turnSeconds} s na tah` : ''}</div>
             <div className="copybox">
               <input className="field" readOnly value={link} onFocus={(e) => e.target.select()} />
               <button className="btn primary" onClick={copy}>{copied ? 'Zkopírováno ✓' : 'Kopírovat odkaz'}</button>

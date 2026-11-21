@@ -256,6 +256,9 @@ describe('cistern & draw', () => {
     ok(g.act(0, { t: 'junk', uid: cis.uid }));
     expect(g.state.players[0].cisternHome).toBe(true);
     expect(g.state.players[0].water).toBe(2);
+    // only once per turn – otherwise "take & junk" loops forever
+    const again = g.act(0, { t: 'takeCistern' });
+    expect(again.ok).toBe(false);
   });
 
   it('draw card costs 2 water', () => {

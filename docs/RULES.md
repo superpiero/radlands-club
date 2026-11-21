@@ -5,7 +5,7 @@ Pravidla jsou zde popsána tak, jak je implementuje engine (`src/engine/game.ts`
 
 ## 1. Cíl
 Zničit **všechny 3 soupeřovy základny**. Kdo to dokáže, vyhrává okamžitě – i uprostřed tahu nebo během vyhodnocení efektu.
-Když balíček dojde podruhé, hra končí **remízou**.
+Když balíček dojde podruhé, hra končí: vyhrává hráč s více stojícími základnami, při shodě ten s menším poškozením základen; teprve pak je remíza.
 
 ## 2. Komponenty
 | Komponenta | Počet | Poznámka |
@@ -37,7 +37,7 @@ Když balíček dojde podruhé, hra končí **remízou**.
    - **Rozebrat kartu**: odhoď kartu z ruky a proveď její efekt rozebrání (zdarma).
    - **Použít schopnost** připravené karty: zaplať cenu; karta je pak do konce tahu nepřipravená.
    - **Líznout kartu** za 2 vody.
-   - **Vzít Cisternu** do ruky za 1 vodu. Rozebráním Cisterny získáš 1 vodu navíc a Cisterna se vrátí do zóny.
+   - **Vzít Cisternu** do ruky za 1 vodu (nejvýš jednou za tah). Rozebráním Cisterny získáš 1 vodu navíc a Cisterna se vrátí do zóny.
 5. **Konec tahu** – nevyužitá voda propadá.
 
 ## 6. Připravenost
@@ -53,7 +53,7 @@ Když balíček dojde podruhé, hra končí **remízou**.
 - Nepoškozená karta → **poškozená**. Poškozená → **zničená**. Pevnost je zničena až třetím poškozením.
 - Zničený přeživší jde do odhazovacího balíčku. Zničený tulák jde lícem dolů navrch balíčku. Zničená základna zůstává ve hře jako zničená (do sloupce lze dál hrát).
 - Když je zničen přeživší vzadu, ten vepředu se posune k základně.
-- **Opravit** = odstranit 1 poškození z vlastní karty, nebo zneškodnit soupeřovu nálož na vlastní základně (obojí naráz, pokud platí obojí). Opravený přeživší není v tomto tahu připravený (výjimka: Felčar).
+- **Opravit** = odstranit 1 poškození z vlastního přeživšího, nebo zneškodnit soupeřovu nálož na vlastní základně. Poškozenou **základnu** opravují jen karty, které to výslovně uvádějí (např. Kovářka Rez, Doktorka Iva, Ruiny nemocnice). Opravený přeživší není v tomto tahu připravený (výjimka: Felčar).
 - Útočné efekty nelze použít na vlastní karty.
 
 ## 8. Nájezd
@@ -72,11 +72,11 @@ Když balíček dojde podruhé, hra končí **remízou**.
 ## 10. Sběratelský režim (vlastní balíčky)
 - Každý hráč hraje se svým balíčkem (30–40 karet, max. 2 kopie, legendární 1×) a má vlastní odhazovací balíček.
 - Tuláci se berou z vlastního balíčku a po zničení se vrací na jeho vršek. Karty, které „berou z odhazovacího balíčku“ (Sběračka Myška), berou z vlastního.
-- Když ti dojde balíček, zamíchá se tvůj odhazovací balíček (jednou). **Když dojde podruhé, prohráváš (vyčerpání).**
+- Když ti dojde balíček, zamíchá se tvůj odhazovací balíček jako nový. **Žízeň:** každé další zamíchání (od druhého) poškodí tvou nejméně poškozenou základnu. Když nemáš ani odhozené karty, líznutí propadne a základna je poškozena také.
 - Za odehrané online hry dostávají registrovaní hráči kapky na nákup boosterů.
 
 ## 11. Další pravidla
 - Vlastnosti přeživších platí, jen dokud nejsou poškození (výjimka: Pes Rex). Vlastnosti základen platí, dokud nejsou zničené.
-- Balíček dojde → odhazovací balíček se zamíchá jako nový (jednou). Dojde podruhé → remíza.
+- Balíček dojde → odhazovací balíček se zamíchá jako nový (jednou). Dojde podruhé → rozhodne počet stojících základen (pak menší poškození, jinak remíza).
 - Ruka nemá limit. Z odhazovacího balíčku je vidět jen vrchní karta.
 - **Zpět**: akci lze vrátit, dokud neodhalila skrytou informaci (líznutí, prohlédnutí karet, rozhodnutí soupeře, náhoda). Rozdělanou volbu lze zrušit (Esc).

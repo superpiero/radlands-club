@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { go } from '../App';
 import { Icon } from '../components/Icon';
-import { getName, randomName, setName } from '../prefs';
+import { getFlag, getName, randomName, setName } from '../prefs';
 import { logout, selectDeck, selectedDeck, useAccount } from '../account';
 import { deckSize, validateDeck } from '../../shared/collection';
 
@@ -9,7 +9,7 @@ export function Home() {
   const [name, setNm] = useState(getName() || '');
   const [code, setCode] = useState('');
   const [bases, setBases] = useState<'draft' | 'random'>('draft');
-  const [level, setLevel] = useState<'easy' | 'normal' | 'hard'>('normal');
+  const [level, setLevel] = useState<'easy' | 'normal' | 'hard'>(() => (getFlag('botWon', false) ? 'normal' : 'easy'));
   const acc = useAccount();
   const prof = acc.profile;
   const [deckModeSel, setDeckMode] = useState<'classic' | 'collection' | null>(null);
@@ -28,7 +28,8 @@ export function Home() {
   };
 
   const q = bases === 'random' ? '?bases=random' : '';
-  const qNew = `?${bases === 'random' ? 'bases=random&' : ''}decks=${mode}`;
+  const [timer, setTimer] = useState<number>(0);
+  const qNew = `?${bases === 'random' ? 'bases=random&' : ''}decks=${mode}${timer ? `&timer=${timer}` : ''}`;
   const canOnline = mode === 'classic' || deckOk;
 
   return (
@@ -102,6 +103,12 @@ export function Home() {
               )}
             </>
           )}
+          <div className="row">
+            <span className="muted">Čas na tah:</span>
+            <div className="seg">
+              {[0, 60, 90, 120].map((t) => <button key={t} className={timer === t ? 'on' : ''} onClick={() => setTimer(t)}>{t ? `${t} s` : 'bez limitu'}</button>)}
+            </div>
+          </div>
           <button className="btn primary" disabled={!canOnline} onClick={() => { ensureName(); if (curDeck) selectDeck(curDeck.id); go(`/new${qNew}`); }}>
             <Icon name="play-button" /> Založit stůl
           </button>
@@ -127,6 +134,8 @@ export function Home() {
         <div className="panel home-card">
           <h2><Icon name="tabletop-players" /> Jeden počítač</h2>
           <p>Dva hráči u jednoho zařízení. Před každým předáním se ruka schová.</p>
+          <input className="field" placeholder="Jméno 2. hráče" maxLength={20} defaultValue={(() => { try { return localStorage.getItem('pk.name2') ?? ''; } catch { return ''; } })()}
+            onChange={(e) => { try { localStorage.setItem('pk.name2', e.target.value.slice(0, 20)); } catch { /* ignore */ } }} />
           <button className="btn" onClick={() => { ensureName(); go(`/hotseat${q}`); }}>
             <Icon name="swap-bag" /> Hrát u jednoho PC
           </button>

@@ -49,6 +49,10 @@ export interface LegalInfo {
 
 const COL_NAME = ['levý', 'prostřední', 'pravý'];
 
+function emptyStats(): import('./types').MatchStats {
+  return { damage: 0, kills: 0, bases: 0, played: 0, junked: 0, abilities: 0, bySource: {} };
+}
+
 export function freshState(opts: GameOptions): GameState {
   const seed = opts.seed ?? Math.floor(Math.random() * 2 ** 31);
   const rng = seedState(seed);
@@ -63,6 +67,7 @@ export function freshState(opts: GameOptions): GameState {
     deck: [], discard: [], turn: 0, active: 0, first: 0, coinWinner: 0,
     phase: 'draft', step: 'start', pending: null, winner: null, winReason: null,
     reshuffles: 0, log: [], seq: 0, promptSeq: 0, rev: 0, fx: [],
+    stats: [emptyStats(), emptyStats()],
   };
   // Deck(s)
   if (opts.decks) {
@@ -115,7 +120,7 @@ export class Game {
   // Public API
   // =========================================================================
 
-  act(player: PlayerIdx, action: Action): { ok: true } | { ok: false; error: string } {
+  act(player: PlayerIdx, action: Action): { ok: true } | { ok: false; error: string; rolledBack?: boolean } {
     if (player !== 0 && player !== 1) return { ok: false, error: 'Neplatný hráč.' };
     const bad = sanitizeAction(action);
     if (bad) return { ok: false, error: bad };
@@ -198,7 +203,7 @@ export class Game {
         this.actionStart = null;
         this.actionLog = [];
         this.state.rev++;
-        return { ok: false, error: 'Interní chyba – akce byla vrácena.' };
+        return { ok: false, error: 'Interní chyba – akce byla vrácena.', rolledBack: true };
       }
     }
     this.state.rev++;
@@ -407,24 +412,27 @@ export class Game {
     const pl = st.players[p];
     switch (a.t) {
       case 'playPerson': {
+        const handCard = pl.hand.find((h) => h.uid === a.uid)!;
+        let col = a.col;
+        let pos = a.pos;
+        // choose the slot first: nothing changes for the opponent until the card is really placed
+        if (col === undefined || pos === undefined || !this.slotValid(p, col, pos)) {
+          const slot = yield* this.chooseSlot(p, 'Kam postavíš přeživšího?', handCard.id);
+          if (!slot) return;
+          col = slot.col;
+          pos = slot.pos;
+        }
         const inst = this.takeFromHand(p, a.uid);
         const def = cardDef(inst.id);
         const cost = this.personCost(p, def);
         if (this.baseTraitActive(p, 'kantyna') && pl.personDiscountTurn !== st.turn && (def.cost ?? 0) > 0) pl.personDiscountTurn = st.turn;
         pl.water -= cost;
-        let col = a.col;
-        let pos = a.pos;
-        if (col === undefined || pos === undefined || !this.slotValid(p, col, pos)) {
-          const slot = yield* this.chooseSlot(p, 'Kam postavíš přeživšího?', inst.id);
-          if (!slot) return;
-          col = slot.col;
-          pos = slot.pos;
-        }
         const person: PersonInPlay = {
           uid: inst.uid, id: inst.id, faceDown: false, damaged: false,
           playedTurn: st.turn, usedTurn: -1, restoredTurn: -1, stunnedTurn: -1, stash: 0,
         };
         this.placePerson(p, person, col, pos);
+        this.stat(p).played++;
         this.fx({ t: 'play', uid: inst.uid, player: p });
         this.log(p, 'play', `${this.pn(p)} verbuje ${def.name} (${COL_NAME[col]} sloupec, cena ${cost}).`, [inst.id]);
         return;
@@ -433,6 +441,7 @@ export class Game {
         const inst = this.takeFromHand(p, a.uid);
         const def = cardDef(inst.id);
         pl.water -= def.cost ?? 0;
+        this.stat(p).played++;
         this.fx({ t: 'event', uid: inst.uid, player: p, id: inst.id });
         if ((def.countdown ?? 0) === 0) {
           this.revealed = true;
@@ -452,6 +461,7 @@ export class Game {
         if (inst.id !== 'cisterna') this.revealed = true;
         if (inst.id === 'cisterna') pl.cisternHome = true;
         else this.discardOf(p).push(inst);
+        this.stat(p).junked++;
         this.fx({ t: 'junk', player: p, id: inst.id });
         this.log(p, 'play', `${this.pn(p)} rozebírá ${def.name} → ${JUNK_LABEL[def.junk!]}.`, [inst.id]);
         yield* this.junkEffect(p, def.junk!, inst.uid);
@@ -468,6 +478,7 @@ export class Game {
       case 'takeCistern': {
         pl.water -= 1;
         pl.cisternHome = false;
+        pl.cisternTurn = st.turn;
         pl.hand.push({ uid: `w${++st.seq}`, id: 'cisterna' });
         this.log(p, 'water', `${this.pn(p)} bere Cisternu do ruky.`, ['cisterna']);
         return;
@@ -480,6 +491,7 @@ export class Game {
         pl.water -= this.abilityCost(p, ab.cost);
         if (pl2) pl2.person.usedTurn = st.turn;
         else this.findBase(a.uid)!.base.usedTurn = st.turn;
+        this.stat(p).abilities++;
         this.fx({ t: 'ability', uid: a.uid, player: p });
         this.log(p, 'play', `${this.pn(p)} používá ${def.name}: ${ab.text}`, [def.id]);
         yield* ab.run(this, ctx);
@@ -533,9 +545,11 @@ export class Game {
         return null;
       }
       case 'drawCard':
+        if (st.opts.personal && !this.canDrawMore(p)) return 'Nemáš z čeho líznout – balíček i odhazovací balíček jsou prázdné.';
         return this.drawCost(p) <= pl.water ? null : 'Nemáš dost vody.';
       case 'takeCistern':
         if (!pl.cisternHome) return 'Cisternu už máš v ruce.';
+        if (pl.cisternTurn === st.turn) return 'Cisternu lze vzít jen jednou za tah.';
         return pl.water >= 1 ? null : 'Nemáš dost vody.';
       case 'ability': {
         const pp = this.findPerson(a.uid);
@@ -808,7 +822,7 @@ export class Game {
   restoreTargets(p: PlayerIdx, o: { basesOnly?: boolean; exclude?: string; peopleOnly?: boolean }): string[] {
     const pl = this.state.players[p];
     const out: string[] = [];
-    if (!o.basesOnly) for (const x of pl.columns.flat()) if (x.damaged && !x.faceDown && x.uid !== o.exclude) out.push(x.uid);
+    if (!o.basesOnly) for (const x of pl.columns.flat()) if (x.damaged && x.uid !== o.exclude) out.push(x.uid);
     for (const b of pl.bases) {
       if (b.destroyed || b.uid === o.exclude) continue;
       const charged = b.charge !== null && b.charge !== p;
@@ -831,7 +845,10 @@ export class Game {
 
   usedBases(p: PlayerIdx): string[] {
     const t = this.state.turn;
-    return this.state.players[p].bases.filter((b) => !b.destroyed && b.usedTurn === t && cardDef(b.id).abilities.length > 0).map((b) => b.uid);
+    return this.state.players[p].bases
+      .filter((b) => !b.destroyed && b.usedTurn === t && cardDef(b.id).abilities.length > 0)
+      .filter((b) => cardDef(b.id).abilities.some((ab) => !ab.canUse || ab.canUse(this, { p, uid: b.uid })))
+      .map((b) => b.uid);
   }
 
   usedPeople(p: PlayerIdx, exclude: string): string[] {
@@ -1026,34 +1043,62 @@ export class Game {
   /** Can player p still take a card from their deck (possibly after the one allowed reshuffle)? */
   canDrawMore(p: PlayerIdx): boolean {
     const st = this.state;
-    const resh = st.opts.personal ? st.players[p].reshuffles ?? 0 : st.reshuffles;
-    return this.deckOf(p).length > 0 || (resh === 0 && this.discardOf(p).length > 0);
+    if (st.opts.personal) return this.deckOf(p).length > 0 || this.discardOf(p).length > 0;
+    return this.deckOf(p).length > 0 || (st.reshuffles === 0 && this.discardOf(p).length > 0);
   }
 
-  private drawTop(p: PlayerIdx): CardInst {
+  /** "Žízeň" (personal decks): each reshuffle after the first damages your least damaged base. */
+  private thirst(p: PlayerIdx) {
+    const bases = this.state.players[p].bases.filter((b) => !b.destroyed);
+    if (!bases.length) return;
+    const b = [...bases].sort((x, y) => x.damage - y.damage)[0];
+    const hp = cardDef(b.id).hp ?? 2;
+    b.damage++;
+    this.log(p, 'damage', `Žízeň: ${this.pn(p)} zamíchal(a) balíček znovu – základna ${this.nm(b.id)} je poškozena.`, [b.id]);
+    if (b.damage >= hp) {
+      b.destroyed = true;
+      b.charge = null;
+      b.stored = 0;
+      this.fx({ t: 'damage', uid: b.uid, destroyed: true });
+      this.log(p, 'destroy', `Základna ${this.nm(b.id)} (${this.pn(p)}) podlehla žízni!`, [b.id]);
+      this.checkWin();
+    } else {
+      this.fx({ t: 'damage', uid: b.uid });
+    }
+  }
+
+  /** Top card of p's draw pile; null when a personal deck has nothing left at all. */
+  private drawTop(p: PlayerIdx): CardInst | null {
     const st = this.state;
     const deck = this.deckOf(p);
     if (deck.length === 0) {
       const discard = this.discardOf(p);
-      const personal = !!st.opts.personal;
-      const resh = personal ? st.players[p].reshuffles ?? 0 : st.reshuffles;
-      if (resh === 0 && discard.length > 0) {
+      if (st.opts.personal) {
+        const pl = st.players[p];
+        if (discard.length === 0) {
+          this.thirst(p);
+          return null;
+        }
         deck.push(...discard.map((c) => ({ uid: this.freshUid(), id: c.id })));
         discard.length = 0;
         shuffleInPlace(st.rng, deck);
-        if (personal) st.players[p].reshuffles = 1;
-        else st.reshuffles = 1;
+        pl.reshuffles = (pl.reshuffles ?? 0) + 1;
         this.revealed = true;
-        this.log(personal ? p : null, 'info', personal
-          ? `${this.pn(p)}: balíček došel – odhozené karty se zamíchaly zpět. Až dojde podruhé, ${this.pn(p)} prohrává vyčerpáním.`
-          : 'Balíček došel – odhazovací balíček se zamíchal jako nový balíček. Až dojde podruhé, hra končí remízou.');
-      } else if (personal) {
-        throw new GameOver(this.opp(p), `${this.pn(p)} došly karty (vyčerpání).`);
+        this.fx({ t: 'thirst', player: p, first: pl.reshuffles < 2 });
+        if (pl.reshuffles >= 2) this.thirst(p);
+        else this.log(p, 'info', `${this.pn(p)}: balíček došel – odhozené karty se zamíchaly zpět. Každé další zamíchání stojí poškození základny (Žízeň).`);
+      } else if (st.reshuffles === 0 && discard.length > 0) {
+        deck.push(...discard.map((c) => ({ uid: this.freshUid(), id: c.id })));
+        discard.length = 0;
+        shuffleInPlace(st.rng, deck);
+        st.reshuffles = 1;
+        this.revealed = true;
+        this.log(null, 'info', 'Balíček došel – odhazovací balíček se zamíchal jako nový balíček. Až dojde podruhé, hra skončí a rozhodne počet stojících základen.');
       } else {
-        throw this.deckOutResult(resh === 0 ? 'Došly všechny karty.' : 'Balíček došel podruhé.');
+        throw this.deckOutResult(st.reshuffles === 0 ? 'Došly všechny karty.' : 'Balíček došel podruhé.');
       }
     }
-    return deck.shift()!;
+    return deck.shift() ?? null;
   }
 
   draw(p: PlayerIdx, n: number, silent = false) {
@@ -1062,9 +1107,12 @@ export class Game {
     const got: string[] = [];
     for (let i = 0; i < n; i++) {
       const c = this.drawTop(p);
+      if (!c) break;
       pl.hand.push(c);
       got.push(c.id);
     }
+    if (!got.length) return;
+    n = got.length;
     this.revealed = true;
     this.fx({ t: 'draw', player: p, n });
     if (!silent) {
@@ -1114,6 +1162,34 @@ export class Game {
     return yield* this.damage(uid, c.p, { kind: o.kind, srcUid: c.uid, srcIsPerson });
   }
 
+  private stat(p: PlayerIdx): import('./types').MatchStats {
+    const st = this.state;
+    st.stats ??= [emptyStats(), emptyStats()];
+    return st.stats[p];
+  }
+
+  private srcId(srcUid?: string): string | null {
+    if (!srcUid) return null;
+    const pp = this.findPerson(srcUid);
+    if (pp) return pp.person.faceDown ? null : pp.person.id;
+    const bb = this.findBase(srcUid);
+    if (bb) return bb.base.id;
+    for (const pl of this.state.players) for (const e of pl.queue) if (e?.uid === srcUid) return e.id;
+    for (const pl of this.state.players) for (const d of pl.discard ?? []) if (d.uid === srcUid) return d.id;
+    for (const d of this.state.discard) if (d.uid === srcUid) return d.id;
+    return srcUid.startsWith('raidtok') ? 'najezd' : null;
+  }
+
+  private recordDamage(by: PlayerIdx, owner: PlayerIdx, o: { kind: string; srcUid?: string }, destroyed: boolean, isBase: boolean) {
+    if (by === owner) return;
+    const s = this.stat(by);
+    s.damage++;
+    if (destroyed && !isBase) s.kills++;
+    if (destroyed && isBase) s.bases++;
+    const id = o.kind === 'raid' ? 'najezd' : o.kind === 'charge' ? 'nalož' : this.srcId(o.srcUid);
+    if (id) s.bySource[id] = (s.bySource[id] ?? 0) + 1;
+  }
+
   /** Apply one damage to a card (person or base). Ignores protection – callers choose legal targets. */
   *damage(uid: string, by: PlayerIdx, o: { kind: DmgKind; srcUid?: string; srcIsPerson?: boolean }): Gen<DamageResult | null> {
     const st = this.state;
@@ -1127,6 +1203,7 @@ export class Game {
       const res: DamageResult = { uid, owner, kind: 'person', col, destroyed: false, destroyedPerson: false };
       const tough = person.faceDown && !person.damaged && this.activePeople(owner).some((x) => x.id === 'matka');
       const src = o.srcUid ?? (o.kind === 'raid' ? `raidtok-${by}` : undefined);
+      this.recordDamage(by, owner, o, !tough && (person.faceDown || person.damaged), false);
       if (tough) {
         person.damaged = true;
         this.fx({ t: 'damage', uid, src });
@@ -1154,6 +1231,7 @@ export class Game {
     }
     const hp = cardDef(base.id).hp ?? 2;
     const bsrc = o.srcUid ?? (o.kind === 'raid' ? `raidtok-${by}` : undefined);
+    this.recordDamage(by, owner, o, base.damage + 1 >= hp, true);
     base.damage++;
     const res: DamageResult = { uid, owner, kind: 'base', col, destroyed: false, destroyedPerson: false };
     if (base.damage >= hp) {
@@ -1240,7 +1318,8 @@ export class Game {
       pp.person.damaged = false;
       if (!keepReady) pp.person.restoredTurn = st.turn;
       this.fx({ t: 'restore', uid });
-      this.log(pp.owner, 'info', `${this.nm(pp.person.id)} je opraven(a)${keepReady ? ' a hned připraven(a)' : ''}.`, [pp.person.id]);
+      const nm = pp.person.faceDown ? 'Tulák' : this.nm(pp.person.id);
+      this.log(pp.owner, 'info', `${nm}: opraveno${keepReady ? ' a hned připraveno' : ''}.`, pp.person.faceDown ? undefined : [pp.person.id]);
       return;
     }
     const bb = this.findBase(uid);
@@ -1266,9 +1345,14 @@ export class Game {
       this.log(p, 'info', 'Na tuláka není místo.');
       return;
     }
+    if (!this.canDrawMore(p)) {
+      this.log(p, 'info', 'Balíček je vyčerpaný – žádný tulák nepřijde.');
+      return;
+    }
     const slot = yield* this.chooseSlot(p, 'Kam postavíš tuláka?', 'tulak');
     if (!slot) return;
     const c = this.drawTop(p);
+    if (!c) return;
     const person: PersonInPlay = {
       uid: this.freshUid('t'), id: c.id, faceDown: true, damaged: false,
       playedTurn: this.state.turn, usedTurn: -1, restoredTurn: -1, stunnedTurn: -1, stash: 0,
@@ -1403,8 +1487,23 @@ export class Game {
 
   *smuggle(c: Ctx): Gen {
     const st = this.state;
-    const cards: CardInst[] = [this.drawTop(c.p)];
-    if (this.canDrawMore(c.p)) cards.push(this.drawTop(c.p));
+    if (!this.canDrawMore(c.p)) {
+      this.log(c.p, 'info', 'Balíček je vyčerpaný – Pašerák nic nesežene.');
+      return;
+    }
+    const first = this.drawTop(c.p);
+    if (!first) return;
+    const cards: CardInst[] = [first];
+    if (this.canDrawMore(c.p)) {
+      try {
+        const second = this.drawTop(c.p);
+        if (second) cards.push(second);
+      } catch (e) {
+        // the game ended while drawing the second card: keep the first one in hand so no card vanishes
+        st.players[c.p].hand.push(first);
+        throw e;
+      }
+    }
     this.revealed = true;
     if (cards.length === 1) {
       st.players[c.p].hand.push(cards[0]);
@@ -1506,6 +1605,7 @@ export class Game {
       if (!uid) return;
       const c = this.takeFromHand(p, uid);
       this.discardOf(p).push(c);
+      this.revealed = true;
       this.log(p, 'info', `${this.pn(p)} odhazuje ${this.nm(c.id)}.`, [c.id]);
     }
   }
@@ -1584,7 +1684,7 @@ export class Game {
     if (!uid) return;
     const inst = this.takeFromHand(c.p, uid);
     if (inst.id === 'cisterna') pl.cisternHome = true;
-    else this.discardOf(c.p).push(inst);
+    else { this.discardOf(c.p).push(inst); this.revealed = true; }
     const kind = cardDef(inst.id).junk!;
     this.log(c.p, 'play', `${this.pn(c.p)} rozebírá ${this.nm(inst.id)} na Šrotišti → ${JUNK_LABEL[kind]} 2×.`, [inst.id]);
     yield* this.junkEffect(c.p, kind, inst.uid);

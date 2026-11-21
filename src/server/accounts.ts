@@ -42,18 +42,34 @@ export class Accounts {
   private store: Store = { v: 1, users: {}, sessions: {} };
   private dirty = false;
 
-  constructor(private file: string) {
-    if (existsSync(file)) {
+  constructor(private file: string | null = null) {
+    if (file && existsSync(file)) {
       try {
-        this.store = JSON.parse(readFileSync(file, 'utf8'));
-        this.store.sessions ??= {};
+        this.loads(readFileSync(file, 'utf8'));
       } catch (e) {
         console.warn('Nelze načíst účty:', e);
       }
     }
   }
 
+  /** Replace the store from serialized JSON. */
+  loads(json: string) {
+    const s = JSON.parse(json) as Store;
+    s.sessions ??= {};
+    s.users ??= {};
+    this.store = s;
+    this.dirty = false;
+  }
+
+  /** Serialized store, or null when nothing changed (unless forced). Marks clean. */
+  dumps(force = false): string | null {
+    if (!this.dirty && !force) return null;
+    this.dirty = false;
+    return JSON.stringify(this.store);
+  }
+
   save(force = false) {
+    if (!this.file) return;
     if (!this.dirty && !force) return;
     mkdirSync(dirname(this.file), { recursive: true });
     writeFileSync(`${this.file}.tmp`, JSON.stringify(this.store));
@@ -79,7 +95,7 @@ export class Accounts {
     if (!NAME_RE.test(n)) return { error: 'Jméno musí mít 3–20 znaků (písmena, čísla, mezera, _ . -).' };
     if (typeof password !== 'string' || password.length < 4 || password.length > 100) return { error: 'Heslo musí mít aspoň 4 znaky.' };
     const k = key(n);
-    if (this.store.users[k]) return { error: 'Toto jméno už někdo používá.' };
+    if (Object.prototype.hasOwnProperty.call(this.store.users, k)) return { error: 'Toto jméno už někdo používá.' };
     const salt = randomBytes(16).toString('hex');
     const collection = starterSet();
     const u: UserRec = {
@@ -93,7 +109,8 @@ export class Accounts {
   }
 
   login(name: string, password: string): { token: string; profile: PublicProfile } | { error: string } {
-    const u = this.store.users[key(String(name ?? ''))];
+    const k = key(String(name ?? '').replace(/\s+/g, ' '));
+    const u = Object.prototype.hasOwnProperty.call(this.store.users, k) ? this.store.users[k] : undefined;
     if (!u || typeof password !== 'string') return { error: 'Špatné jméno nebo heslo.' };
     const a = Buffer.from(hashPw(password, u.salt), 'hex');
     const b = Buffer.from(u.hash, 'hex');
@@ -108,8 +125,9 @@ export class Accounts {
 
   userByToken(token: string | undefined | null): UserRec | null {
     if (!token) return null;
+    if (!Object.prototype.hasOwnProperty.call(this.store.sessions, token)) return null;
     const k = this.store.sessions[token];
-    return k ? this.store.users[k] ?? null : null;
+    return Object.prototype.hasOwnProperty.call(this.store.users, k) ? this.store.users[k] : null;
   }
 
   openBooster(u: UserRec): { cards: PulledCard[]; profile: PublicProfile } | { error: string } {
@@ -168,7 +186,7 @@ export class Accounts {
 
   /** Award kapky after an online game. */
   reward(name: string, result: 'win' | 'loss' | 'draw', turns: number): number {
-    const u = this.store.users[key(name)];
+    const u = this.get(name);
     if (!u) return 0;
     if (result === 'win') u.stats.wins++;
     else if (result === 'loss') u.stats.losses++;
@@ -180,7 +198,8 @@ export class Accounts {
   }
 
   get(name: string): UserRec | null {
-    return this.store.users[key(name)] ?? null;
+    const k = key(name);
+    return Object.prototype.hasOwnProperty.call(this.store.users, k) ? this.store.users[k] : null;
   }
 
   static deckSize = deckSize;

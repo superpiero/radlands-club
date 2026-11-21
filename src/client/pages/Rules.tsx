@@ -65,6 +65,7 @@ export function Rules() {
           <li>Karta je <b>krytá</b>, když před ní stojí tvůj přeživší. Základna je krytá, když je v jejím sloupci aspoň jeden přeživší. Přeživší vzadu je krytý tím vepředu.</li>
           <li><b>Poškodit</b> lze, pokud karta neříká jinak, jen <b>nekrytou</b> soupeřovu kartu (přeživšího nebo základnu).</li>
           <li><b>Zranit</b> = poškodit nekrytého přeživšího (ne základnu).</li>
+          <li><b>Nepřítel</b> = soupeřův přeživší (včetně tuláků). Základna nepřítel není.</li>
           <li>Poškozená karta dostane prasklinu. <b>Druhé poškození ji zničí.</b> Poškozený přeživší není připravený a jeho vlastnost neplatí.</li>
           <li>Tulák je zničen už prvním poškozením a vrací se lícem dolů navrch balíčku.</li>
           <li>Když je zničen přeživší vzadu, ten vepředu se posune k základně.</li>
@@ -103,7 +104,7 @@ export function Rules() {
         <ul>
           <li>Vlastnosti (text v kurzívě) platí stále – u přeživších jen dokud nejsou poškození, u základen dokud nejsou zničené.</li>
           <li>Útočné efekty nesmíš použít na své vlastní karty, pokud to karta výslovně neříká.</li>
-          <li>Když dojde balíček, zamíchá se odhazovací balíček jako nový. <b>Když dojde podruhé, hra končí remízou.</b></li>
+          <li>Když dojde balíček, zamíchá se odhazovací balíček jako nový. <b>Když dojde podruhé, hra končí – vyhrává hráč s více stojícími základnami</b> (při shodě menší poškození, jinak remíza). Ve sběratelském režimu platí <b>Žízeň</b>: balíček se znovu zamíchá, ale od druhého zamíchání to stojí poškození tvé nejméně poškozené základny.</li>
           <li>Ruka nemá limit. Odhazovací balíček je veřejný jen vrchní kartou.</li>
           <li>Dokud neodhalíš novou informaci (líznutí, rozhodnutí soupeře…), můžeš akci vrátit tlačítkem <b>Zpět</b> (Ctrl+Z). Rozdělanou volbu zrušíš klávesou Esc.</li>
         </ul>

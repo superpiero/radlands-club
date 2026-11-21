@@ -17,7 +17,7 @@ export type Route =
   | { page: 'boosters' }
   | { page: 'decks' }
   | { page: 'room'; code: string; spectate?: boolean }
-  | { page: 'new'; baseMode: 'draft' | 'random'; deckMode: 'classic' | 'collection' }
+  | { page: 'new'; baseMode: 'draft' | 'random'; deckMode: 'classic' | 'collection'; turnSeconds: number }
   | { page: 'bot'; baseMode: 'draft' | 'random'; level: 'easy' | 'normal' | 'hard' }
   | { page: 'hotseat'; baseMode: 'draft' | 'random' };
 
@@ -35,7 +35,7 @@ function parse(hash: string): Route {
     case 'boosters': return { page: 'boosters' };
     case 'decks': return { page: 'decks' };
     case 'room': return parts[1] ? { page: 'room', code: parts[1].toUpperCase(), spectate: q.get('watch') === '1' } : { page: 'home' };
-    case 'new': return { page: 'new', baseMode, deckMode: q.get('decks') === 'collection' ? 'collection' : 'classic' };
+    case 'new': return { page: 'new', baseMode, deckMode: q.get('decks') === 'collection' ? 'collection' : 'classic', turnSeconds: Number(q.get('timer') ?? 0) || 0 };
     case 'bot': {
       const lv = q.get('level');
       return { page: 'bot', baseMode, level: lv === 'easy' || lv === 'hard' ? lv : 'normal' };

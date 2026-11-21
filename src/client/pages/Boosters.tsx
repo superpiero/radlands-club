@@ -7,6 +7,7 @@ import { Card, CardBack } from '../components/Card';
 import { Icon } from '../components/Icon';
 import { sfx } from '../sound';
 import { Particles, burst } from '../components/Particles';
+import { ART_IDS, ART_VERSION } from '../gen/art';
 
 type Stage = 'idle' | 'shaking' | 'torn' | 'done';
 
@@ -20,6 +21,13 @@ export function Boosters() {
   const packRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { void refreshProfile(); }, []);
+  const allFlipped = flipped.length > 0 && flipped.every(Boolean);
+  useEffect(() => {
+    if (stage === 'torn' && allFlipped) {
+      applyPendingProfile();
+      setStage('done');
+    }
+  }, [allFlipped, stage]);
 
   if (!acc.session) {
     return (
@@ -73,13 +81,6 @@ export function Boosters() {
     else sfx.flip();
   };
 
-  const allFlipped = flipped.length > 0 && flipped.every(Boolean);
-  useEffect(() => {
-    if (stage === 'torn' && allFlipped) {
-      applyPendingProfile();
-      setStage('done');
-    }
-  }, [allFlipped, stage]);
 
   const next = () => { setCards([]); setFlipped([]); setStage('idle'); };
 
@@ -109,6 +110,7 @@ export function Boosters() {
             {unopened > 0 ? (
               <>
                 <div ref={packRef} className={`pack ${stage === 'shaking' ? 'shaking' : ''}`} onClick={open} role="button" aria-label="Otevřít booster">
+                  {ART_IDS.has('booster') && <img className="pack-art" src={`/art/booster.webp?v=${ART_VERSION}`} alt="" draggable={false} />}
                   <div className="pack-foil" />
                   <div className="pack-label">
                     <svg viewBox="0 0 64 64" className="pack-drop"><path d="M32 6c7 12 17 22 17 33a17 17 0 0 1-34 0c0-11 10-21 17-33z" fill="currentColor" /></svg>

@@ -56,6 +56,8 @@ export interface PlayerState {
   /** exposedTurn[c] === current turn => column c counts as unprotected. */
   exposedTurn: number[];
   drawDiscountTurn: number;
+  /** Turn in which the Cistern was taken (once per turn). */
+  cisternTurn?: number;
   personDiscountTurn: number;
   sentryTurn: number;
   draftOptions: string[];
@@ -174,6 +176,19 @@ export interface GameState {
   rev: number;
   /** Short-lived visual effects for clients (cleared each act). */
   fx: Fx[];
+  /** Per-player match statistics (for the game-over summary). */
+  stats?: [MatchStats, MatchStats];
+}
+
+export interface MatchStats {
+  damage: number;
+  kills: number;
+  bases: number;
+  played: number;
+  junked: number;
+  abilities: number;
+  /** damage dealt per source card id */
+  bySource: Record<string, number>;
 }
 
 export type Fx =
@@ -187,5 +202,6 @@ export type Fx =
   | { t: 'junk'; player: PlayerIdx; id: string }
   | { t: 'ability'; uid: string; player: PlayerIdx }
   | { t: 'turn'; player: PlayerIdx }
+  | { t: 'thirst'; player: PlayerIdx; first?: boolean }
   | { t: 'boom'; uid: string }
   | { t: 'stun'; uid: string };

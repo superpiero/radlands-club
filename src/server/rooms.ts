@@ -79,6 +79,7 @@ export class Room {
       code: this.code,
       seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.client, account: !!s.user, awayMs: s.client ? 0 : Date.now() - (s.awaySince ?? Date.now()) } : null)) as RoomInfo['seats'],
       claimWinMs: CLAIM_WIN_MS,
+      turnLeftMs: this.turnLeft(Date.now()),
       you: this.seatOf(forClient),
       spectators: this.spectators.size,
       status: this.status(),
@@ -214,8 +215,13 @@ export class Room {
     const seat = asSeat ?? this.seatOf(c);
     if (seat === null || !this.game) return send(c, { t: 'error', msg: 'Nejsi hráč u tohoto stolu.' });
     const before = this.game.state.phase;
+    if (!this.game.state.pending) this.boundary = this.history.length;
     const res = this.game.act(seat, action);
-    if (!res.ok) return send(c, { t: 'error', msg: res.error });
+    if (!res.ok) {
+      // the engine rolled the whole action back: drop its partial replay log too
+      if (res.rolledBack) { this.history.length = Math.min(this.history.length, this.boundary); this.dirty = true; this.broadcastState(); }
+      return send(c, { t: 'error', msg: res.error });
+    }
     this.history.push({ p: seat, a: action });
     this.dirty = true;
     this.broadcastState();
@@ -228,9 +234,97 @@ export class Room {
   }
 
   /** Periodic housekeeping: auto-answer for absent players, room info refresh. */
+  private lastAwayBroadcast = 0;
+  /** history index where the current top-level action started */
+  private boundary = 0;
+  private timerKey = '';
+  private timerStart = 0;
+
+  /** Remaining ms for the current timed decision (active turn or pending prompt). */
+  private promptKey = '';
+  private promptStart = 0;
+
+  /** Remaining ms of the current decision: the active player's turn clock, or the opponent's reaction clock. */
+  turnLeft(now: number): number | null {
+    const secs = this.options.turnSeconds ?? 0;
+    if (!secs || !this.game || this.game.state.phase !== 'play') return null;
+    this.syncTimer(now);
+    const st = this.game.state;
+    if (st.pending && st.pending.player !== st.active) return Math.max(0, Math.min(secs, 45) * 1000 - (now - this.promptStart));
+    return Math.max(0, secs * 1000 - (now - this.timerStart));
+  }
+
+  private syncTimer(now: number) {
+    const st = this.game!.state;
+    let changed = false;
+    const turnKey = `t${st.turn}:${st.active}`;
+    if (turnKey !== this.timerKey) {
+      this.timerKey = turnKey;
+      this.timerStart = now;
+      changed = true;
+    }
+    // the opponent's reaction prompt pauses the active player's clock
+    const pk = st.pending && st.pending.player !== st.active ? `p${st.pending.id}` : '';
+    if (pk !== this.promptKey) {
+      if (this.promptKey && !pk) this.timerStart += now - this.promptStart;
+      if (pk) this.promptStart = now;
+      this.promptKey = pk;
+      changed = true;
+    }
+    return changed;
+  }
+
   tick(now: number) {
     if (!this.game || this.game.state.phase === 'over') return;
     const st = this.game.state;
+    const awayLong = (i: PlayerIdx) => {
+      const s = this.seats[i];
+      return !!s && !s.client && !!s.awaySince && now - s.awaySince >= AUTO_ANSWER_MS;
+    };
+    // setup phases: decide for an absent player so the table never gets stuck
+    if (st.phase === 'draft') {
+      for (const i of [0, 1] as PlayerIdx[]) {
+        if (!st.players[i].draftPicked && awayLong(i)) {
+          const a: Action = { t: 'draftPick', bases: st.players[i].draftOptions.slice(0, 3) };
+          if (this.game.act(i, a).ok) { this.history.push({ p: i, a }); this.dirty = true; this.systemChat(`${this.seats[i]?.name ?? 'Hráč'} je pryč – základny vybrány automaticky.`); this.broadcastState(); }
+        }
+      }
+      return;
+    }
+    if (st.phase === 'chooseFirst' && awayLong(st.coinWinner)) {
+      const a: Action = { t: 'chooseFirst', first: st.coinWinner };
+      if (this.game.act(st.coinWinner, a).ok) { this.history.push({ p: st.coinWinner, a }); this.dirty = true; this.broadcastState(); }
+      return;
+    }
+    // optional turn timer
+    if ((this.options.turnSeconds ?? 0) > 0 && st.phase === 'play') {
+      const changed = this.syncTimer(now);
+      if (changed) this.broadcastRoom();
+      const left = this.turnLeft(now);
+      if (left !== null && left <= 0) {
+        const pr = st.pending;
+        let a: Action;
+        let p: PlayerIdx;
+        if (pr) {
+          const ids = pr.options.map((o) => o.id);
+          const choice = pr.kind === 'order' ? ids : pr.kind === 'multi' ? ids.slice(0, pr.min ?? 0) : pr.optional ? [] : ids.slice(0, 1);
+          a = { t: 'answer', promptId: pr.id, choice };
+          p = pr.player;
+        } else {
+          a = { t: 'endTurn' };
+          p = st.active;
+        }
+        const res = this.game.act(p, a);
+        if (res.ok) {
+          this.history.push({ p, a });
+          this.dirty = true;
+          this.systemChat(`⏱ ${this.seats[p]?.name ?? 'Hráč'}: čas vypršel${pr ? ' – volba provedena automaticky' : ' – tah končí'}.`);
+          this.broadcastState();
+          this.broadcastRoom();
+        }
+        return;
+      }
+    }
     const away = (i: PlayerIdx) => {
       const s = this.seats[i];
       return s && !s.client && s.awaySince ? now - s.awaySince : 0;
@@ -251,7 +345,10 @@ export class Room {
         this.broadcastState();
       }
     }
-    if (away(0) > 0 || away(1) > 0) this.broadcastRoom();
+    if ((away(0) > 0 || away(1) > 0) && now - this.lastAwayBroadcast > 5000) {
+      this.lastAwayBroadcast = now;
+      this.broadcastRoom();
+    }
   }
 
   /** The connected player can claim the win when the opponent has been away too long. */
@@ -268,14 +365,25 @@ export class Room {
     this.act({ ...c, room: this } as Client, { t: 'concede' }, o);
   }
 
+  /** Rewards need two different registered players who both really played. */
+  private rewardsEligible(): boolean {
+    const [s0, s1] = this.seats;
+    if (!s0?.user || !s1?.user || s0.user.toLowerCase() === s1.user.toLowerCase()) return false;
+    const meaningful = new Set(['playPerson', 'playEvent', 'ability', 'junk']);
+    const counts = [0, 0];
+    for (const h of this.history) if (meaningful.has(h.a.t)) counts[h.p]++;
+    return counts[0] >= 3 && counts[1] >= 3;
+  }
+
   private giveRewards() {
     if (!this.accounts || !this.game) return;
     const st = this.game.state;
+    const eligible = this.rewardsEligible();
     for (const i of [0, 1] as PlayerIdx[]) {
       const s = this.seats[i];
       if (!s?.user) continue;
       const result = st.winner === 'draw' ? 'draw' : st.winner === i ? 'win' : 'loss';
-      const gain = this.accounts.reward(s.user, result, st.turn);
+      const gain = eligible ? this.accounts.reward(s.user, result, st.turn) : 0;
       if (s.client) send(s.client, { t: 'reward', gain, result });
     }
   }
@@ -402,6 +510,32 @@ export class Lobby {
   removed = false;
 
   /** Persist all rooms (replay logs) to a JSON file if anything changed. */
+  /** Serialized rooms (replay logs), or null when nothing changed. Marks clean. */
+  dumps(force = false): string | null {
+    const changed = this.removed || [...this.rooms.values()].some((r) => r.dirty);
+    if (!changed && !force) return null;
+    const data = [...this.rooms.values()].map((r) => r.snapshot());
+    for (const r of this.rooms.values()) r.dirty = false;
+    this.removed = false;
+    return JSON.stringify({ v: 1, rooms: data });
+  }
+
+  loads(json: string): number {
+    const data = JSON.parse(json) as { rooms: RoomSnapshot[] };
+    let n = 0;
+    for (const s of data.rooms ?? []) {
+      try {
+        const r = Room.fromSnapshot(s);
+        r.accounts = this.accounts;
+        this.rooms.set(s.code, r);
+        n++;
+      } catch (e) {
+        console.warn('Nelze obnovit stůl', s.code, e);
+      }
+    }
+    return n;
+  }
+
   save(file: string, force = false) {
     const changed = this.removed || [...this.rooms.values()].some((r) => r.dirty);
     if (!changed && !force) return;

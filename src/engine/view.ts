@@ -2,7 +2,7 @@
 
 import { cardDef } from './cards';
 import type { Game, LegalInfo } from './game';
-import type { CardInst, Fx, LogEntry, Phase, PlayerIdx, Prompt, Step } from './types';
+import type { CardInst, Fx, GameState, LogEntry, Phase, PlayerIdx, Prompt, Step } from './types';
 
 export interface PersonView {
   uid: string;
@@ -77,6 +77,8 @@ export interface GameView {
   fx: Fx[];
   canUndo: boolean;
   canCancel: boolean;
+  /** Match statistics – only sent once the game is over. */
+  stats: GameState['stats'] | null;
   legal: LegalInfo | null;
 }
 
@@ -127,7 +129,13 @@ export function buildView(g: Game, viewer: PlayerIdx | null): GameView {
   let waitingFor: GameView['waitingFor'] = null;
   if (st.pending) {
     if (viewer === st.pending.player) pending = structuredClone(st.pending);
-    else waitingFor = { player: st.pending.player, title: st.pending.title };
+    else {
+      const pr = st.pending;
+      const what = pr.kind === 'order' ? 'řadí karty' : pr.kind === 'reveal' ? 'prohlíží si karty' : pr.kind === 'multi' ? 'vybírá karty'
+        : /NÁJEZD/.test(pr.title) ? 'vybírá, kterou základnu obětuje Nájezdu' : /Kam postavíš/.test(pr.title) ? 'vybírá místo'
+        : /Hlídkař/.test(pr.title) ? 'zvažuje odvetu Hlídkaře' : 'vybírá cíl';
+      waitingFor = { player: pr.player, title: what };
+    }
   }
 
   const log = st.log.slice(-150).map((e) => ({
@@ -159,6 +167,7 @@ export function buildView(g: Game, viewer: PlayerIdx | null): GameView {
     waitingFor,
     log,
     fx: [...st.fx],
+    stats: st.phase === 'over' ? structuredClone(st.stats ?? null) : null,
     canUndo: viewer !== null && g.canUndo(viewer),
     canCancel: viewer !== null && g.canCancel(viewer),
     legal: viewer !== null ? g.legalInfo(viewer) : null,

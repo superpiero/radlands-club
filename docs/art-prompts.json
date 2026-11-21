@@ -1,0 +1,734 @@
+{
+ "style": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only.",
+ "items": [
+  {
+   "id": "pumpar",
+   "name": "Pumpař",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "pumpar.png",
+   "short": "Portrait 2:3. The pump keeper: a wiry old man in patched overalls and a welding cap cranking a rusty hand water pump on top of a tower of scrap and barrels; a thin stream of clear turquoise water glistens; dunes and broken power lines at dawn.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. The pump keeper: a wiry old man in patched overalls and a welding cap cranking a rusty hand water pump on top of a tower of scrap and barrels; a thin stream of clear turquoise water glistens; dunes and broken power lines at dawn."
+  },
+  {
+   "id": "bara",
+   "name": "Brokovnice Bára",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "bara.png",
+   "short": "Portrait 2:3. A broad-shouldered woman scavenger in a dusty duster coat resting a double-barrelled shotgun on her shoulder, confident half-smile, spent shells at her feet, a burnt-out bus behind her.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A broad-shouldered woman scavenger in a dusty duster coat resting a double-barrelled shotgun on her shoulder, confident half-smile, spent shells at her feet, a burnt-out bus behind her."
+  },
+  {
+   "id": "prak",
+   "name": "Kluk s prakem",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "prak.png",
+   "short": "Portrait 2:3. A barefoot teenage boy with goggles on his forehead aiming a home-made slingshot from the top of a rusty car roof, tongue out in concentration, wind blowing sand.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A barefoot teenage boy with goggles on his forehead aiming a home-made slingshot from the top of a rusty car roof, tongue out in concentration, wind blowing sand."
+  },
+  {
+   "id": "zved",
+   "name": "Zvěd",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "zved.png",
+   "short": "Portrait 2:3. A lean scout lying flat on a rocky ridge, looking through battered binoculars across a valley of ruins, scarf over the mouth, long shadow at sunset.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A lean scout lying flat on a rocky ridge, looking through battered binoculars across a valley of ruins, scarf over the mouth, long shadow at sunset."
+  },
+  {
+   "id": "hana",
+   "name": "Ženistka Hana",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "hana.png",
+   "short": "Portrait 2:3. A young female sapper in a leather apron and protective goggles carefully wiring a bundle of dynamite with a ticking clock, sparks, kneeling next to a concrete wall.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A young female sapper in a leather apron and protective goggles carefully wiring a bundle of dynamite with a ticking clock, sparks, kneeling next to a concrete wall."
+  },
+  {
+   "id": "felcar",
+   "name": "Felčar",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "felcar.png",
+   "short": "Portrait 2:3. A field medic with a red-cross armband stitching a wounded scavenger by lantern light inside a patched canvas tent, medical bag open, calm hands.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A field medic with a red-cross armband stitching a wounded scavenger by lantern light inside a patched canvas tent, medical bag open, calm hands."
+  },
+  {
+   "id": "rez",
+   "name": "Kovářka Rez",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "rez.png",
+   "short": "Portrait 2:3. A muscular female blacksmith with rust-red braided hair hammering a car door into a wall plate on an improvised anvil, sparks flying, scrap fortress behind her.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A muscular female blacksmith with rust-red braided hair hammering a car door into a wall plate on an improvised anvil, sparks flying, scrap fortress behind her."
+  },
+  {
+   "id": "paserak",
+   "name": "Pašerák",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "paserak.png",
+   "short": "Portrait 2:3. A sly smuggler in a long coat lined with hidden pockets, opening it to reveal bottles of water, tools and tins; moonlit back alley of a ruined town.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A sly smuggler in a long coat lined with hidden pockets, opening it to reveal bottles of water, tools and tins; moonlit back alley of a ruined town."
+  },
+  {
+   "id": "naborar",
+   "name": "Náborář",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "naborar.png",
+   "short": "Portrait 2:3. A charismatic recruiter standing on an upturned crate shouting through a dented megaphone to a crowd of ragged wanderers, hand-painted banner without letters behind him.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A charismatic recruiter standing on an upturned crate shouting through a dented megaphone to a crowd of ragged wanderers, hand-painted banner without letters behind him."
+  },
+  {
+   "id": "vymahac",
+   "name": "Vymahač",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "vymahac.png",
+   "short": "Portrait 2:3. A towering debt collector with brass knuckles and a heavy leather coat, cracking his knuckles in a doorway, menacing backlit silhouette.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A towering debt collector with brass knuckles and a heavy leather coat, cracking his knuckles in a doorway, menacing backlit silhouette."
+  },
+  {
+   "id": "hlidkar",
+   "name": "Hlídkař",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "hlidkar.png",
+   "short": "Portrait 2:3. A tireless sentry manning an improvised mounted gun on a sandbag tower at night, searchlight beam cutting through the dust, alert eyes.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A tireless sentry manning an improvised mounted gun on a sandbag tower at night, searchlight beam cutting through the dust, alert eyes."
+  },
+  {
+   "id": "marta",
+   "name": "Skladnice Marta",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "marta.png",
+   "short": "Portrait 2:3. A stout storekeeper woman counting sealed water barrels in a dim warehouse, ledger under her arm, keys on her belt, shafts of light through the roof.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A stout storekeeper woman counting sealed water barrels in a dim warehouse, ledger under her arm, keys on her belt, shafts of light through the roof."
+  },
+  {
+   "id": "bedrich",
+   "name": "Bedřich Pancéř",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "bedrich.png",
+   "short": "Portrait 2:3. A huge gentle giant in welded scrap-metal armour holding a car-door shield, protecting a child behind him, dust storm swirling.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A huge gentle giant in welded scrap-metal armour holding a car-door shield, protecting a child behind him, dust storm swirling."
+  },
+  {
+   "id": "rex",
+   "name": "Pes Rex",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "rex.png",
+   "short": "Portrait 2:3. A scruffy loyal wasteland dog with a spiked collar and one torn ear, standing guard on a pile of rubble, teeth bared, fierce but lovable.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A scruffy loyal wasteland dog with a spiked collar and one torn ear, standing guard on a pile of rubble, teeth bared, fierce but lovable."
+  },
+  {
+   "id": "jiskra",
+   "name": "Mechanička Jiskra",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "jiskra.png",
+   "short": "Portrait 2:3. A young mechanic girl with oil-smudged cheeks and a headlamp, sparking an old generator back to life with jumper cables, grinning, tools everywhere.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A young mechanic girl with oil-smudged cheeks and a headlamp, sparking an old generator back to life with jumper cables, grinning, tools everywhere."
+  },
+  {
+   "id": "granatnik",
+   "name": "Granátník",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "granatnik.png",
+   "short": "Portrait 2:3. A grenadier pulling the pin of a home-made grenade with his teeth, bandolier of grenades across his chest, explosion glow behind the ruined wall.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A grenadier pulling the pin of a home-made grenade with his teeth, bandolier of grenades across his chest, explosion glow behind the ruined wall."
+  },
+  {
+   "id": "bubenik",
+   "name": "Bubeník",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "bubenik.png",
+   "short": "Portrait 2:3. A wild drummer beating a war drum made from an oil barrel on a convoy truck roof, crowd of fighters cheering, dust and firelight.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A wild drummer beating a war drum made from an oil barrel on a convoy truck roof, crowd of fighters cheering, dust and firelight."
+  },
+  {
+   "id": "myska",
+   "name": "Sběračka Myška",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "myska.png",
+   "short": "Portrait 2:3. A small quick scavenger girl rummaging through a junk pile with a magnet on a stick and a stuffed sack, mouse-like curiosity, glittering bits of metal.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A small quick scavenger girl rummaging through a junk pile with a magnet on a stick and a stuffed sack, mouse-like curiosity, glittering bits of metal."
+  },
+  {
+   "id": "radista",
+   "name": "Radista",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "radista.png",
+   "short": "Portrait 2:3. A radio operator with big headphones hunched over a pile of glowing vacuum-tube radios in a bunker, antenna wires everywhere, focused face lit green.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A radio operator with big headphones hunched over a pile of glowing vacuum-tube radios in a bunker, antenna wires everywhere, focused face lit green."
+  },
+  {
+   "id": "lasar",
+   "name": "Lasař",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "lasar.png",
+   "short": "Portrait 2:3. A wasteland wrangler on top of a rusty motorbike swinging a lasso over his head, about to rope a fleeing raider, dust cloud.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A wasteland wrangler on top of a rusty motorbike swinging a lasso over his head, about to rope a fleeing raider, dust cloud."
+  },
+  {
+   "id": "ludmila",
+   "name": "Starostka Ludmila",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "ludmila.png",
+   "short": "Portrait 2:3. A stern grey-haired mayor woman in a patched formal coat standing at a makeshift town hall desk with a quill and scrolls, lantern light, small settlement behind her.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A stern grey-haired mayor woman in a patched formal coat standing at a makeshift town hall desk with a quill and scrolls, lantern light, small settlement behind her."
+  },
+  {
+   "id": "prospektorka",
+   "name": "Prospektorka",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "prospektorka.png",
+   "short": "Portrait 2:3. A tough female prospector with a pickaxe and a headlamp cracking open rock in a narrow quarry, finding a glint of turquoise water seeping from the stone.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A tough female prospector with a pickaxe and a headlamp cracking open rock in a narrow quarry, finding a glint of turquoise water seeping from the stone."
+  },
+  {
+   "id": "minometcik",
+   "name": "Minometčík",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "minometcik.png",
+   "short": "Portrait 2:3. A mortar crew veteran dropping a shell into a scrap-built mortar tube behind sandbags, ears covered, a high arc of smoke into the sky.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A mortar crew veteran dropping a shell into a scrap-built mortar tube behind sandbags, ears covered, a high arc of smoke into the sky."
+  },
+  {
+   "id": "kat",
+   "name": "Kat",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "kat.png",
+   "short": "Portrait 2:3. A silent executioner in a hooded leather mask holding a heavy chain, standing in a doorway of a ruined chapel, ominous red sky.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A silent executioner in a hooded leather mask holding a heavy chain, standing in a doorway of a ruined chapel, ominous red sky."
+  },
+  {
+   "id": "honak",
+   "name": "Honák Vítek",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "honak.png",
+   "short": "Portrait 2:3. A cowboy-like herder on a roaring dirt bike driving a pack of motorbike riders across the dunes, waving his hat, low sun.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A cowboy-like herder on a roaring dirt bike driving a pack of motorbike riders across the dunes, waving his hat, low sun."
+  },
+  {
+   "id": "doktorka",
+   "name": "Doktorka Iva",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "doktorka.png",
+   "short": "Portrait 2:3. A former surgeon woman in a stained white coat and round glasses with a stethoscope, operating table lit by car headlights inside a garage clinic.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A former surgeon woman in a stained white coat and round glasses with a stethoscope, operating table lit by car headlights inside a garage clinic."
+  },
+  {
+   "id": "strazce",
+   "name": "Strážce studny",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "strazce.png",
+   "short": "Portrait 2:3. A grim guardian with a long spear and a gas mask standing in front of a deep stone well, protecting it from a dust storm, turquoise glow rising from the well.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A grim guardian with a long spear and a gas mask standing in front of a deep stone well, protecting it from a dust storm, turquoise glow rising from the well."
+  },
+  {
+   "id": "baron",
+   "name": "Vodní baron",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "baron.png",
+   "short": "Portrait 2:3. A wealthy water baron in a ragged velvet coat and a crown made of pipe fittings, sitting on a throne of water tanks, holding a crystal glass of clear turquoise water.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A wealthy water baron in a ragged velvet coat and a crown made of pipe fittings, sitting on a throne of water tanks, holding a crystal glass of clear turquoise water."
+  },
+  {
+   "id": "matka",
+   "name": "Matka Prachu",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "matka.png",
+   "short": "Portrait 2:3. A mysterious old matriarch wrapped in layered shawls and dust, surrounded by hooded wanderers who kneel around her, warm firelight and long shadows.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A mysterious old matriarch wrapped in layered shawls and dust, surrounded by hooded wanderers who kneel around her, warm firelight and long shadows."
+  },
+  {
+   "id": "prorok",
+   "name": "Prorok Bouře",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "prorok.png",
+   "short": "Portrait 2:3. A wild-bearded prophet on a rock raising a staff toward a giant dust storm full of lightning, robes whipping in the wind, apocalyptic sky.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A wild-bearded prophet on a rock raising a staff toward a giant dust storm full of lightning, robes whipping in the wind, apocalyptic sky."
+  },
+  {
+   "id": "velitelka",
+   "name": "Velitelka Ocel",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "velitelka.png",
+   "short": "Portrait 2:3. A commanding female warlord in a visored helmet and a long coat standing on the hood of a lead war-truck of a raiding convoy, pointing forward, banners without symbols.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A commanding female warlord in a visored helmet and a long coat standing on the hood of a lead war-truck of a raiding convoy, pointing forward, banners without symbols."
+  },
+  {
+   "id": "sucho",
+   "name": "Sucho",
+   "kind": "operation",
+   "landscape": false,
+   "file": "sucho.png",
+   "short": "Portrait 2:3. A cracked dry riverbed under a merciless white sun, a dead boat stranded in the mud, heat haze, no people.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A cracked dry riverbed under a merciless white sun, a dead boat stranded in the mud, heat haze, no people."
+  },
+  {
+   "id": "karavana",
+   "name": "Karavana",
+   "kind": "operation",
+   "landscape": false,
+   "file": "karavana.png",
+   "short": "Portrait 2:3. A long caravan of hand-pulled carts and rusty trucks loaded with crates winding through a desert canyon at golden hour.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A long caravan of hand-pulled carts and rusty trucks loaded with crates winding through a desert canyon at golden hour."
+  },
+  {
+   "id": "delostrelectvo",
+   "name": "Dělostřelectvo",
+   "kind": "operation",
+   "landscape": false,
+   "file": "delostrelectvo.png",
+   "short": "Portrait 2:3. An improvised artillery battery firing at night, muzzle flashes, shells streaking across the sky toward distant ruins.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. An improvised artillery battery firing at night, muzzle flashes, shells streaking across the sky toward distant ruins."
+  },
+  {
+   "id": "sanitka",
+   "name": "Sanitka",
+   "kind": "operation",
+   "landscape": false,
+   "file": "sanitka.png",
+   "short": "Portrait 2:3. An old ambulance van covered in welded armour plates and a hand-painted red cross racing through a dust storm, headlights blazing.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. An old ambulance van covered in welded armour plates and a hand-painted red cross racing through a dust storm, headlights blazing."
+  },
+  {
+   "id": "boure",
+   "name": "Písečná bouře",
+   "kind": "operation",
+   "landscape": false,
+   "file": "boure.png",
+   "short": "Portrait 2:3. An enormous wall of sand rolling over a small settlement, people running for cover, the sky turning dark orange.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. An enormous wall of sand rolling over a small settlement, people running for cover, the sky turning dark orange."
+  },
+  {
+   "id": "sabotaz",
+   "name": "Sabotáž",
+   "kind": "operation",
+   "landscape": false,
+   "file": "sabotaz.png",
+   "short": "Portrait 2:3. A gloved hand cutting a wire with pliers in the dark next to a sparking control box, tense close-up, red warning light.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A gloved hand cutting a wire with pliers in the dark next to a sparking control box, tense close-up, red warning light."
+  },
+  {
+   "id": "podkop",
+   "name": "Podkop",
+   "kind": "operation",
+   "landscape": false,
+   "file": "podkop.png",
+   "short": "Portrait 2:3. Diggers in a narrow candle-lit tunnel under a fortress wall, wooden supports, a mine cart full of earth.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Diggers in a narrow candle-lit tunnel under a fortress wall, wooden supports, a mine cart full of earth."
+  },
+  {
+   "id": "pramen",
+   "name": "Skrytý pramen",
+   "kind": "operation",
+   "landscape": false,
+   "file": "pramen.png",
+   "short": "Portrait 2:3. A hidden underground spring in a cave, crystal-clear turquoise water bubbling between rocks, light falling from a crack in the ceiling.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A hidden underground spring in a cave, crystal-clear turquoise water bubbling between rocks, light falling from a crack in the ceiling."
+  },
+  {
+   "id": "prepad",
+   "name": "Noční přepad",
+   "kind": "operation",
+   "landscape": false,
+   "file": "prepad.png",
+   "short": "Portrait 2:3. Shadowy raiders with night-vision goggles sneaking over a fence at night, green lenses glowing, moonlight.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Shadowy raiders with night-vision goggles sneaking over a fence at night, green lenses glowing, moonlight."
+  },
+  {
+   "id": "evakuace",
+   "name": "Evakuace",
+   "kind": "operation",
+   "landscape": false,
+   "file": "evakuace.png",
+   "short": "Portrait 2:3. People escaping through a back door of a burning shelter into a waiting truck, carrying bundles, urgent motion blur.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. People escaping through a back door of a burning shelter into a waiting truck, carrying bundles, urgent motion blur."
+  },
+  {
+   "id": "poslednikapka",
+   "name": "Poslední kapka",
+   "kind": "operation",
+   "landscape": false,
+   "file": "poslednikapka.png",
+   "short": "Portrait 2:3. A single huge drop of turquoise water falling in slow motion toward a cracked desert floor, the whole wasteland reflected in it, dramatic sunset.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A single huge drop of turquoise water falling in slow motion toward a cracked desert floor, the whole wasteland reflected in it, dramatic sunset."
+  },
+  {
+   "id": "vymena",
+   "name": "Výměnný obchod",
+   "kind": "operation",
+   "landscape": false,
+   "file": "vymena.png",
+   "short": "Portrait 2:3. Two traders bartering at a market stall, exchanging a canteen of water for a box of bolts, close-up of hands and goods.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Two traders bartering at a market stall, exchanging a canteen of water for a box of bolts, close-up of hands and goods."
+  },
+  {
+   "id": "kyselydest",
+   "name": "Kyselý déšť",
+   "kind": "operation",
+   "landscape": false,
+   "file": "kyselydest.png",
+   "short": "Portrait 2:3. Rusty acid rain pouring from sick yellow-green clouds onto corroding metal rooftops, steam rising.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Rusty acid rain pouring from sick yellow-green clouds onto corroding metal rooftops, steam rising."
+  },
+  {
+   "id": "vysadek",
+   "name": "Výsadek",
+   "kind": "operation",
+   "landscape": false,
+   "file": "vysadek.png",
+   "short": "Portrait 2:3. Supply crates and wanderers parachuting down from the sky on patched sail parachutes over the dunes at dawn.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Supply crates and wanderers parachuting down from the sky on patched sail parachutes over the dunes at dawn."
+  },
+  {
+   "id": "oaza",
+   "name": "Oáza",
+   "kind": "operation",
+   "landscape": false,
+   "file": "oaza.png",
+   "short": "Portrait 2:3. A miraculous green oasis with palm trees and a turquoise pool hidden among dunes, travellers kneeling to drink, soft light.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A miraculous green oasis with palm trees and a turquoise pool hidden among dunes, travellers kneeling to drink, soft light."
+  },
+  {
+   "id": "vodarna",
+   "name": "Vodárna",
+   "kind": "base",
+   "landscape": true,
+   "file": "vodarna.png",
+   "short": "Landscape 3:2. A rusty water treatment plant with big filter tanks and pipes, a glowing turquoise filtration pool, guarded walls.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A rusty water treatment plant with big filter tanks and pipes, a glowing turquoise filtration pool, guarded walls."
+  },
+  {
+   "id": "radiostanice",
+   "name": "Radiostanice",
+   "kind": "base",
+   "landscape": true,
+   "file": "radiostanice.png",
+   "short": "Landscape 3:2. A hilltop radio station with a tall improvised antenna mast, satellite dish and blinking lights at dusk.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A hilltop radio station with a tall improvised antenna mast, satellite dish and blinking lights at dusk."
+  },
+  {
+   "id": "hnizdo",
+   "name": "Kulometné hnízdo",
+   "kind": "base",
+   "landscape": true,
+   "file": "hnizdo.png",
+   "short": "Landscape 3:2. A machine-gun nest built from sandbags and car doors on a ruined overpass, overlooking a desert road.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A machine-gun nest built from sandbags and car doors on a ruined overpass, overlooking a desert road."
+  },
+  {
+   "id": "dilna",
+   "name": "Dílna",
+   "kind": "base",
+   "landscape": true,
+   "file": "dilna.png",
+   "short": "Landscape 3:2. A cluttered workshop in an old garage, workbenches, hanging tools, a half-repaired vehicle, warm lamp light.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A cluttered workshop in an old garage, workbenches, hanging tools, a half-repaired vehicle, warm lamp light."
+  },
+  {
+   "id": "trziste",
+   "name": "Tržiště",
+   "kind": "base",
+   "landscape": true,
+   "file": "trziste.png",
+   "short": "Landscape 3:2. A busy scrap market under colourful patched awnings, stalls of tools, canteens and spare parts, crowd of traders.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A busy scrap market under colourful patched awnings, stalls of tools, canteens and spare parts, crowd of traders."
+  },
+  {
+   "id": "trhaviny",
+   "name": "Sklad trhavin",
+   "kind": "base",
+   "landscape": true,
+   "file": "trhaviny.png",
+   "short": "Landscape 3:2. An explosives depot in a concrete bunker with crates of dynamite, hazard stripes painted without letters, a single lamp.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. An explosives depot in a concrete bunker with crates of dynamite, hazard stripes painted without letters, a single lamp."
+  },
+  {
+   "id": "ubikace",
+   "name": "Ubikace",
+   "kind": "base",
+   "landscape": true,
+   "file": "ubikace.png",
+   "short": "Landscape 3:2. Rows of tents and pallet shacks forming living quarters, laundry lines, campfires, evening.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. Rows of tents and pallet shacks forming living quarters, laundry lines, campfires, evening."
+  },
+  {
+   "id": "bunkr",
+   "name": "Bunkr",
+   "kind": "base",
+   "landscape": true,
+   "file": "bunkr.png",
+   "short": "Landscape 3:2. A massive cold-war concrete bunker entrance half buried in sand, heavy steel door, sandbags.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A massive cold-war concrete bunker entrance half buried in sand, heavy steel door, sandbags."
+  },
+  {
+   "id": "studna",
+   "name": "Studna",
+   "kind": "base",
+   "landscape": true,
+   "file": "studna.png",
+   "short": "Landscape 3:2. An ancient stone well with a wooden winch and bucket in the middle of a dusty courtyard, turquoise glint deep inside.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. An ancient stone well with a wooden winch and bucket in the middle of a dusty courtyard, turquoise glint deep inside."
+  },
+  {
+   "id": "srotiste",
+   "name": "Šrotiště",
+   "kind": "base",
+   "landscape": true,
+   "file": "srotiste.png",
+   "short": "Landscape 3:2. A vast scrapyard with towers of crushed cars, a crane with a magnet, sparks of someone cutting metal.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A vast scrapyard with towers of crushed cars, a crane with a magnet, sparks of someone cutting metal."
+  },
+  {
+   "id": "zbrojnice",
+   "name": "Zbrojnice",
+   "kind": "base",
+   "landscape": true,
+   "file": "zbrojnice.png",
+   "short": "Landscape 3:2. A fortified armoury with racks of improvised rifles and ammo boxes behind a chain-link cage.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A fortified armoury with racks of improvised rifles and ammo boxes behind a chain-link cage."
+  },
+  {
+   "id": "prehrada",
+   "name": "Přehrada",
+   "kind": "base",
+   "landscape": true,
+   "file": "prehrada.png",
+   "short": "Landscape 3:2. A cracked concrete dam holding back the last reservoir of turquoise water in a canyon, patched with scrap.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A cracked concrete dam holding back the last reservoir of turquoise water in a canyon, patched with scrap."
+  },
+  {
+   "id": "stezka",
+   "name": "Pašerácká stezka",
+   "kind": "base",
+   "landscape": true,
+   "file": "stezka.png",
+   "short": "Landscape 3:2. A narrow smugglers' path winding through rock canyons, footprints in the sand, a hidden cache under a ledge.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A narrow smugglers' path winding through rock canyons, footprints in the sand, a hidden cache under a ledge."
+  },
+  {
+   "id": "signal",
+   "name": "Signální oheň",
+   "kind": "base",
+   "landscape": true,
+   "file": "signal.png",
+   "short": "Landscape 3:2. A huge signal bonfire on a hill sending a column of black smoke into the orange sky, figures watching.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A huge signal bonfire on a hill sending a column of black smoke into the orange sky, figures watching."
+  },
+  {
+   "id": "pevnost",
+   "name": "Pevnost",
+   "kind": "base",
+   "landscape": true,
+   "file": "pevnost.png",
+   "short": "Landscape 3:2. A fortress made of three concentric scrap-metal walls on a mesa, watchtowers, flags without symbols.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A fortress made of three concentric scrap-metal walls on a mesa, watchtowers, flags without symbols."
+  },
+  {
+   "id": "vrakoviste",
+   "name": "Vrakoviště",
+   "kind": "base",
+   "landscape": true,
+   "file": "vrakoviste.png",
+   "short": "Landscape 3:2. A graveyard of wrecked airplanes and buses half buried in dunes, people living inside the fuselages.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A graveyard of wrecked airplanes and buses half buried in dunes, people living inside the fuselages."
+  },
+  {
+   "id": "rusicka",
+   "name": "Rušička",
+   "kind": "base",
+   "landscape": true,
+   "file": "rusicka.png",
+   "short": "Landscape 3:2. A jamming station: a tangle of antennas and speakers emitting visible distortion waves, sparks, night.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A jamming station: a tangle of antennas and speakers emitting visible distortion waves, sparks, night."
+  },
+  {
+   "id": "hangar",
+   "name": "Hangár",
+   "kind": "base",
+   "landscape": true,
+   "file": "hangar.png",
+   "short": "Landscape 3:2. A large aircraft hangar converted into a vehicle garage with rolling doors open, trucks and bikes inside.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A large aircraft hangar converted into a vehicle garage with rolling doors open, trucks and bikes inside."
+  },
+  {
+   "id": "vysilac",
+   "name": "Vysílač",
+   "kind": "base",
+   "landscape": true,
+   "file": "vysilac.png",
+   "short": "Landscape 3:2. A tall transmitter tower with a red beacon on top above a town of shacks, radio waves suggested in the air.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A tall transmitter tower with a red beacon on top above a town of shacks, radio waves suggested in the air."
+  },
+  {
+   "id": "krater",
+   "name": "Kráter",
+   "kind": "base",
+   "landscape": true,
+   "file": "krater.png",
+   "short": "Landscape 3:2. A huge impact crater with a small hidden settlement built on its inner slope, quiet and empty landscape.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A huge impact crater with a small hidden settlement built on its inner slope, quiet and empty landscape."
+  },
+  {
+   "id": "nemocnice",
+   "name": "Ruiny nemocnice",
+   "kind": "base",
+   "landscape": true,
+   "file": "nemocnice.png",
+   "short": "Landscape 3:2. The ruins of a hospital with one wing repaired, white sheets as curtains, a faded red cross painted on the roof.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. The ruins of a hospital with one wing repaired, white sheets as curtains, a faded red cross painted on the roof."
+  },
+  {
+   "id": "vezeni",
+   "name": "Vězení",
+   "kind": "base",
+   "landscape": true,
+   "file": "vezeni.png",
+   "short": "Landscape 3:2. A prison made from shipping containers and bed-frame bars, a guard tower, barbed wire at dusk.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A prison made from shipping containers and bed-frame bars, a guard tower, barbed wire at dusk."
+  },
+  {
+   "id": "radar",
+   "name": "Radar",
+   "kind": "base",
+   "landscape": true,
+   "file": "radar.png",
+   "short": "Landscape 3:2. A rotating radar dish on a hilltop bunker sweeping the horizon, glowing green screen light from a window.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A rotating radar dish on a hilltop bunker sweeping the horizon, glowing green screen light from a window."
+  },
+  {
+   "id": "minovepole",
+   "name": "Minové pole",
+   "kind": "base",
+   "landscape": true,
+   "file": "minovepole.png",
+   "short": "Landscape 3:2. A minefield in front of a settlement wall, marker stones and buried mines, one mine exploding in the distance.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A minefield in front of a settlement wall, marker stones and buried mines, one mine exploding in the distance."
+  },
+  {
+   "id": "benzinka",
+   "name": "Benzínka",
+   "kind": "base",
+   "landscape": true,
+   "file": "benzinka.png",
+   "short": "Landscape 3:2. An abandoned gas station turned into a stronghold, fuel tanks repurposed as water tanks, neon tubes broken.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. An abandoned gas station turned into a stronghold, fuel tanks repurposed as water tanks, neon tubes broken."
+  },
+  {
+   "id": "skrys",
+   "name": "Skrýš",
+   "kind": "base",
+   "landscape": true,
+   "file": "skrys.png",
+   "short": "Landscape 3:2. A secret hideout under a trapdoor in a ruined house, a ladder leading down to a cosy lantern-lit room.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A secret hideout under a trapdoor in a ruined house, a ladder leading down to a cosy lantern-lit room."
+  },
+  {
+   "id": "elektrarna",
+   "name": "Elektrárna",
+   "kind": "base",
+   "landscape": true,
+   "file": "elektrarna.png",
+   "short": "Landscape 3:2. A small power plant of scavenged solar panels, wind turbines and a humming generator shed, cables everywhere.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A small power plant of scavenged solar panels, wind turbines and a humming generator shed, cables everywhere."
+  },
+  {
+   "id": "kantyna",
+   "name": "Kantýna",
+   "kind": "base",
+   "landscape": true,
+   "file": "kantyna.png",
+   "short": "Landscape 3:2. A canteen in a tin-roofed hall, a big steaming cooking pot, survivors eating at long tables, warm light.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A canteen in a tin-roofed hall, a big steaming cooking pot, survivors eating at long tables, warm light."
+  },
+  {
+   "id": "strelnice",
+   "name": "Střelnice",
+   "kind": "base",
+   "landscape": true,
+   "file": "strelnice.png",
+   "short": "Landscape 3:2. A shooting range with tin-can targets and dummy targets made of rags, shooters practising, dusty afternoon.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. A shooting range with tin-can targets and dummy targets made of rags, shooters practising, dusty afternoon."
+  },
+  {
+   "id": "najezd",
+   "name": "Nájezd",
+   "kind": "raid",
+   "landscape": false,
+   "file": "najezd.png",
+   "short": "Portrait 2:3. A raiding convoy of spiked cars and motorbikes charging over a dune toward the viewer, flames and dust, war cries.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A raiding convoy of spiked cars and motorbikes charging over a dune toward the viewer, flames and dust, war cries."
+  },
+  {
+   "id": "cisterna",
+   "name": "Cisterna",
+   "kind": "cistern",
+   "landscape": false,
+   "file": "cisterna.png",
+   "short": "Portrait 2:3. A battered water tanker barrel on a cart with a turquoise tap dripping, sun glare on the metal.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A battered water tanker barrel on a cart with a turquoise tap dripping, sun glare on the metal."
+  },
+  {
+   "id": "tulak",
+   "name": "Tulák",
+   "kind": "survivor",
+   "landscape": false,
+   "file": "tulak.png",
+   "short": "Portrait 2:3. A lone hooded wanderer seen from behind walking into the endless desert, face hidden, long shadow, mysterious.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. A lone hooded wanderer seen from behind walking into the endless desert, face hidden, long shadow, mysterious."
+  },
+  {
+   "id": "playmat",
+   "name": "playmat",
+   "kind": "special",
+   "landscape": true,
+   "file": "playmat.png",
+   "short": "Landscape 3:2. Top-down view of an empty worn canvas game mat lying on a wooden table: a faded hand-drawn map of a dry wasteland (dried riverbeds, dunes, ruined roads, contour lines) printed on sand-coloured canvas, coffee stains, stitched edges; very low contrast so cards placed on it stay readable; no zones, no text. Format 16:9 wide.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Landscape 3:2 format. Top-down view of an empty worn canvas game mat lying on a wooden table: a faded hand-drawn map of a dry wasteland (dried riverbeds, dunes, ruined roads, contour lines) printed on sand-coloured canvas, coffee stains, stitched edges; very low contrast so cards placed on it stay readable; no zones, no text. Format 16:9 wide."
+  },
+  {
+   "id": "cardback",
+   "name": "cardback",
+   "kind": "special",
+   "landscape": false,
+   "file": "cardback.png",
+   "short": "Portrait 2:3. Card back design: a symmetrical emblem of a single turquoise water drop inside a rusty riveted metal ring, surrounded by stencil-like ornamental patterns on dark teal-and-rust textured background, centred and symmetrical, no text.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Card back design: a symmetrical emblem of a single turquoise water drop inside a rusty riveted metal ring, surrounded by stencil-like ornamental patterns on dark teal-and-rust textured background, centred and symmetrical, no text."
+  },
+  {
+   "id": "booster",
+   "name": "booster",
+   "kind": "special",
+   "landscape": false,
+   "file": "booster.png",
+   "short": "Portrait 2:3. Product shot of a sealed foil booster pack shaped like a small battered jerrycan wrapper, teal and rust colours, a water-drop emblem in the centre, hazard tape across the top, dramatic studio lighting on a dark background, no text.",
+   "full": "Painterly digital illustration for a premium collectible card game, original artwork. Setting: a sun-bleached post-apocalyptic Central European wasteland decades after the rivers dried up; water is the most precious resource. Visual language: warm ochre, rust orange, dusty sand and faded canvas-tarp browns; turquoise teal is reserved for water and water technology. Dramatic golden-hour rim lighting, a strong readable silhouette of the main subject, cinematic depth, atmospheric dust, subtle film grain and gritty hand-painted texture. Keep the main subject centred with some headroom so it still reads when cropped small. Absolutely no text, letters, numbers, logos, watermarks, card frames or borders – full-bleed artwork only. Portrait 2:3 format. Product shot of a sealed foil booster pack shaped like a small battered jerrycan wrapper, teal and rust colours, a water-drop emblem in the centre, hazard tape across the top, dramatic studio lighting on a dark background, no text."
+  }
+ ]
+}

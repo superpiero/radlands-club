@@ -11,6 +11,7 @@ import { WebSocketServer } from 'ws';
 import type { ClientMsg } from '../shared/protocol';
 import { PROTOCOL_VERSION } from '../shared/protocol';
 import { Accounts } from './accounts';
+import { pickPersist } from './persist';
 import { type Client, Lobby, send } from './rooms';
 
 const PORT = Number(process.env.PORT ?? 8080);
@@ -20,18 +21,48 @@ const HOST = process.env.HOST ?? '0.0.0.0';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const candidates = [join(here, 'client'), join(here, '../../dist/client'), join(process.cwd(), 'dist/client')];
-const STATIC_DIR = candidates.find((d) => existsSync(join(d, 'index.html'))) ?? candidates[0];
+let staticDir: string | null = null;
+function STATIC(): string {
+  if (staticDir && existsSync(join(staticDir, 'index.html'))) return staticDir;
+  staticDir = candidates.find((d) => existsSync(join(d, 'index.html'))) ?? candidates[0];
+  return staticDir;
+}
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon', '.json': 'application/json',
-  '.woff2': 'font/woff2', '.woff': 'font/woff', '.webmanifest': 'application/manifest+json', '.mp3': 'audio/mpeg',
+  '.webp': 'image/webp', '.woff2': 'font/woff2', '.woff': 'font/woff', '.webmanifest': 'application/manifest+json', '.mp3': 'audio/mpeg',
 };
 
-const accounts = new Accounts(join(DATA_DIR, 'accounts.json'));
+const persist = pickPersist(DATA_DIR);
+const accounts = new Accounts(null);
 const lobby = new Lobby(accounts);
-const restored = lobby.load(DATA_FILE);
-if (restored) console.log(`  Obnoveno ${restored} rozehraných stolů z ${DATA_FILE}`);
+void DATA_FILE;
+try {
+  const a = await persist.load('accounts');
+  if (a) accounts.loads(a);
+  const r = await persist.load('rooms');
+  const n = r ? lobby.loads(r) : 0;
+  console.log(`  Úložiště: ${persist.name} (stoly: ${n}).`);
+} catch (e) {
+  console.error('Načtení uložených dat selhalo – startuji s prázdnými daty:', e);
+}
+
+let saving = false;
+async function persistNow(force = false) {
+  if (saving) return;
+  saving = true;
+  try {
+    const r = lobby.dumps(force);
+    if (r) await persist.save('rooms', r);
+    const a = accounts.dumps(force);
+    if (a) await persist.save('accounts', a);
+  } catch (e) {
+    console.warn('Ukládání selhalo:', e);
+  } finally {
+    saving = false;
+  }
+}
 
 function json(res: import('node:http').ServerResponse, code: number, body: unknown) {
   res.writeHead(code, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' });
@@ -96,8 +127,8 @@ const server = createServer((req, res) => {
     res.end();
     return;
   }
-  let file = join(STATIC_DIR, path);
-  if (!path || !existsSync(file) || statSync(file).isDirectory()) file = join(STATIC_DIR, 'index.html');
+  let file = join(STATIC(), path);
+  if (!path || !existsSync(file) || statSync(file).isDirectory()) file = join(STATIC(), 'index.html');
   if (!existsSync(file)) {
     res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     res.end('Klient není sestavený. Spusť "npm run build".');
@@ -187,7 +218,9 @@ function handle(c: Client, msg: ClientMsg) {
       if (c.room) c.room.leave(c, true);
       const deckMode = msg.options?.deckMode === 'collection' ? 'collection' : 'classic';
       if (deckMode === 'collection' && !c.account) return send(c, { t: 'error', msg: 'Sběratelský stůl může založit jen přihlášený hráč.' });
-      const room = lobby.create({ baseMode: msg.options?.baseMode === 'random' ? 'random' : 'draft', deckMode });
+      const ts = Number(msg.options?.turnSeconds ?? 0);
+      const turnSeconds = [60, 90, 120].includes(ts) ? ts : 0;
+      const room = lobby.create({ baseMode: msg.options?.baseMode === 'random' ? 'random' : 'draft', deckMode, turnSeconds });
       const err = room.join(c, false, msg.deckId ? String(msg.deckId) : undefined);
       if (err) {
         lobby.rooms.delete(room.code);
@@ -228,16 +261,12 @@ function handle(c: Client, msg: ClientMsg) {
 }
 
 setInterval(() => lobby.sweep(), 60_000);
-setInterval(() => lobby.tick(), 5_000);
-setInterval(() => {
-  try { lobby.save(DATA_FILE); } catch (e) { console.warn('Ukládání stolů selhalo:', e); }
-  try { accounts.save(); } catch (e) { console.warn('Ukládání účtů selhalo:', e); }
-}, 3000);
+setInterval(() => lobby.tick(), 1_000);
+setInterval(() => { void persistNow(); }, 3000);
 for (const sig of ['SIGINT', 'SIGTERM'] as const) {
   process.on(sig, () => {
-    try { lobby.save(DATA_FILE, true); } catch { /* ignore */ }
-    try { accounts.save(true); } catch { /* ignore */ }
-    process.exit(0);
+    void persistNow(true).finally(() => process.exit(0));
+    setTimeout(() => process.exit(0), 4000);
   });
 }
 
@@ -249,5 +278,5 @@ server.listen(PORT, HOST, () => {
   console.log('\n  💧 POSLEDNÍ KAPKA – herní server běží');
   console.log(`     Lokálně:      http://localhost:${PORT}`);
   for (const a of addrs) console.log(`     V síti/LAN:   http://${a}:${PORT}`);
-  console.log(`     Statické soubory: ${STATIC_DIR}\n`);
+  console.log(`     Statické soubory: ${STATIC()}\n`);
 });
