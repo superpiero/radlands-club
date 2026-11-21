@@ -39,7 +39,7 @@ function GameRouteInner({ route }: { route: Route }) {
     if (!name) { name = randomName(); setName(name); }
     switch (route.page) {
       case 'new':
-        return new NetConn(name, getToken(), { t: 'create', options: { baseMode: route.baseMode, deckMode: route.deckMode }, deckId: selectedDeck() ?? undefined });
+        return new NetConn(name, getToken(), { t: 'create', options: { baseMode: route.baseMode, deckMode: route.deckMode, turnSeconds: route.turnSeconds }, deckId: selectedDeck() ?? undefined });
       case 'room':
         return new NetConn(name, getToken(), { t: 'join', code: route.code, spectate: route.spectate, deckId: selectedDeck() ?? undefined });
       case 'bot':

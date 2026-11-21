@@ -62,3 +62,23 @@ describe('absent players', () => {
     expect(g.state.winner).toBe(0);
   });
 });
+
+describe('turn timer', () => {
+  it('ends the turn automatically when the time runs out', () => {
+    const lobby = new Lobby();
+    const room = lobby.create({ baseMode: 'random', turnSeconds: 60 });
+    const a = fakeClient('ta2', 'A');
+    const b = fakeClient('tb2', 'B');
+    room.join(a);
+    room.join(b);
+    const g = room.game!;
+    room.act(g.state.coinWinner === 0 ? a : b, { t: 'chooseFirst', first: 0 });
+    const t0 = Date.now();
+    room.tick(t0);
+    expect(room.turnLeft(t0)).toBe(60_000);
+    expect(g.state.active).toBe(0);
+    room.tick(t0 + 61_000);
+    expect(g.state.active).toBe(1);
+    expect(room.chat.some((l) => l.text.includes('čas vypršel'))).toBe(true);
+  });
+});

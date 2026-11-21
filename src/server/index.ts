@@ -192,7 +192,9 @@ function handle(c: Client, msg: ClientMsg) {
       if (c.room) c.room.leave(c, true);
       const deckMode = msg.options?.deckMode === 'collection' ? 'collection' : 'classic';
       if (deckMode === 'collection' && !c.account) return send(c, { t: 'error', msg: 'Sběratelský stůl může založit jen přihlášený hráč.' });
-      const room = lobby.create({ baseMode: msg.options?.baseMode === 'random' ? 'random' : 'draft', deckMode });
+      const ts = Number(msg.options?.turnSeconds ?? 0);
+      const turnSeconds = [60, 90, 120].includes(ts) ? ts : 0;
+      const room = lobby.create({ baseMode: msg.options?.baseMode === 'random' ? 'random' : 'draft', deckMode, turnSeconds });
       const err = room.join(c, false, msg.deckId ? String(msg.deckId) : undefined);
       if (err) {
         lobby.rooms.delete(room.code);
@@ -233,7 +235,7 @@ function handle(c: Client, msg: ClientMsg) {
 }
 
 setInterval(() => lobby.sweep(), 60_000);
-setInterval(() => lobby.tick(), 5_000);
+setInterval(() => lobby.tick(), 1_000);
 setInterval(() => {
   try { lobby.save(DATA_FILE); } catch (e) { console.warn('Ukládání stolů selhalo:', e); }
   try { accounts.save(); } catch (e) { console.warn('Ukládání účtů selhalo:', e); }

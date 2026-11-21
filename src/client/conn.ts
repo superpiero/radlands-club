@@ -22,6 +22,8 @@ export interface ConnState {
   left?: boolean;
   reward?: { gain: number; result: 'win' | 'loss' | 'draw' };
   fatal?: string;
+  /** Local timestamp when the current timed decision runs out (turn timer). */
+  turnDeadline?: number | null;
 }
 
 type Listener = (s: ConnState) => void;
@@ -127,7 +129,7 @@ export class NetConn extends Conn {
   private onMsg(msg: ServerMsg) {
     switch (msg.t) {
       case 'room':
-        this.set({ room: msg.room });
+        this.set({ room: msg.room, turnDeadline: msg.room.turnLeftMs != null ? Date.now() + msg.room.turnLeftMs : null });
         // after the room exists, reconnects should join it instead of creating a new one
         this.intent = { t: 'join', code: msg.room.code, deckId: this.intent.deckId };
         if (history.replaceState && !location.hash.includes(msg.room.code)) history.replaceState(null, '', `#/room/${msg.room.code}`);

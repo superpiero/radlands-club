@@ -28,7 +28,8 @@ export function Home() {
   };
 
   const q = bases === 'random' ? '?bases=random' : '';
-  const qNew = `?${bases === 'random' ? 'bases=random&' : ''}decks=${mode}`;
+  const [timer, setTimer] = useState<number>(0);
+  const qNew = `?${bases === 'random' ? 'bases=random&' : ''}decks=${mode}${timer ? `&timer=${timer}` : ''}`;
   const canOnline = mode === 'classic' || deckOk;
 
   return (
@@ -102,6 +103,12 @@ export function Home() {
               )}
             </>
           )}
+          <div className="row">
+            <span className="muted">Čas na tah:</span>
+            <div className="seg">
+              {[0, 60, 90, 120].map((t) => <button key={t} className={timer === t ? 'on' : ''} onClick={() => setTimer(t)}>{t ? `${t} s` : 'bez limitu'}</button>)}
+            </div>
+          </div>
           <button className="btn primary" disabled={!canOnline} onClick={() => { ensureName(); if (curDeck) selectDeck(curDeck.id); go(`/new${qNew}`); }}>
             <Icon name="play-button" /> Založit stůl
           </button>

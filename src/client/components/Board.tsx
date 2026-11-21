@@ -41,6 +41,19 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   const [banner, setBanner] = useState<{ text: string; mine: boolean; key: number } | null>(null);
   const [sideOpen, setSideOpen] = useState(false);
   const [inspect, setInspect] = useState<string | null>(null);
+  // turn timer countdown (online rooms with a time limit)
+  const [nowTs, setNowTs] = useState(Date.now());
+  useEffect(() => {
+    if (!state.turnDeadline) return;
+    const t = setInterval(() => setNowTs(Date.now()), 500);
+    return () => clearInterval(t);
+  }, [state.turnDeadline]);
+  const timeLeft = state.turnDeadline && view.phase === 'play' ? Math.max(0, Math.ceil((state.turnDeadline - nowTs) / 1000)) : null;
+  const timerFor: PlayerIdx | null = view.phase !== 'play' ? null : view.pending ? (view.pending.player) : view.waitingFor ? view.waitingFor.player : view.active;
+  const lowTick = useRef(-1);
+  useEffect(() => {
+    if (timeLeft !== null && timeLeft <= 5 && timeLeft > 0 && timerFor === me && lowTick.current !== timeLeft) { lowTick.current = timeLeft; sfx.click(); }
+  }, [timeLeft, timerFor, me]);
   const [howto, setHowto] = useState(() => !spectator && !getFlag('howtoSeen', false));
   useEffect(() => { conn.pause(howto); }, [howto, conn]);
   const [handOpen, setHandOpen] = useState(false);
@@ -607,6 +620,9 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           {view.personal && <span className="pill" title={`Vlastní balíček: ${pl.deckCount} karet, odhozeno ${pl.discardCount}`}><Icon name="stockpiles" />{pl.deckCount}</span>}
           {state.room && (state.room.score[0] + state.room.score[1] > 0) && <span className="pill" title="Výhry v této sérii">🏆 {state.room.score[owner]}</span>}
           {state.mode === 'online' && seat && !seat.connected && <span className="pill warn" title="Hráč je odpojený">odpojen {Math.floor((seat.awayMs ?? 0) / 1000)} s</span>}
+          {timerFor === owner && timeLeft !== null && (
+            <span className={`pill timer ${timeLeft <= 10 ? 'low' : ''}`} title="Časový limit">⏱ {Math.floor(timeLeft / 60)}:{String(timeLeft % 60).padStart(2, '0')}</span>
+          )}
         </div>
         {!isMe && !spectator && view.phase === 'play' && state.mode === 'online' && seat && !seat.connected && (seat.awayMs ?? 0) >= (state.room?.claimWinMs ?? 120000) && (
           <button className="btn small danger" onClick={() => (conn as NetConn).claimWin()}>Soupeř je pryč – vzít výhru</button>

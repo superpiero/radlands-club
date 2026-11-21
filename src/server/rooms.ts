@@ -79,6 +79,7 @@ export class Room {
       code: this.code,
       seats: this.seats.map((s) => (s ? { name: s.name, connected: !!s.client, account: !!s.user, awayMs: s.client ? 0 : Date.now() - (s.awaySince ?? Date.now()) } : null)) as RoomInfo['seats'],
       claimWinMs: CLAIM_WIN_MS,
+      turnLeftMs: this.turnLeft(Date.now()),
       you: this.seatOf(forClient),
       spectators: this.spectators.size,
       status: this.status(),
@@ -228,9 +229,62 @@ export class Room {
   }
 
   /** Periodic housekeeping: auto-answer for absent players, room info refresh. */
+  private lastAwayBroadcast = 0;
+  private timerKey = '';
+  private timerStart = 0;
+
+  /** Remaining ms for the current timed decision (active turn or pending prompt). */
+  turnLeft(now: number): number | null {
+    const secs = this.options.turnSeconds ?? 0;
+    if (!secs || !this.game || this.game.state.phase !== 'play') return null;
+    this.syncTimer(now);
+    const limit = this.game.state.pending ? Math.min(secs, 45) * 1000 : secs * 1000;
+    return Math.max(0, limit - (now - this.timerStart));
+  }
+
+  private syncTimer(now: number) {
+    const st = this.game!.state;
+    const key = st.pending ? `p${st.pending.id}` : `t${st.turn}:${st.active}`;
+    if (key !== this.timerKey) {
+      this.timerKey = key;
+      this.timerStart = now;
+      return true;
+    }
+    return false;
+  }
+
   tick(now: number) {
     if (!this.game || this.game.state.phase === 'over') return;
     const st = this.game.state;
+    // optional turn timer
+    if ((this.options.turnSeconds ?? 0) > 0 && st.phase === 'play') {
+      const changed = this.syncTimer(now);
+      if (changed) this.broadcastRoom();
+      const left = this.turnLeft(now);
+      if (left !== null && left <= 0) {
+        const pr = st.pending;
+        let a: Action;
+        let p: PlayerIdx;
+        if (pr) {
+          const ids = pr.options.map((o) => o.id);
+          const choice = pr.kind === 'order' ? ids : pr.kind === 'multi' ? ids.slice(0, pr.min ?? 0) : pr.optional ? [] : ids.slice(0, 1);
+          a = { t: 'answer', promptId: pr.id, choice };
+          p = pr.player;
+        } else {
+          a = { t: 'endTurn' };
+          p = st.active;
+        }
+        const res = this.game.act(p, a);
+        if (res.ok) {
+          this.history.push({ p, a });
+          this.dirty = true;
+          this.systemChat(`⏱ ${this.seats[p]?.name ?? 'Hráč'}: čas vypršel${pr ? ' – volba provedena automaticky' : ' – tah končí'}.`);
+          this.broadcastState();
+          this.broadcastRoom();
+        }
+        return;
+      }
+    }
     const away = (i: PlayerIdx) => {
       const s = this.seats[i];
       return s && !s.client && s.awaySince ? now - s.awaySince : 0;
@@ -251,7 +305,10 @@ export class Room {
         this.broadcastState();
       }
     }
-    if (away(0) > 0 || away(1) > 0) this.broadcastRoom();
+    if ((away(0) > 0 || away(1) > 0) && now - this.lastAwayBroadcast > 5000) {
+      this.lastAwayBroadcast = now;
+      this.broadcastRoom();
+    }
   }
 
   /** The connected player can claim the win when the opponent has been away too long. */

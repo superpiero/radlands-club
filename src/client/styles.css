@@ -885,3 +885,5 @@ select.field { padding: 7px 8px; font-size: 16px; }
 @media (max-height: 560px), (max-width: 600px) {
   .pop { left: 50% !important; right: auto !important; top: auto !important; bottom: 8px !important; transform: translateX(-50%); max-height: 86vh; overflow: auto; }
 }
+.pill.timer { border-color: rgba(143,227,239,.5); color: var(--water-2); font-variant-numeric: tabular-nums; }
+.pill.timer.low { border-color: var(--danger); color: #ffb4a6; animation: tick 1s steps(2) infinite; }
