@@ -1,0 +1,792 @@
+{
+  "edition": "Poslední kapka — Noční proud",
+  "entrypoint": "index.html",
+  "assets": [
+    {
+      "filename": "pumpar.avif",
+      "name": "Pumpař",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 119601
+    },
+    {
+      "filename": "bara.avif",
+      "name": "Brokovnice Bára",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 114212
+    },
+    {
+      "filename": "prak.avif",
+      "name": "Kluk s prakem",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 106464
+    },
+    {
+      "filename": "zved.avif",
+      "name": "Zvěd",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 103296
+    },
+    {
+      "filename": "hana.avif",
+      "name": "Ženistka Hana",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 101389
+    },
+    {
+      "filename": "felcar.avif",
+      "name": "Felčar",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 106680
+    },
+    {
+      "filename": "rez.avif",
+      "name": "Kovářka Rez",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 108676
+    },
+    {
+      "filename": "paserak.avif",
+      "name": "Pašerák",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 100918
+    },
+    {
+      "filename": "naborar.avif",
+      "name": "Náborář",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 100999
+    },
+    {
+      "filename": "vymahac.avif",
+      "name": "Vymahač",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 92678
+    },
+    {
+      "filename": "hlidkar.avif",
+      "name": "Hlídkař",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 99666
+    },
+    {
+      "filename": "marta.avif",
+      "name": "Skladnice Marta",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 97775
+    },
+    {
+      "filename": "bedrich.avif",
+      "name": "Bedřich Pancéř",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 96037
+    },
+    {
+      "filename": "rex.avif",
+      "name": "Pes Rex",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 111283
+    },
+    {
+      "filename": "jiskra.avif",
+      "name": "Mechanička Jiskra",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 97049
+    },
+    {
+      "filename": "granatnik.avif",
+      "name": "Granátník",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 101392
+    },
+    {
+      "filename": "bubenik.avif",
+      "name": "Bubeník",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 85136
+    },
+    {
+      "filename": "myska.avif",
+      "name": "Sběračka Myška",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 107771
+    },
+    {
+      "filename": "radista.avif",
+      "name": "Radista",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 83883
+    },
+    {
+      "filename": "lasar.avif",
+      "name": "Lasař",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 96055
+    },
+    {
+      "filename": "ludmila.avif",
+      "name": "Starostka Ludmila",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 99209
+    },
+    {
+      "filename": "prospektorka.avif",
+      "name": "Prospektorka",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 116997
+    },
+    {
+      "filename": "minometcik.avif",
+      "name": "Minometčík",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 89349
+    },
+    {
+      "filename": "kat.avif",
+      "name": "Kat",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 102771
+    },
+    {
+      "filename": "honak.avif",
+      "name": "Honák Vítek",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 107938
+    },
+    {
+      "filename": "doktorka.avif",
+      "name": "Doktorka Iva",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 82659
+    },
+    {
+      "filename": "strazce.avif",
+      "name": "Strážce studny",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 85532
+    },
+    {
+      "filename": "baron.avif",
+      "name": "Vodní baron",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 107611
+    },
+    {
+      "filename": "matka.avif",
+      "name": "Matka Prachu",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 104162
+    },
+    {
+      "filename": "prorok.avif",
+      "name": "Prorok Bouře",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 107694
+    },
+    {
+      "filename": "velitelka.avif",
+      "name": "Velitelka Ocel",
+      "category": "prezivsi",
+      "width": 576,
+      "height": 864,
+      "bytes": 116238
+    },
+    {
+      "filename": "sucho.avif",
+      "name": "Sucho",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 121869
+    },
+    {
+      "filename": "karavana.avif",
+      "name": "Karavana",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 95632
+    },
+    {
+      "filename": "delostrelectvo.avif",
+      "name": "Dělostřelectvo",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 110339
+    },
+    {
+      "filename": "sanitka.avif",
+      "name": "Sanitka",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 111032
+    },
+    {
+      "filename": "boure.avif",
+      "name": "Písečná bouře",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 95658
+    },
+    {
+      "filename": "sabotaz.avif",
+      "name": "Sabotáž",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 94424
+    },
+    {
+      "filename": "podkop.avif",
+      "name": "Podkop",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 105098
+    },
+    {
+      "filename": "pramen.avif",
+      "name": "Skrytý pramen",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 120048
+    },
+    {
+      "filename": "prepad.avif",
+      "name": "Noční přepad",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 105812
+    },
+    {
+      "filename": "evakuace.avif",
+      "name": "Evakuace",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 86518
+    },
+    {
+      "filename": "poslednikapka.avif",
+      "name": "Poslední kapka",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 98322
+    },
+    {
+      "filename": "vymena.avif",
+      "name": "Výměnný obchod",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 105039
+    },
+    {
+      "filename": "kyselydest.avif",
+      "name": "Kyselý déšť",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 106275
+    },
+    {
+      "filename": "vysadek.avif",
+      "name": "Výsadek",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 97674
+    },
+    {
+      "filename": "oaza.avif",
+      "name": "Oáza",
+      "category": "operace",
+      "width": 576,
+      "height": 864,
+      "bytes": 109804
+    },
+    {
+      "filename": "vodarna.avif",
+      "name": "Vodárna",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 73347
+    },
+    {
+      "filename": "radiostanice.avif",
+      "name": "Radiostanice",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 49894
+    },
+    {
+      "filename": "hnizdo.avif",
+      "name": "Kulometné hnízdo",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 65510
+    },
+    {
+      "filename": "dilna.avif",
+      "name": "Dílna",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 68681
+    },
+    {
+      "filename": "trziste.avif",
+      "name": "Tržiště",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 78030
+    },
+    {
+      "filename": "trhaviny.avif",
+      "name": "Sklad trhavin",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 65377
+    },
+    {
+      "filename": "ubikace.avif",
+      "name": "Ubikace",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 67709
+    },
+    {
+      "filename": "bunkr.avif",
+      "name": "Bunkr",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 66899
+    },
+    {
+      "filename": "studna.avif",
+      "name": "Studna",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 78540
+    },
+    {
+      "filename": "srotiste.avif",
+      "name": "Šrotiště",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 65114
+    },
+    {
+      "filename": "zbrojnice.avif",
+      "name": "Zbrojnice",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 71309
+    },
+    {
+      "filename": "prehrada.avif",
+      "name": "Přehrada",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 73257
+    },
+    {
+      "filename": "stezka.avif",
+      "name": "Pašerácká stezka",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 69723
+    },
+    {
+      "filename": "signal.avif",
+      "name": "Signální oheň",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 63981
+    },
+    {
+      "filename": "pevnost.avif",
+      "name": "Pevnost",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 62833
+    },
+    {
+      "filename": "vrakoviste.avif",
+      "name": "Vrakoviště",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 60082
+    },
+    {
+      "filename": "rusicka.avif",
+      "name": "Rušička",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 74195
+    },
+    {
+      "filename": "hangar.avif",
+      "name": "Hangár",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 64233
+    },
+    {
+      "filename": "vysilac.avif",
+      "name": "Vysílač",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 57766
+    },
+    {
+      "filename": "krater.avif",
+      "name": "Kráter",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 62566
+    },
+    {
+      "filename": "nemocnice.avif",
+      "name": "Ruiny nemocnice",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 72928
+    },
+    {
+      "filename": "vezeni.avif",
+      "name": "Vězení",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 71926
+    },
+    {
+      "filename": "radar.avif",
+      "name": "Radar",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 64913
+    },
+    {
+      "filename": "minovepole.avif",
+      "name": "Minové pole",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 61544
+    },
+    {
+      "filename": "benzinka.avif",
+      "name": "Benzínka",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 62177
+    },
+    {
+      "filename": "skrys.avif",
+      "name": "Skrýš",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 59378
+    },
+    {
+      "filename": "elektrarna.avif",
+      "name": "Elektrárna",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 58365
+    },
+    {
+      "filename": "kantyna.avif",
+      "name": "Kantýna",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 68747
+    },
+    {
+      "filename": "strelnice.avif",
+      "name": "Střelnice",
+      "category": "zakladny",
+      "width": 768,
+      "height": 512,
+      "bytes": 64067
+    },
+    {
+      "filename": "najezd.avif",
+      "name": "Nájezd",
+      "category": "specialni",
+      "width": 576,
+      "height": 864,
+      "bytes": 103905
+    },
+    {
+      "filename": "cisterna.avif",
+      "name": "Cisterna",
+      "category": "specialni",
+      "width": 576,
+      "height": 864,
+      "bytes": 101204
+    },
+    {
+      "filename": "tulak.avif",
+      "name": "Tulák",
+      "category": "specialni",
+      "width": 576,
+      "height": 864,
+      "bytes": 125936
+    },
+    {
+      "filename": "board-background.avif",
+      "name": "Noční proud",
+      "category": "prostredi",
+      "width": 1440,
+      "height": 960,
+      "bytes": 250093
+    },
+    {
+      "filename": "ctyri-ramy-karet.avif",
+      "name": "Čtyři rámy karet",
+      "category": "design",
+      "width": 1800,
+      "height": 955,
+      "bytes": 149271
+    },
+    {
+      "filename": "herni-stul-mobil.avif",
+      "name": "Herní stůl na telefonu",
+      "category": "design",
+      "width": 390,
+      "height": 1230,
+      "bytes": 47861
+    },
+    {
+      "filename": "herni-stul.avif",
+      "name": "Herní stůl",
+      "category": "design",
+      "width": 1280,
+      "height": 888,
+      "bytes": 105981
+    },
+    {
+      "filename": "obrazovy-rejstrik-78.avif",
+      "name": "Obrazový rejstřík 78 karet",
+      "category": "design",
+      "width": 1760,
+      "height": 3087,
+      "bytes": 683956
+    },
+    {
+      "filename": "sada-01.avif",
+      "name": "Přehled sady 01",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 81513
+    },
+    {
+      "filename": "sada-02.avif",
+      "name": "Přehled sady 02",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 78925
+    },
+    {
+      "filename": "sada-03.avif",
+      "name": "Přehled sady 03",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 83558
+    },
+    {
+      "filename": "sada-04.avif",
+      "name": "Přehled sady 04",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 80608
+    },
+    {
+      "filename": "sada-05.avif",
+      "name": "Přehled sady 05",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 82459
+    },
+    {
+      "filename": "sada-06.avif",
+      "name": "Přehled sady 06",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 79985
+    },
+    {
+      "filename": "sada-07.avif",
+      "name": "Přehled sady 07",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 82388
+    },
+    {
+      "filename": "sada-08.avif",
+      "name": "Přehled sady 08",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 81093
+    },
+    {
+      "filename": "sada-09.avif",
+      "name": "Přehled sady 09",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 76565
+    },
+    {
+      "filename": "sada-10.avif",
+      "name": "Přehled sady 10",
+      "category": "design",
+      "width": 960,
+      "height": 550,
+      "bytes": 44025
+    },
+    {
+      "filename": "rejstrik-prototyp.avif",
+      "name": "Rejstřík v prototypu",
+      "category": "design",
+      "width": 1280,
+      "height": 720,
+      "bytes": 76437
+    },
+    {
+      "filename": "znak-nocni-proud.svg",
+      "name": "Znak Nočního proudu",
+      "category": "ui",
+      "bytes": 370
+    },
+    {
+      "filename": "ikony-rozhrani.svg",
+      "name": "Ikony rozhraní",
+      "category": "ui",
+      "bytes": 3670,
+      "symbols": [
+        "i-board",
+        "i-cards",
+        "i-palette",
+        "i-book",
+        "i-clock",
+        "i-restart",
+        "i-water",
+        "i-shield",
+        "i-attack",
+        "i-turn",
+        "i-unit",
+        "i-base",
+        "i-plus",
+        "i-target",
+        "i-flag",
+        "i-sun",
+        "i-close",
+        "i-search",
+        "i-pin",
+        "i-heart"
+      ]
+    }
+  ]
+}
