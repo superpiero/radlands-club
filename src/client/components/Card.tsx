@@ -98,7 +98,7 @@ export function Card(p: CardProps) {
       <div className={cls} data-uid={p.uid} onClick={p.onClick} onMouseEnter={hover} onMouseLeave={leave} style={p.style} title={p.title}>
         <div className="tex" />
         {art}
-        <div className="side">
+        <div className="bside">
           <div className="head">
             <div className="name">{def.name}</div>
             <span className="draws" title="Počet karet, které si na začátku hry líznete"><Icon name="card-draw" />{def.draw}</span>

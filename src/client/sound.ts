@@ -4,8 +4,15 @@ let ctx: AudioContext | null = null;
 let muted = (() => { try { return localStorage.getItem('pk.muted') === '1'; } catch { return false; } })();
 let volume = 0.5;
 
+let unlocked = false;
+if (typeof window !== 'undefined') {
+  const unlock = () => { unlocked = true; window.removeEventListener('pointerdown', unlock); window.removeEventListener('keydown', unlock); };
+  window.addEventListener('pointerdown', unlock);
+  window.addEventListener('keydown', unlock);
+}
+
 function ac(): AudioContext | null {
-  if (muted) return null;
+  if (muted || !unlocked) return null;
   try {
     if (!ctx) ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
     if (ctx.state === 'suspended') void ctx.resume();

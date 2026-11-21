@@ -38,6 +38,8 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   const [order, setOrder] = useState<string[]>([]);
   const [banner, setBanner] = useState<{ text: string; mine: boolean; key: number } | null>(null);
   const [sideOpen, setSideOpen] = useState(false);
+  const [inspect, setInspect] = useState<string | null>(null);
+  const [handOpen, setHandOpen] = useState(false);
   const [muted, setMut] = useState(isMuted());
   const [tipsOn, setTipsOn] = useState(getFlag('tips', true));
   const [revealMin, setRevealMin] = useState(false);
@@ -93,8 +95,15 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   const clickCard = (uid: string, e: MouseEvent, kind: 'hand' | 'board') => {
     if (pending) {
       const o = optByUid.get(uid);
-      // not an option: let the click bubble (e.g. to a highlighted column)
-      if (!o) return;
+      // not an option: let the click bubble (e.g. to a highlighted column), or just show the card
+      if (!o) {
+        if (colOpts.size === 0) {
+          e.stopPropagation();
+          const id = idOf(uid);
+          if (id) setInspect(id);
+        }
+        return;
+      }
       e.stopPropagation();
       if (pending.kind === 'multi') {
         sfx.click();
@@ -103,10 +112,25 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       return;
     }
     e.stopPropagation();
-    if (!canAct) return;
+    const mine = kind === 'hand' || P.columns.flat().some((x) => x.uid === uid) || P.bases.some((b) => b.uid === uid);
+    if (!canAct || !mine) {
+      const id = idOf(uid);
+      if (id) setInspect(id);
+      return;
+    }
     sfx.click();
     const r = (e.currentTarget as HTMLElement).getBoundingClientRect();
     setSel({ kind, uid, x: r.left + r.width / 2, y: kind === 'hand' ? r.top : r.top + r.height / 2 });
+    if (kind === 'hand') setHandOpen(false);
+  };
+  const idOf = (uid: string): string | null => {
+    for (const pl of view.players) {
+      for (const x of pl.columns.flat()) if (x.uid === uid) return x.id;
+      for (const b of pl.bases) if (b.uid === uid) return b.id;
+      for (const e of pl.queue) if (e?.uid === uid) return e.id;
+      for (const h of pl.hand ?? []) if (h.uid === uid) return h.id;
+    }
+    return null;
   };
 
   const clickCistern = (e: MouseEvent) => {
@@ -260,7 +284,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
               {e && (
                 <div className={`qcard ${e.id === 'najezd' ? 'raid' : 'op'}`} data-uid={e.uid}
                   onMouseEnter={() => zoomStore.set({ id: e.id })} onMouseLeave={() => zoomStore.clear(e.id)}
-                  onClick={(ev) => { ev.stopPropagation(); if (o) answer([o.id]); }}>
+                  onClick={(ev) => { ev.stopPropagation(); if (o) answer([o.id]); else setInspect(e.id); }}>
                   <Icon name={CARDS[e.id].icon} />{CARDS[e.id].name}
                 </div>
               )}
@@ -434,9 +458,11 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         </>
       );
     }
+    const detailId = sel.kind === 'hand' || sel.kind === 'board' ? idOf(sel.uid) : sel.kind === 'cistern' ? 'cisterna' : null;
     return (
       <div className="pop panel" style={style} onClick={(e) => e.stopPropagation()}>
         {body}
+        {detailId && <button className="btn ghost small" onClick={() => { setSel(null); setInspect(detailId); }}><Icon name="magnifying-glass" /> Detail karty</button>}
       </div>
     );
   };
@@ -609,7 +635,12 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           {homeZone(me)}
         </div>
         {pbar(me)}
-        <div className="hand-wrap">
+        <div className={`hand-wrap ${handOpen ? 'open' : ''}`}>
+          {!spectator && hand.length > 0 && (
+            <button className="btn small hand-toggle" onClick={(e) => { e.stopPropagation(); setHandOpen(!handOpen); }}>
+              {handOpen ? '▼ Schovat ruku' : `▲ Ruka (${hand.length})`}
+            </button>
+          )}
           {spectator ? <div className="hand-empty">Sleduješ hru jako divák.</div> : hand.length === 0 ? <div className="hand-empty">Prázdná ruka.</div> : (
             <div className="hand" style={{ ['--n' as string]: hand.length }} onMouseMove={handTilt} onMouseLeave={handTiltEnd}>
               {hand.map((c) => {
@@ -634,6 +665,14 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       {popover()}
       {modal()}
       {revealMin && pending && <div style={{ position: 'fixed', top: 70, left: '50%', transform: 'translateX(-50%)', zIndex: 61 }}><button className="btn primary" onClick={() => setRevealMin(false)}>Zpět k výběru</button></div>}
+      {inspect && (
+        <div className="overlay inspect" onClick={(e) => { e.stopPropagation(); setInspect(null); }}>
+          <div className="inspect-inner">
+            <Card id={inspect} noZoom rarityFx />
+            <div className="muted" style={{ textAlign: 'center' }}>Klepnutím zavřeš</div>
+          </div>
+        </div>
+      )}
       {view.phase === 'chooseFirst' && <ChooseFirst view={view} me={me} act={act} />}
       {view.phase === 'over' && <GameOver view={view} me={me} state={state} conn={conn} />}
       {recap && (
