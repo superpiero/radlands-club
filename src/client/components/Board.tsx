@@ -367,7 +367,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           <span key={i} className={`wtok ${i < n ? (i >= 3 ? 'extra' : '') : 'spent'}`} />
         ))}
         {drops > 8 && <span className="wcount">×{n}</span>}
-        {pl.waterPenalty > 0 && <span className="pill" title="Sucho – příští tah o vodu méně">−{pl.waterPenalty} <Drop /></span>}
+        {pl.waterPenalty > 0 && <span className="pill" title="Sucho – příští tah o vodu méně"><span>−{pl.waterPenalty} <Drop /></span></span>}
       </div>
     );
   };
@@ -456,7 +456,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         <>
           <div className="ptitle">Cisterna</div>
           <button className="btn opt" disabled={!legal?.canTakeCistern} onClick={() => { setSel(null); act({ t: 'takeCistern' }); }}>
-            Vzít do ruky (1 <Drop />)<small>Později ji rozeber a získáš 1 vodu navíc – voda se tak přenese do dalšího tahu.</small>
+            <span>Vzít do ruky (1 <Drop />)</span><small>Později ji rozeber a získáš 1 vodu navíc – voda se tak přenese do dalšího tahu.</small>
           </button>
         </>
       );
@@ -472,12 +472,12 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           <div className="ptitle">{def.name}</div>
           {def.kind === 'survivor' && (
             <button className="btn opt primary" disabled={!playable} onClick={() => { setSel(null); act({ t: 'playPerson', uid: c.uid }); }}>
-              Zahrát za {cost} <Drop /><small>Postav přeživšího do sloupce před základnu.</small>
+              <span>Zahrát za {cost} <Drop /></span><small>Postav přeživšího do sloupce před základnu.</small>
             </button>
           )}
           {def.kind === 'operation' && (
             <button className="btn opt primary" disabled={!playable} onClick={() => { setSel(null); act({ t: 'playEvent', uid: c.uid }); }}>
-              Zahrát za {def.cost} <Drop /><small>{def.countdown === 0 ? 'Okamžitě se vyhodnotí.' : `Do fronty na místo ${def.countdown}.`} {def.effectText}</small>
+              <span>Zahrát za {def.cost} <Drop /></span><small>{def.countdown === 0 ? 'Okamžitě se vyhodnotí.' : `Do fronty na místo ${def.countdown}.`} {def.effectText}</small>
             </button>
           )}
           {!playable && why && def.kind !== 'cistern' && <div className="why">{why}</div>}
@@ -504,7 +504,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
             return (
               <div key={idx} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 <button className="btn opt primary" disabled={!ok} onClick={() => { setSel(null); act({ t: 'ability', uid: sel.uid, idx }); }}>
-                  Použít za {ab.cost} <Drop /><small>{ab.text}</small>
+                  <span>Použít za {ab.cost} <Drop /></span><small>{ab.text}</small>
                 </button>
                 {!ok && why && <div className="why">{why}</div>}
               </div>
@@ -665,7 +665,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     <div className="actions">
       {view.canUndo && <button className="btn small" onClick={() => act({ t: 'undo' })} title="Vrátit poslední akci (Ctrl+Z)"><Icon name="return-arrow" /> Zpět</button>}
       <button className="btn small" disabled={!legal?.canDraw} onClick={() => act({ t: 'drawCard' })} title="Zaplať vodu a lízni kartu">
-        <Icon name="card-draw" /> Líznout ({legal?.drawCost ?? 2} <Drop />)
+        <Icon name="card-draw" /> <span>Líznout ({legal?.drawCost ?? 2} <Drop />)</span>
       </button>
       <button className={`btn primary endturn ${canAct && P.water === 0 && (legal?.abilities.length ?? 0) === 0 ? 'pulse' : ''}`} disabled={!canAct} onClick={endTurn}>
         <Icon name="checkered-flag" /> Konec tahu

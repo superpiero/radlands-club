@@ -167,3 +167,19 @@ input.field, select.field { background-color: rgba(12, 9, 7, .72); border-color:
 .card.k-base:not(.compact) .art::before { content: ''; position: absolute; inset: 0; z-index: 1; pointer-events: none;
   background: linear-gradient(180deg, rgba(14,10,7,.78) 0%, rgba(14,10,7,.35) 16%, transparent 30%); }
 .card.k-base:not(.compact) .name { text-shadow: 0 1px 0 #000, 0 2px 8px rgba(0,0,0,.85); }
+
+/* --------------------------------------------------------------------------
+   9. Board rails: player plates, controls, actions
+   -------------------------------------------------------------------------- */
+.pinfo { background: linear-gradient(180deg, rgba(255,236,200,.06), transparent 50%), rgba(16, 11, 8, .55);
+  border-color: rgba(246, 220, 176, .14); box-shadow: inset 0 1px 0 rgba(255,240,210,.06), 0 6px 16px rgba(0,0,0,.35); }
+.pinfo.active { border-color: rgba(233,185,73,.6); box-shadow: 0 0 0 1px rgba(233,185,73,.25), 0 0 26px rgba(233,185,73,.18), inset 0 1px 0 rgba(255,240,210,.1); }
+.pinfo .who .avatar { background: radial-gradient(circle at 35% 30%, #4a3c2e, #1d1711); }
+.pinfo.me .who .avatar { border-color: rgba(63,184,201,.6); }
+.pinfo.opp .who .avatar { border-color: rgba(224,115,60,.6); }
+.pinfo.active .who .avatar { border-color: var(--gold); }
+.controls .btn.small { background: rgba(16, 11, 8, .6); border-color: rgba(246, 220, 176, .16); }
+.controls .btn.small:hover:not(:disabled) { background: rgba(40, 30, 22, .8); }
+.actions .endturn:not(:disabled) { letter-spacing: .08em; }
+.qwrap .qslot, .hz .home-zone .token { border-radius: 10px; }
+.status .pill, .center .pill { background: rgba(16, 11, 8, .7); border-color: rgba(246, 220, 176, .2); }

@@ -140,7 +140,7 @@ export function FxLayer({ view, me, onTurn, onThirst }: { view: GameView; me: Pl
             const el = document.querySelector(`[data-water="${f.player}"]`);
             if (el && f.n > 0) {
               const r = el.getBoundingClientRect();
-              out.push({ key: ++spawnKey, cls: 'float', rect: { x: r.left, y: r.top + 4, w: r.width, h: r.height }, content: <>+{f.n}<Drop /></> });
+              out.push({ key: ++spawnKey, cls: 'float', rect: { x: r.left, y: r.top + 4, w: r.width, h: r.height }, content: <span>+{f.n}<Drop /></span> });
             }
             sounds.push({ s: 'water', at: 0 });
             break;
