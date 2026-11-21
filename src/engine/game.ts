@@ -120,7 +120,7 @@ export class Game {
   // Public API
   // =========================================================================
 
-  act(player: PlayerIdx, action: Action): { ok: true } | { ok: false; error: string } {
+  act(player: PlayerIdx, action: Action): { ok: true } | { ok: false; error: string; rolledBack?: boolean } {
     if (player !== 0 && player !== 1) return { ok: false, error: 'Neplatný hráč.' };
     const bad = sanitizeAction(action);
     if (bad) return { ok: false, error: bad };
@@ -203,7 +203,7 @@ export class Game {
         this.actionStart = null;
         this.actionLog = [];
         this.state.rev++;
-        return { ok: false, error: 'Interní chyba – akce byla vrácena.' };
+        return { ok: false, error: 'Interní chyba – akce byla vrácena.', rolledBack: true };
       }
     }
     this.state.rev++;
@@ -412,19 +412,21 @@ export class Game {
     const pl = st.players[p];
     switch (a.t) {
       case 'playPerson': {
+        const handCard = pl.hand.find((h) => h.uid === a.uid)!;
+        let col = a.col;
+        let pos = a.pos;
+        // choose the slot first: nothing changes for the opponent until the card is really placed
+        if (col === undefined || pos === undefined || !this.slotValid(p, col, pos)) {
+          const slot = yield* this.chooseSlot(p, 'Kam postavíš přeživšího?', handCard.id);
+          if (!slot) return;
+          col = slot.col;
+          pos = slot.pos;
+        }
         const inst = this.takeFromHand(p, a.uid);
         const def = cardDef(inst.id);
         const cost = this.personCost(p, def);
         if (this.baseTraitActive(p, 'kantyna') && pl.personDiscountTurn !== st.turn && (def.cost ?? 0) > 0) pl.personDiscountTurn = st.turn;
         pl.water -= cost;
-        let col = a.col;
-        let pos = a.pos;
-        if (col === undefined || pos === undefined || !this.slotValid(p, col, pos)) {
-          const slot = yield* this.chooseSlot(p, 'Kam postavíš přeživšího?', inst.id);
-          if (!slot) return;
-          col = slot.col;
-          pos = slot.pos;
-        }
         const person: PersonInPlay = {
           uid: inst.uid, id: inst.id, faceDown: false, damaged: false,
           playedTurn: st.turn, usedTurn: -1, restoredTurn: -1, stunnedTurn: -1, stash: 0,
@@ -542,6 +544,7 @@ export class Game {
         return null;
       }
       case 'drawCard':
+        if (st.opts.personal && !this.canDrawMore(p)) return 'Tvůj balíček je vyčerpaný – líznutí by znamenalo prohru.';
         return this.drawCost(p) <= pl.water ? null : 'Nemáš dost vody.';
       case 'takeCistern':
         if (!pl.cisternHome) return 'Cisternu už máš v ruce.';
@@ -817,7 +820,7 @@ export class Game {
   restoreTargets(p: PlayerIdx, o: { basesOnly?: boolean; exclude?: string; peopleOnly?: boolean }): string[] {
     const pl = this.state.players[p];
     const out: string[] = [];
-    if (!o.basesOnly) for (const x of pl.columns.flat()) if (x.damaged && !x.faceDown && x.uid !== o.exclude) out.push(x.uid);
+    if (!o.basesOnly) for (const x of pl.columns.flat()) if (x.damaged && x.uid !== o.exclude) out.push(x.uid);
     for (const b of pl.bases) {
       if (b.destroyed || b.uid === o.exclude) continue;
       const charged = b.charge !== null && b.charge !== p;
@@ -840,7 +843,10 @@ export class Game {
 
   usedBases(p: PlayerIdx): string[] {
     const t = this.state.turn;
-    return this.state.players[p].bases.filter((b) => !b.destroyed && b.usedTurn === t && cardDef(b.id).abilities.length > 0).map((b) => b.uid);
+    return this.state.players[p].bases
+      .filter((b) => !b.destroyed && b.usedTurn === t && cardDef(b.id).abilities.length > 0)
+      .filter((b) => cardDef(b.id).abilities.some((ab) => !ab.canUse || ab.canUse(this, { p, uid: b.uid })))
+      .map((b) => b.uid);
   }
 
   usedPeople(p: PlayerIdx, exclude: string): string[] {
@@ -1055,7 +1061,7 @@ export class Game {
         this.revealed = true;
         this.log(personal ? p : null, 'info', personal
           ? `${this.pn(p)}: balíček došel – odhozené karty se zamíchaly zpět. Až dojde podruhé, ${this.pn(p)} prohrává vyčerpáním.`
-          : 'Balíček došel – odhazovací balíček se zamíchal jako nový balíček. Až dojde podruhé, hra končí remízou.');
+          : 'Balíček došel – odhazovací balíček se zamíchal jako nový balíček. Až dojde podruhé, hra skončí a rozhodne počet stojících základen.');
       } else if (personal) {
         throw new GameOver(this.opp(p), `${this.pn(p)} došly karty (vyčerpání).`);
       } else {
@@ -1279,7 +1285,8 @@ export class Game {
       pp.person.damaged = false;
       if (!keepReady) pp.person.restoredTurn = st.turn;
       this.fx({ t: 'restore', uid });
-      this.log(pp.owner, 'info', `${this.nm(pp.person.id)} je opraven(a)${keepReady ? ' a hned připraven(a)' : ''}.`, [pp.person.id]);
+      const nm = pp.person.faceDown ? 'Tulák' : this.nm(pp.person.id);
+      this.log(pp.owner, 'info', `${nm}: opraveno${keepReady ? ' a hned připraveno' : ''}.`, pp.person.faceDown ? undefined : [pp.person.id]);
       return;
     }
     const bb = this.findBase(uid);
@@ -1303,6 +1310,10 @@ export class Game {
   *gainDrifter(p: PlayerIdx): Gen {
     if (!this.hasFreeSlot(p)) {
       this.log(p, 'info', 'Na tuláka není místo.');
+      return;
+    }
+    if (!this.canDrawMore(p)) {
+      this.log(p, 'info', 'Balíček je vyčerpaný – žádný tulák nepřijde.');
       return;
     }
     const slot = yield* this.chooseSlot(p, 'Kam postavíš tuláka?', 'tulak');
@@ -1442,6 +1453,10 @@ export class Game {
 
   *smuggle(c: Ctx): Gen {
     const st = this.state;
+    if (!this.canDrawMore(c.p)) {
+      this.log(c.p, 'info', 'Balíček je vyčerpaný – Pašerák nic nesežene.');
+      return;
+    }
     const cards: CardInst[] = [this.drawTop(c.p)];
     if (this.canDrawMore(c.p)) cards.push(this.drawTop(c.p));
     this.revealed = true;
@@ -1545,6 +1560,7 @@ export class Game {
       if (!uid) return;
       const c = this.takeFromHand(p, uid);
       this.discardOf(p).push(c);
+      this.revealed = true;
       this.log(p, 'info', `${this.pn(p)} odhazuje ${this.nm(c.id)}.`, [c.id]);
     }
   }
@@ -1623,7 +1639,7 @@ export class Game {
     if (!uid) return;
     const inst = this.takeFromHand(c.p, uid);
     if (inst.id === 'cisterna') pl.cisternHome = true;
-    else this.discardOf(c.p).push(inst);
+    else { this.discardOf(c.p).push(inst); this.revealed = true; }
     const kind = cardDef(inst.id).junk!;
     this.log(c.p, 'play', `${this.pn(c.p)} rozebírá ${this.nm(inst.id)} na Šrotišti → ${JUNK_LABEL[kind]} 2×.`, [inst.id]);
     yield* this.junkEffect(c.p, kind, inst.uid);

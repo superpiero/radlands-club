@@ -5,7 +5,7 @@ Pravidla jsou zde popsána tak, jak je implementuje engine (`src/engine/game.ts`
 
 ## 1. Cíl
 Zničit **všechny 3 soupeřovy základny**. Kdo to dokáže, vyhrává okamžitě – i uprostřed tahu nebo během vyhodnocení efektu.
-Když balíček dojde podruhé, hra končí **remízou**.
+Když balíček dojde podruhé, hra končí: vyhrává hráč s více stojícími základnami, při shodě ten s menším poškozením základen; teprve pak je remíza.
 
 ## 2. Komponenty
 | Komponenta | Počet | Poznámka |
@@ -77,6 +77,6 @@ Když balíček dojde podruhé, hra končí **remízou**.
 
 ## 11. Další pravidla
 - Vlastnosti přeživších platí, jen dokud nejsou poškození (výjimka: Pes Rex). Vlastnosti základen platí, dokud nejsou zničené.
-- Balíček dojde → odhazovací balíček se zamíchá jako nový (jednou). Dojde podruhé → remíza.
+- Balíček dojde → odhazovací balíček se zamíchá jako nový (jednou). Dojde podruhé → rozhodne počet stojících základen (pak menší poškození, jinak remíza).
 - Ruka nemá limit. Z odhazovacího balíčku je vidět jen vrchní karta.
 - **Zpět**: akci lze vrátit, dokud neodhalila skrytou informaci (líznutí, prohlédnutí karet, rozhodnutí soupeře, náhoda). Rozdělanou volbu lze zrušit (Esc).

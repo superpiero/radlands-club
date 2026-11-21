@@ -88,8 +88,12 @@ export function openBooster(collection: Record<string, number>, rng: Rng): Pulle
   const raw: Rarity[] = ['common', 'common', 'common', rng() < 0.15 ? 'rare' : 'uncommon', rng() < 0.25 ? 'legendary' : 'rare'];
   const out: PulledCard[] = [];
   for (const slot of raw) {
-    const r = resolveSlot(slot, collection);
-    const pool = byRarity(r);
+    const up = resolveSlot(slot, collection);
+    const upPool = byRarity(up);
+    const allMaxed = !upPool.some((c) => (collection[c.id] ?? 0) < maxCopies(c.id));
+    // fully collected: keep the original slot rarity so duplicates turn into the slot's dust value
+    const r = allMaxed ? slot : up;
+    const pool = byRarity(r).length ? byRarity(r) : upPool;
     const notMaxed = pool.filter((c) => (collection[c.id] ?? 0) < maxCopies(c.id));
     const c = pickWeighted(notMaxed.length ? notMaxed : pool, rng);
     const had = collection[c.id] ?? 0;
