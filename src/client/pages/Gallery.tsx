@@ -5,6 +5,7 @@ import { Card, CardBack } from '../components/Card';
 import { Icon } from '../components/Icon';
 
 type Filter = 'all' | 'survivor' | 'operation' | 'base' | 'special';
+const RARITY_NAME: Record<string, string> = { common: 'běžná', uncommon: 'neobvyklá', rare: 'vzácná', legendary: 'legendární' };
 
 export function Gallery() {
   const [f, setF] = useState<Filter>('all');
@@ -23,8 +24,8 @@ export function Gallery() {
         <div className={`gallery ${bases ? 'bases' : ''}`}>
           {list.map((c) => (
             <div key={c.id}>
-              <Card id={c.id} noZoom />
-              <div className="copies">{c.copies > 0 ? `${c.copies}× v balíčku` : bases ? `Zásoby: ${c.draw}` : ''}</div>
+              <Card id={c.id} noZoom rarityFx />
+              <div className="copies">{c.copies > 0 ? `${c.copies}× v klasickém balíčku · ${RARITY_NAME[c.rarity ?? 'common']}` : bases ? `Zásoby: ${c.draw}` : `Jen sběratelský režim · ${RARITY_NAME[c.rarity ?? 'common']}`}</div>
             </div>
           ))}
         </div>
@@ -40,7 +41,7 @@ export function Gallery() {
           <button className="btn small" onClick={() => go('/rules')}><Icon name="rule-book" /> Pravidla</button>
         </div>
         <h1>Databáze karet</h1>
-        <p className="muted">Balíček: {total} karet ({SURVIVORS.length} druhů přeživších a {OPERATIONS.length} druhů operací, vše 2×). Základen je {BASES.length} – do každé hry se jich použije 6.</p>
+        <p className="muted">Klasický balíček: {total} karet ({SURVIVORS.filter((c) => c.copies > 0).length} druhů přeživších a {OPERATIONS.filter((c) => c.copies > 0).length} druhů operací, vše 2×). Sběratelský režim přidává {[...SURVIVORS, ...OPERATIONS].filter((c) => c.copies === 0).length} vzácných a legendárních karet. Základen je {BASES.length} – do každé hry se jich použije 6.</p>
         <div className="filters">
           {(['all', 'survivor', 'operation', 'base', 'special'] as Filter[]).map((k) => (
             <button key={k} className={`btn small ${f === k ? 'primary' : ''}`} onClick={() => setF(k)}>

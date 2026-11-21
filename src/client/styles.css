@@ -799,3 +799,5 @@ select.field { padding: 7px 8px; font-size: 16px; }
 @media (max-height: 560px), (max-width: 860px) { .prompt .tipline { display: none; } }
 .chat .line, .log .le { overflow-wrap: anywhere; }
 @media (pointer: coarse) { .controls .btn, .btn.small { min-height: 36px; min-width: 36px; } }
+.card .art .scene { position: absolute; inset: 0; width: 100%; height: 100%; }
+.card .art svg.glyph { z-index: 1; }
