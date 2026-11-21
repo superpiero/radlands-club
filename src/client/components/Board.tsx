@@ -275,7 +275,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     const pl = view.players[owner];
     return (
       <div className="queue" title="Fronta operací: místo 1 se vyhodnotí na začátku příštího tahu majitele">
-        {(owner === me ? [2, 1, 0] : [0, 1, 2]).map((i) => {
+        {[0, 1, 2].map((i) => {
           const e = pl.queue[i];
           const o = e ? optByUid.get(e.uid) : undefined;
           return (
@@ -342,7 +342,8 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   }, [state.emotes]);
 
   // ---- prompt bar ----
-  const promptBar = () => {
+  const promptBar = (tipNode?: ReactNode) => {
+    const tipLine = tipNode ? <span className="tipline">{tipNode}<button className="btn ghost small" onClick={(e) => { e.stopPropagation(); setTipsOn(false); setFlag('tips', false); }} title="Vypnout tipy">×</button></span> : null;
     if (view.phase === 'over') return <div className="prompt wait"><span className="ptitle">Konec hry</span></div>;
     if (pending && !modalMode) {
       return (
@@ -357,6 +358,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           {pending.kind === 'multi' && <button className="btn primary small" disabled={multi.length < (pending.min ?? 0)} onClick={() => answer(multi)}>Potvrdit</button>}
           {pending.optional && <button className="btn small" onClick={() => answer([])}>Přeskočit</button>}
           {view.canCancel && <button className="btn ghost small" onClick={() => act({ t: 'cancel' })}>Zrušit</button>}
+          {tipLine}
         </div>
       );
     }
@@ -370,6 +372,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           <span className="ptitle" style={{ color: 'var(--water-2)' }}>
             Tvůj tah · {P.water} {P.water === 1 ? 'voda' : P.water >= 2 && P.water <= 4 ? 'vody' : 'vod'} · klikni na kartu v ruce nebo na stole
           </span>
+          {tipLine}
         </div>
       );
     }
@@ -548,94 +551,87 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     return null;
   })();
 
-  const pbar = (owner: PlayerIdx) => {
+  const pinfo = (owner: PlayerIdx) => {
     const pl = view.players[owner];
     const isMe = owner === me;
     const active = view.active === owner && view.phase === 'play';
+    const seat = state.room?.seats[owner];
     return (
-      <div className={`pbar ${active ? 'active' : ''}`} style={{ position: 'relative' }}>
+      <div className={`pinfo ${isMe ? 'me' : 'opp'} ${active ? 'active' : ''}`}>
         {emoteFor(owner)}
         <div className="who">
           <div className="avatar"><Icon name={isMe ? 'gas-mask' : 'death-skull'} /></div>
-          <span className="nm">{pl.name}</span>
-          {state.room && (state.room.score[0] + state.room.score[1] > 0) && <span className="pill" title="Výhry v této sérii">🏆 {state.room.score[owner]}</span>}
-          {state.room && state.mode === 'online' && state.room.seats[owner] && !state.room.seats[owner]!.connected && (
-            <span className="pill" title="Hráč je odpojený">odpojen {Math.floor((state.room.seats[owner]!.awayMs ?? 0) / 1000)} s</span>
-          )}
-          {!isMe && !spectator && view.phase === 'play' && state.mode === 'online' && state.room?.seats[owner] && !state.room.seats[owner]!.connected
-            && (state.room.seats[owner]!.awayMs ?? 0) >= (state.room.claimWinMs ?? 120000) && (
-            <button className="btn small danger" onClick={() => (conn as NetConn).claimWin()}>Soupeř je pryč – vzít výhru</button>
-          )}
+          <span className="nm" title={pl.name}>{pl.name}</span>
+          {active && <span className="pill turn">na tahu</span>}
         </div>
-        {active && <span className="pill turn">na tahu</span>}
-        {!isMe && (
-          <div className="handbacks" title={`Karet v ruce: ${pl.handCount}`}>
-            {Array.from({ length: Math.min(pl.handCount, 10) }, (_, i) => <div key={i} className="mini" />)}
-            <span className="muted" style={{ marginLeft: 6 }}>{pl.handCount}</span>
-          </div>
-        )}
-        {water(pl, owner)}
-        <span className="pill hide-sm" title="Přeživších ve hře (max 6)"><Icon name="hooded-figure" />{pl.peopleCount}/6</span>
-        {view.personal && !isMe && <span className="pill hide-sm" title={`Vlastní balíček soupeře: ${pl.deckCount} karet, odhozeno ${pl.discardCount}`}><Icon name="stockpiles" />{pl.deckCount}</span>}
-        <div className="spacer" />
-        {isMe && !spectator && (
-          <div className="actions-bar">
-            {view.canUndo && <button className="btn small" onClick={() => act({ t: 'undo' })} title="Vrátit poslední akci (Ctrl+Z)"><Icon name="return-arrow" /> Zpět</button>}
-            <button className="btn small" disabled={!legal?.canDraw} onClick={() => act({ t: 'drawCard' })} title="Zaplať vodu a lízni kartu">
-              <Icon name="card-draw" /> Líznout ({legal?.drawCost ?? 2}💧)
-            </button>
-            <button className={`btn primary ${canAct && P.water === 0 && (legal?.abilities.length ?? 0) === 0 ? 'pulse' : ''}`} disabled={!canAct} onClick={endTurn}>
-              <Icon name="checkered-flag" /> Konec tahu
-            </button>
-          </div>
-        )}
-        {!isMe && (
-          <div className="actions-bar">
-            <button className="btn small ghost mobile-only" onClick={() => setSideOpen(true)}><Icon name="hamburger-menu" /></button>
-            <button className="btn small ghost" onClick={() => { setMuted(!muted); setMut(!muted); }} title={muted ? 'Zapnout zvuk' : 'Vypnout zvuk'}><Icon name={muted ? 'speaker-off' : 'speaker'} /></button>
-            <button className="btn small ghost hide-sm" onClick={() => { setTipsOn(!tipsOn); setFlag('tips', !tipsOn); }} title="Nápověda pro začátečníky">{tipsOn ? 'Tipy: ZAP' : 'Tipy: VYP'}</button>
-            {!spectator && view.phase === 'play' && (
-              <button className="btn small ghost" onClick={() => { if (confirm('Opravdu se vzdát? Soupeř vyhraje tuto hru.')) act({ t: 'concede' }); }} title="Vzdát hru"><Icon name="broken-shield" /><span className="hide-sm"> Vzdát</span></button>
-            )}
-            <button className="btn small ghost" onClick={() => { if (view.phase === 'over' || confirm('Opustit hru? (Online místo zůstane rezervované – můžeš se vrátit stejným odkazem.)')) go('/'); }} title="Odejít"><Icon name="exit-door" /></button>
-          </div>
+        <div className="pstats">
+          {water(pl, owner)}
+          {!isMe && (
+            <span className="pill" title={`Karet v ruce: ${pl.handCount}`}><Icon name="card-draw" />{pl.handCount}</span>
+          )}
+          <span className="pill" title="Přeživších ve hře (max 6)"><Icon name="hooded-figure" />{pl.peopleCount}/6</span>
+          {view.personal && <span className="pill" title={`Vlastní balíček: ${pl.deckCount} karet, odhozeno ${pl.discardCount}`}><Icon name="stockpiles" />{pl.deckCount}</span>}
+          {state.room && (state.room.score[0] + state.room.score[1] > 0) && <span className="pill" title="Výhry v této sérii">🏆 {state.room.score[owner]}</span>}
+          {state.mode === 'online' && seat && !seat.connected && <span className="pill warn" title="Hráč je odpojený">odpojen {Math.floor((seat.awayMs ?? 0) / 1000)} s</span>}
+        </div>
+        {!isMe && !spectator && view.phase === 'play' && state.mode === 'online' && seat && !seat.connected && (seat.awayMs ?? 0) >= (state.room?.claimWinMs ?? 120000) && (
+          <button className="btn small danger" onClick={() => (conn as NetConn).claimWin()}>Soupeř je pryč – vzít výhru</button>
         )}
       </div>
     );
   };
 
+  const controls = (
+    <div className="controls">
+      <button className="btn small ghost mobile-only" onClick={() => setSideOpen(true)} title="Záznam a chat"><Icon name="hamburger-menu" /></button>
+      <button className="btn small ghost" onClick={() => { setMuted(!muted); setMut(!muted); }} title={muted ? 'Zapnout zvuk' : 'Vypnout zvuk'}><Icon name={muted ? 'speaker-off' : 'speaker'} /></button>
+      <button className="btn small ghost hide-sm" onClick={() => { setTipsOn(!tipsOn); setFlag('tips', !tipsOn); }} title="Nápověda pro začátečníky">{tipsOn ? 'Tipy ✓' : 'Tipy ✗'}</button>
+      {!spectator && view.phase === 'play' && (
+        <button className="btn small ghost" onClick={() => { if (confirm('Opravdu se vzdát? Soupeř vyhraje tuto hru.')) act({ t: 'concede' }); }} title="Vzdát hru"><Icon name="broken-shield" /></button>
+      )}
+      <button className="btn small ghost" onClick={() => { if (view.phase === 'over' || confirm('Opustit hru? (Online místo zůstane rezervované – můžeš se vrátit stejným odkazem.)')) go('/'); }} title="Odejít"><Icon name="exit-door" /></button>
+    </div>
+  );
+
+  const actions = spectator ? <div className="actions" /> : (
+    <div className="actions">
+      {view.canUndo && <button className="btn small" onClick={() => act({ t: 'undo' })} title="Vrátit poslední akci (Ctrl+Z)"><Icon name="return-arrow" /> Zpět</button>}
+      <button className="btn small" disabled={!legal?.canDraw} onClick={() => act({ t: 'drawCard' })} title="Zaplať vodu a lízni kartu">
+        <Icon name="card-draw" /> Líznout ({legal?.drawCost ?? 2}💧)
+      </button>
+      <button className={`btn primary endturn ${canAct && P.water === 0 && (legal?.abilities.length ?? 0) === 0 ? 'pulse' : ''}`} disabled={!canAct} onClick={endTurn}>
+        <Icon name="checkered-flag" /> Konec tahu
+      </button>
+    </div>
+  );
+
+  const handInactive = !!pending && !pending.options.some((o) => o.ref?.t === 'hand');
+
   return (
     <div className="game" onClick={() => setSel(null)}>
-      <div className="table">
-        {pbar(opp)}
-        <div className="side opp">
-          {queue(opp)}
-          <div className="cols">{[0, 1, 2].map((c) => column(opp, c))}</div>
-          {homeZone(opp)}
-        </div>
-        <div className="center">
-          <div className="pilebox">
-            <div className="pile deck" data-uid="deck-pile" title={`Balíček: ${view.deckCount} karet${view.reshuffles ? ' (už jednou zamíchán – až dojde, je remíza!)' : ''}`}>
-              <Icon name="stockpiles" /><span className="pc">{view.deckCount}</span>
-            </div>
-            <div className="pile discard" title="Odhazovací balíček (vrchní karta)">
-              {view.discardTop ? <Card id={view.discardTop.id} compact style={{ ['--h' as string]: 'calc(var(--ch) * .62)', ['--w' as string]: 'calc(var(--cw) * .62)' }} /> : <span className="muted" style={{ fontSize: 12 }}>odhoz</span>}
-              <span className="pc">{view.discardCount}</span>
-            </div>
+      <div className="table" data-active={view.phase === 'play' ? (view.active === me ? 'me' : 'opp') : 'none'}>
+        {pinfo(opp)}
+        {controls}
+        <div className="qwrap opp">{queue(opp)}</div>
+        <div className="hz opp">{homeZone(opp)}</div>
+        <div className="cols opp">{[0, 1, 2].map((c) => column(opp, c))}</div>
+        <div className="piles">
+          <div className="pile deck" data-uid="deck-pile" title={`Balíček: ${view.deckCount} karet${view.reshuffles ? (view.personal ? ' (už jednou zamíchán – až dojde, prohráváš!)' : ' (už jednou zamíchán – až dojde, je remíza!)') : ''}`}>
+            <Icon name="stockpiles" /><span className="pc">{view.deckCount}</span>
           </div>
-          <div className="status">{promptBar()}</div>
-          <div className="row" style={{ justifyContent: 'flex-end', flexWrap: 'nowrap' }}>
-            {tip && <div className="tip"><button className="btn ghost small" onClick={() => { setTipsOn(false); setFlag('tips', false); }}>×</button>{tip}</div>}
-            <span className="pill">Tah {view.turn}</span>
+          <div className="pile discard" title="Odhazovací balíček (vrchní karta)" onClick={(e) => { e.stopPropagation(); if (view.discardTop) setInspect(view.discardTop.id); }}>
+            {view.discardTop ? <Card id={view.discardTop.id} compact noZoom /> : <span className="muted" style={{ fontSize: 12 }}>odhoz</span>}
+            <span className="pc">{view.discardCount}</span>
           </div>
         </div>
-        <div className="side me">
-          {queue(me)}
-          <div className="cols">{[0, 1, 2].map((c) => column(me, c))}</div>
-          {homeZone(me)}
-        </div>
-        {pbar(me)}
-        <div className={`hand-wrap ${handOpen ? 'open' : ''}`}>
+        <div className="status">{promptBar(tip)}</div>
+        <div className="turnbox"><span className="pill">Tah {view.turn}</span></div>
+        <div className="cols me">{[0, 1, 2].map((c) => column(me, c))}</div>
+        <div className="qwrap me">{queue(me)}</div>
+        <div className="hz me">{homeZone(me)}</div>
+        {pinfo(me)}
+        {actions}
+        <div className={`hand-wrap ${handOpen ? 'open' : ''} ${handInactive ? 'inactive' : ''}`}>
           {!spectator && hand.length > 0 && (
             <button className="btn small hand-toggle" onClick={(e) => { e.stopPropagation(); setHandOpen(!handOpen); }}>
               {handOpen ? '▼ Schovat ruku' : `▲ Ruka (${hand.length})`}
@@ -660,6 +656,12 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
             </div>
           )}
         </div>
+        {recap && (
+          <div className="recap panel" key={`recap-${recap.key}`} onClick={(e) => { e.stopPropagation(); setRecap(null); }} title="Klikni pro zavření">
+            <div className="recap-title"><Icon name="eye-target" /> Co udělal(a) {O.name}</div>
+            {recap.lines.map((l, i) => <div key={i} className="recap-line">{l}</div>)}
+          </div>
+        )}
       </div>
       <Sidebar view={view} state={state} me={me} onChat={(t) => conn.chat(t)} onEmote={(id) => conn.emote(id)} mobileOpen={sideOpen} onClose={() => setSideOpen(false)} />
       {popover()}
@@ -675,13 +677,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       )}
       {view.phase === 'chooseFirst' && <ChooseFirst view={view} me={me} act={act} />}
       {view.phase === 'over' && <GameOver view={view} me={me} state={state} conn={conn} />}
-      {recap && (
-        <div className="recap panel" key={recap.key} onClick={(e) => { e.stopPropagation(); setRecap(null); }} title="Klikni pro zavření">
-          <div className="recap-title"><Icon name="eye-target" /> Co udělal(a) {O.name}</div>
-          {recap.lines.map((l, i) => <div key={i} className="recap-line">{l}</div>)}
-        </div>
-      )}
-      {banner && <div className="banner" key={banner.key}><div className={`inner ${banner.mine ? 'mine' : ''}`}>{banner.text}</div></div>}
+      {banner && <div className="banner" key={`banner-${banner.key}`}><div className={`inner ${banner.mine ? 'mine' : ''}`}>{banner.text}</div></div>}
       <FxLayer view={view} me={me} onTurn={onTurn} />
       <Particles />
     </div>

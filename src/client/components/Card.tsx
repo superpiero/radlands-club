@@ -40,6 +40,10 @@ const KIND_LABEL: Record<string, string> = {
   cistern: 'Cisterna',
 };
 
+function longestWord(name: string): number {
+  return Math.max(6, ...name.split(/\s+/).map((w) => w.length));
+}
+
 export function artStyle(hue: number, kind: string): CSSProperties {
   const sat = kind === 'operation' ? 45 : 55;
   return {
@@ -100,7 +104,7 @@ export function Card(p: CardProps) {
         {art}
         <div className="bside">
           <div className="head">
-            <div className="name">{def.name}</div>
+            <div className="name" style={{ ['--nl' as string]: longestWord(def.name) }}>{def.name}</div>
             <span className="draws" title="Počet karet, které si na začátku hry líznete"><Icon name="card-draw" />{def.draw}</span>
           </div>
           {hp > 2 && (
@@ -124,7 +128,7 @@ export function Card(p: CardProps) {
         {costVal !== undefined && (
           <span className="cost" title="Cena ve vodě"><Icon name="water-drop" /><span>{costVal}</span></span>
         )}
-        <div className="name">{def.name}</div>
+        <div className="name" style={{ ['--nl' as string]: longestWord(def.name) }}>{def.name}</div>
         {def.kind === 'operation' && (
           <span className={`fuse ${def.countdown === 0 ? 'instant' : ''}`} title={def.countdown === 0 ? 'Okamžitá operace' : `Odpočet: ${def.countdown}`}>
             <Icon name="sands-of-time" />{def.countdown === 0 ? '⚡' : def.countdown}
