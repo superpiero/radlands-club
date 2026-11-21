@@ -258,3 +258,10 @@ a { color: var(--water); }
 .card.k-base .frame, .card.k-base.compact .frame { box-shadow: inset 0 0 0 .1em var(--cat), inset 0 0 0 .18em rgba(0,0,0,.55); background: none; }
 .card.k-base:not(.compact) .bside { overflow: hidden; }
 .card.k-base:not(.compact) .text { justify-content: flex-start; font-size: .8em; overflow: hidden; padding-top: .3em; }
+
+/* leftovers from the warm v2/v3 palette in design.css (menus owned by the design session) */
+.waiting .panel h2, .gate .stencil, .draft h2, .home-card h2 { color: #fff; }
+.gate-perks { color: #d6d0e8; }
+.gate-perks .icon { color: var(--water); }
+.footer-note { color: rgba(207, 200, 226, .6); }
+.footer-note a { color: var(--water); }
