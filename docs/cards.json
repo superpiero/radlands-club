@@ -1,0 +1,889 @@
+[
+  {
+    "id": "pumpar",
+    "name": "Pumpař",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "water",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Lízni kartu. Pokud pak máš v ruce 2 nebo méně karet, lízni další."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Každá pumpa vrže jinak. On zná všechny."
+  },
+  {
+    "id": "bara",
+    "name": "Brokovnice Bára",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "injure",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Poškoď. Pokud tím zničíš přeživšího, lízni kartu."
+      }
+    ],
+    "copies": 2,
+    "flavor": "„Dvě rány. Víc jich nikdy nepotřebuju.“"
+  },
+  {
+    "id": "prak",
+    "name": "Kluk s prakem",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "drifter",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Zraň. Lze použít, jen když tato karta stojí nekrytá."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Malý, rychlý a vždycky v první řadě."
+  },
+  {
+    "id": "zved",
+    "name": "Zvěd",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "draw",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Vyber soupeřův sloupec. Do konce tahu jsou všechny karty v něm nekryté."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Vidí díru v každé obraně."
+  },
+  {
+    "id": "hana",
+    "name": "Ženistka Hana",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "raid",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Polož nálož na nekrytou soupeřovu základnu (bez nálože). Na začátku tvého příštího tahu vybuchne a základnu poškodí, i když bude krytá."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Tiká to. Vždycky to tiká."
+  },
+  {
+    "id": "felcar",
+    "name": "Felčar",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "restore",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Oprav svou poškozenou kartu. Opravený přeživší zůstává připravený."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Šije nití z padáků. Drží to."
+  },
+  {
+    "id": "rez",
+    "name": "Kovářka Rez",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "restore",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Oprav svou poškozenou základnu (nebo zneškodni nálož). Pak lízni kartu."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Svařuje zdi z kapot aut."
+  },
+  {
+    "id": "paserak",
+    "name": "Pašerák",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "water",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Prohlédni si vrchní 2 karty balíčku. Jednu si vezmi do ruky, druhou dej dospod balíčku."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Nic nemá, všechno sežene."
+  },
+  {
+    "id": "naborar",
+    "name": "Náborář",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "drifter",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Naverbuj tuláka. Lze použít, jen když máš ve hře méně přeživších než soupeř."
+      }
+    ],
+    "copies": 2,
+    "flavor": "„Jídlo, voda, střecha. Podepiš tady.“"
+  },
+  {
+    "id": "vymahac",
+    "name": "Vymahač",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "injure",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Omrač nekrytého nepřítele: během soupeřova příštího tahu nebude připravený."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Dluhy se v pustině platí hned."
+  },
+  {
+    "id": "hlidkar",
+    "name": "Hlídkař",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "draw",
+    "abilities": [],
+    "trait": "Jednou za kolo: když soupeř poškodí nebo zraní jinou tvou kartu v tomto sloupci, můžeš zranit nekrytého nepřítele.",
+    "copies": 2,
+    "flavor": "Nespí. Nikdy."
+  },
+  {
+    "id": "marta",
+    "name": "Skladnice Marta",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "water",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Tato voda zůstane na Martě jako zásoba. Na začátku tvého příštího tahu získáš 2 vody navíc (pokud je Marta stále ve hře)."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Co dneska ušetříš, zítra vypiješ."
+  },
+  {
+    "id": "bedrich",
+    "name": "Bedřich Pancéř",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "restore",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Přesuň Bedřicha do jiného sloupce s volným místem, na přední pozici."
+      }
+    ],
+    "trait": "Zranění na Bedřicha nepůsobí (lze ho jen poškodit nebo zničit).",
+    "copies": 2,
+    "flavor": "Chodící barikáda s dobrým srdcem."
+  },
+  {
+    "id": "rex",
+    "name": "Pes Rex",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "drifter",
+    "abilities": [],
+    "trait": "I když je poškozený: když je Rex zničen, naverbuj tuláka.",
+    "copies": 2,
+    "flavor": "Hodný pes. Většinou."
+  },
+  {
+    "id": "jiskra",
+    "name": "Mechanička Jiskra",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "water",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Vyber svou základnu, jejíž schopnost jsi v tomto tahu už použil. Je znovu připravená."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Rozebere generátor poslepu. Složí ho dvakrát rychleji."
+  },
+  {
+    "id": "granatnik",
+    "name": "Granátník",
+    "kind": "survivor",
+    "cost": 3,
+    "junk": "injure",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Poškoď. Pokud tím zničíš přeživšího a v jeho sloupci stojí další přeživší, zraň i toho."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Pojistka ven, starosti pryč."
+  },
+  {
+    "id": "bubenik",
+    "name": "Bubeník",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "draw",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Jiný tvůj nepoškozený přeživší, který v tomto tahu použil schopnost, je znovu připravený."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Rytmus, který zvedá mrtvé z postele."
+  },
+  {
+    "id": "myska",
+    "name": "Sběračka Myška",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "drifter",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Vezmi si do ruky vrchní kartu odhazovacího balíčku."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Co jiní zahodí, ona zvedne."
+  },
+  {
+    "id": "radista",
+    "name": "Radista",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "raid",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Posuň svou operaci ve frontě o 1 místo vpřed (na volné místo). Z místa 1 se operace hned vyhodnotí."
+      }
+    ],
+    "copies": 2,
+    "flavor": "„Tady Kapka, příjem.“"
+  },
+  {
+    "id": "lasar",
+    "name": "Lasař",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "raid",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Vyber soupeřův sloupec se dvěma přeživšími a prohoď jejich pořadí."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Kdo se schovává vzadu, toho vytáhne dopředu."
+  },
+  {
+    "id": "ludmila",
+    "name": "Starostka Ludmila",
+    "kind": "survivor",
+    "cost": 2,
+    "junk": "draw",
+    "abilities": [],
+    "trait": "Na začátku tvého tahu: pokud nemáš ve frontě žádnou operaci, lízni kartu.",
+    "copies": 2,
+    "flavor": "Pamatuje si každého, kdo dluží vodu."
+  },
+  {
+    "id": "prospektorka",
+    "name": "Prospektorka",
+    "kind": "survivor",
+    "cost": 1,
+    "junk": "water",
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Lízni 2 karty, pak 1 kartu z ruky odhoď."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Kope tam, kde ostatní jen plivou."
+  },
+  {
+    "id": "minometcik",
+    "name": "Minometčík",
+    "kind": "survivor",
+    "cost": 3,
+    "junk": "raid",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Zraň krytého přeživšího, který stojí vzadu v soupeřově sloupci."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Za zeď? Za zeď je to nejlepší."
+  },
+  {
+    "id": "kat",
+    "name": "Kat",
+    "kind": "survivor",
+    "cost": 3,
+    "junk": "injure",
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Zniči poškozeného nepřítele (i krytého)."
+      }
+    ],
+    "copies": 2,
+    "flavor": "Dokončí, co jiní začali."
+  },
+  {
+    "id": "sucho",
+    "name": "Sucho",
+    "kind": "operation",
+    "cost": 2,
+    "junk": "water",
+    "countdown": 1,
+    "abilities": [],
+    "effect": "Soupeř získá ve svém příštím tahu o 1 vodu méně.",
+    "copies": 2,
+    "flavor": "Řeka zmizela přes noc."
+  },
+  {
+    "id": "karavana",
+    "name": "Karavana",
+    "kind": "operation",
+    "cost": 1,
+    "junk": "draw",
+    "countdown": 2,
+    "abilities": [],
+    "effect": "Lízni 3 karty.",
+    "copies": 2,
+    "flavor": "Velbloudi nejsou. Ale vozíky ano."
+  },
+  {
+    "id": "delostrelectvo",
+    "name": "Dělostřelectvo",
+    "kind": "operation",
+    "cost": 2,
+    "junk": "injure",
+    "countdown": 2,
+    "abilities": [],
+    "effect": "Dvakrát poškoď (můžeš i stejnou kartu).",
+    "copies": 2,
+    "flavor": "Nejdřív hrom, pak ticho."
+  },
+  {
+    "id": "sanitka",
+    "name": "Sanitka",
+    "kind": "operation",
+    "cost": 2,
+    "junk": "restore",
+    "countdown": 2,
+    "abilities": [],
+    "effect": "Oprav všechny své poškozené karty (přeživší i základny) a zneškodni nálože na svých základnách.",
+    "copies": 2,
+    "flavor": "Siréna nefunguje, ale houká řidič."
+  },
+  {
+    "id": "boure",
+    "name": "Písečná bouře",
+    "kind": "operation",
+    "cost": 2,
+    "junk": "draw",
+    "countdown": 2,
+    "abilities": [],
+    "effect": "Omrač všechny soupeřovy přeživší (během jeho příštího tahu nebudou připravení).",
+    "copies": 2,
+    "flavor": "Písek v očích, písek v hlavních."
+  },
+  {
+    "id": "sabotaz",
+    "name": "Sabotáž",
+    "kind": "operation",
+    "cost": 1,
+    "junk": "raid",
+    "countdown": 0,
+    "abilities": [],
+    "effect": "Odstraň jednu soupeřovu operaci z jeho fronty. (Nájezd se mu vrátí, jiné operace odhoď.)",
+    "copies": 2,
+    "flavor": "Přestřižený drát, ztracená zpráva."
+  },
+  {
+    "id": "podkop",
+    "name": "Podkop",
+    "kind": "operation",
+    "cost": 1,
+    "junk": "injure",
+    "countdown": 3,
+    "abilities": [],
+    "effect": "Poškoď libovolnou soupeřovu základnu (i krytou).",
+    "copies": 2,
+    "flavor": "Kopali tři noci. Stálo to za to."
+  },
+  {
+    "id": "pramen",
+    "name": "Skrytý pramen",
+    "kind": "operation",
+    "cost": 0,
+    "junk": "water",
+    "countdown": 3,
+    "abilities": [],
+    "effect": "Získej 3 vody navíc.",
+    "copies": 2,
+    "flavor": "Hluboko pod pískem pořád teče."
+  },
+  {
+    "id": "prepad",
+    "name": "Noční přepad",
+    "kind": "operation",
+    "cost": 1,
+    "junk": "injure",
+    "countdown": 1,
+    "abilities": [],
+    "effect": "Zraň. Pokud má soupeř 4 nebo více přeživších, zraň znovu.",
+    "copies": 2,
+    "flavor": "Bez světla, bez zvuku, bez slitování."
+  },
+  {
+    "id": "evakuace",
+    "name": "Evakuace",
+    "kind": "operation",
+    "cost": 1,
+    "junk": "drifter",
+    "countdown": 0,
+    "abilities": [],
+    "effect": "Vrať svého přeživšího (ne tuláka) do ruky. Pak naverbuj tuláka.",
+    "copies": 2,
+    "flavor": "Kdo uteče, ten se vrátí."
+  },
+  {
+    "id": "poslednikapka",
+    "name": "Poslední kapka",
+    "kind": "operation",
+    "cost": 3,
+    "junk": "water",
+    "countdown": 3,
+    "abilities": [],
+    "effect": "Poškoď dvě různé soupeřovy základny (i kryté).",
+    "copies": 2,
+    "flavor": "Když dojde voda, dojde i trpělivost."
+  },
+  {
+    "id": "vymena",
+    "name": "Výměnný obchod",
+    "kind": "operation",
+    "cost": 0,
+    "junk": "draw",
+    "countdown": 0,
+    "abilities": [],
+    "effect": "Odhoď až 2 karty z ruky. Pak lízni o 1 kartu víc, než kolik jsi odhodil.",
+    "copies": 2,
+    "flavor": "Dva šrouby za jednu konzervu. Fér."
+  },
+  {
+    "id": "vodarna",
+    "name": "Vodárna",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Získej 2 vody navíc."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Poslední fungující filtr v okolí."
+  },
+  {
+    "id": "radiostanice",
+    "name": "Radiostanice",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Prohlédni si vrchní 3 karty balíčku a vrať je v libovolném pořadí."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Šum, šum, šum… a pak varování."
+  },
+  {
+    "id": "hnizdo",
+    "name": "Kulometné hnízdo",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Zraň."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Pytle s pískem a nekonečná trpělivost."
+  },
+  {
+    "id": "dilna",
+    "name": "Dílna",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Oprav jinou svou poškozenou kartu (nebo zneškodni nálož)."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Tady se z šrotu dělají zázraky."
+  },
+  {
+    "id": "trziste",
+    "name": "Tržiště",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Odhoď kartu z ruky, pak lízni 2 karty."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Smlouvá se nožem i úsměvem."
+  },
+  {
+    "id": "trhaviny",
+    "name": "Sklad trhavin",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Polož nálož na nekrytou soupeřovu základnu (bez nálože). Na začátku tvého příštího tahu vybuchne a základnu poškodí, i když bude krytá."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Kouření přísně zakázáno."
+  },
+  {
+    "id": "ubikace",
+    "name": "Ubikace",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Naverbuj tuláka."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Postel je postel, i když je z palet."
+  },
+  {
+    "id": "bunkr",
+    "name": "Bunkr",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [],
+    "trait": "Dokud v tomto sloupci stojí 2 přeživší, Bunkr nelze poškodit (ani nájezdem).",
+    "copies": 1,
+    "flavor": "Beton z doby, kdy se ještě věřilo na budoucnost."
+  },
+  {
+    "id": "studna",
+    "name": "Studna",
+    "kind": "base",
+    "draw": 0,
+    "abilities": [],
+    "trait": "Na začátku tvého tahu, pokud Studna není poškozená, získáš 1 vodu navíc.",
+    "copies": 1,
+    "flavor": "Hluboká, studená, střežená."
+  },
+  {
+    "id": "srotiste",
+    "name": "Šrotiště",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Rozeber kartu z ruky: její efekt rozebrání se provede dvakrát."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Všechno se dá rozebrat. Dvakrát."
+  },
+  {
+    "id": "zbrojnice",
+    "name": "Zbrojnice",
+    "kind": "base",
+    "draw": 0,
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Poškoď."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Náboje se tu počítají po kusech."
+  },
+  {
+    "id": "prehrada",
+    "name": "Přehrada",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [
+      {
+        "cost": 0,
+        "text": "Ulož 1 nebo 2 své vody do Přehrady. Na začátku tvého příštího tahu je získáš zpět jako vodu navíc."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Co přiteče dnes, vyteče zítra."
+  },
+  {
+    "id": "stezka",
+    "name": "Pašerácká stezka",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [],
+    "trait": "Tvoje první akce Lízni kartu v každém tahu stojí 1 vodu místo 2.",
+    "copies": 1,
+    "flavor": "Mapu nenajdeš. Musíš znát lidi."
+  },
+  {
+    "id": "signal",
+    "name": "Signální oheň",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Nájezd: zahraj nebo posuň svůj Nájezd."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Kouř je vidět na kilometry. Přesně o to jde."
+  },
+  {
+    "id": "pevnost",
+    "name": "Pevnost",
+    "kind": "base",
+    "draw": 0,
+    "hp": 3,
+    "abilities": [],
+    "trait": "Pevnost je zničena až třetím poškozením.",
+    "copies": 1,
+    "flavor": "Tři zdi. Tři šance."
+  },
+  {
+    "id": "vrakoviste",
+    "name": "Vrakoviště",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 0,
+        "text": "Odhoď kartu z ruky: naverbuj tuláka."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Mezi vraky se dá žít. Nějak."
+  },
+  {
+    "id": "rusicka",
+    "name": "Rušička",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Soupeř náhodně odhodí kartu z ruky. (Cisterna se mu vrátí do zóny.)"
+      }
+    ],
+    "copies": 1,
+    "flavor": "Bzzzzzz."
+  },
+  {
+    "id": "hangar",
+    "name": "Hangár",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Prohoď přeživší ve dvou svých sloupcích (všichni se přesunou k druhé základně)."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Kola, pásy, nebo aspoň trakař."
+  },
+  {
+    "id": "vysilac",
+    "name": "Vysílač",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [],
+    "trait": "Tvoje operace (i Nájezd) se ve frontě umisťují o 1 místo blíž (nejméně na místo 1).",
+    "copies": 1,
+    "flavor": "Rozkazy letí rychleji než kulky."
+  },
+  {
+    "id": "krater",
+    "name": "Kráter",
+    "kind": "base",
+    "draw": 3,
+    "abilities": [],
+    "copies": 1,
+    "flavor": "Nic tu není. Proto tu nikdo neotravuje."
+  },
+  {
+    "id": "nemocnice",
+    "name": "Ruiny nemocnice",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Oprav svou poškozenou kartu (i tuto základnu), nebo zneškodni nálož."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Prázdné postele, plné sklady obvazů."
+  },
+  {
+    "id": "vezeni",
+    "name": "Vězení",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 2,
+        "text": "Omrač nekrytého nepřítele: během soupeřova příštího tahu nebude připravený."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Mříže ze starých postelí. Pořád drží."
+  },
+  {
+    "id": "radar",
+    "name": "Radar",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Prohlédni si soupeřovu ruku. Pak lízni kartu."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Vidíme vás. Všechny."
+  },
+  {
+    "id": "minovepole",
+    "name": "Minové pole",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [],
+    "trait": "Když tuto základnu poškodí schopnost soupeřova přeživšího, ten přeživší je zraněn (i když je krytý).",
+    "copies": 1,
+    "flavor": "Chodí se jen po kamenech. Po kterých, to víme jen my."
+  },
+  {
+    "id": "benzinka",
+    "name": "Benzínka",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Posuň svou operaci ve frontě o 1 místo vpřed (na volné místo). Z místa 1 se hned vyhodnotí."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Benzín už není. Ale nádrže se hodí."
+  },
+  {
+    "id": "skrys",
+    "name": "Skrýš",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Vrať svého nepoškozeného přeživšího (ne tuláka) do ruky."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Pod podlahou je místo pro jednoho."
+  },
+  {
+    "id": "elektrarna",
+    "name": "Elektrárna",
+    "kind": "base",
+    "draw": 0,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Lízni kartu."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Bzučí, jiskří, svítí. Někdy."
+  },
+  {
+    "id": "kantyna",
+    "name": "Kantýna",
+    "kind": "base",
+    "draw": 1,
+    "abilities": [],
+    "trait": "První přeživší, kterého v každém tahu zahraješ, stojí o 1 vodu méně.",
+    "copies": 1,
+    "flavor": "Polévka z ničeho. Ale teplá."
+  },
+  {
+    "id": "strelnice",
+    "name": "Střelnice",
+    "kind": "base",
+    "draw": 2,
+    "abilities": [
+      {
+        "cost": 1,
+        "text": "Zraň nekrytého tuláka."
+      }
+    ],
+    "copies": 1,
+    "flavor": "Plechovky už došly. Teď se střílí na tuláky."
+  },
+  {
+    "id": "najezd",
+    "name": "Nájezd",
+    "kind": "raid",
+    "countdown": 2,
+    "abilities": [],
+    "effect": "Soupeř si vybere jednu svou základnu a ta je poškozena. Pak se Nájezd vrací k tobě.",
+    "copies": 0,
+    "flavor": "Prach, motory, křik."
+  },
+  {
+    "id": "cisterna",
+    "name": "Cisterna",
+    "kind": "cistern",
+    "junk": "water",
+    "abilities": [],
+    "effect": "Akce: zaplať 1 vodu a vezmi Cisternu do ruky. Rozebráním získáš vodu navíc a Cisterna se vrátí do tvé zóny.",
+    "copies": 0,
+    "flavor": "Rezavá, děravá, nenahraditelná."
+  }
+]
