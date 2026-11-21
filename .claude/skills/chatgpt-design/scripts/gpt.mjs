@@ -95,7 +95,8 @@ async function call(method, path, makeBody, { json = true, timeoutMs = 300_000, 
     if (res.ok) return json ? JSON.parse(text) : text;
     let msg = text, code;
     try { const j = JSON.parse(text); msg = j.error?.message || text; code = j.error?.code || j.error?.type; } catch {}
-    if ((res.status === 429 || res.status >= 500) && attempt < retries && code !== 'insufficient_quota' && code !== 'billing_hard_limit_reached') {
+    const billing = /quota|credit|billing/i.test(code || '');
+    if ((res.status === 429 || res.status >= 500) && attempt < retries && !billing) {
       const ra = Number(res.headers.get('retry-after'));
       await sleep(Number.isFinite(ra) && ra > 0 ? ra * 1000 : 3000 * 2 ** attempt);
       lastErr = new ApiError(res.status, msg, code);
@@ -116,26 +117,41 @@ async function listModels() {
 }
 
 const isSnapshot = (id) => /\d{4}-\d{2}-\d{2}$/.test(id);
-const version = (id, re) => { const m = id.match(re); return m ? parseFloat(m[1]) : -1; };
 
-function bestImageModel(ids) {
-  const c = ids.filter((id) => /^gpt-image-/.test(id) && !isSnapshot(id));
-  const score = (id) => version(id, /^gpt-image-(\d+(?:\.\d+)?)/) * 10 - (/mini|nano/.test(id) ? 5 : 0);
-  return c.sort((a, b) => score(b) - score(a))[0];
+// Ranking: highest version first, then the plain id over codename variants (e.g. "-flare"),
+// then alphabetical. Small tiers are only used when nothing else exists.
+function rankModels(ids, re, small) {
+  const all = ids.filter((id) => re.test(id) && !isSnapshot(id));
+  const big = all.filter((id) => !small.test(id));
+  const c = big.length ? big : all;
+  const ver = (id) => parseFloat(id.match(re)[1]);
+  const plain = (id) => (id.replace(re, '') === '' ? 1 : 0);
+  return c.sort((a, b) => ver(b) - ver(a) || plain(b) - plain(a) || a.localeCompare(b));
 }
+const IMAGE_RE = /^gpt-image-(\d+(?:\.\d+)?)/;
+const TEXT_RE = /^gpt-(\d+(?:\.\d+)?)(?=$|-[a-z]+$)/;
+const TEXT_SKIP = /-(mini|nano|pro|codex|chat|audio|realtime|search|transcribe|tts|live|instruct|oss)/;
+const imageCandidates = (ids) => rankModels(ids, IMAGE_RE, /mini|nano/);
+const textCandidates = (ids) => rankModels(ids.filter((id) => !TEXT_SKIP.test(id)), TEXT_RE, /^$/);
+const bestImageModel = (ids) => imageCandidates(ids)[0];
+const bestTextModel = (ids) => textCandidates(ids)[0];
 
-function bestTextModel(ids) {
-  const c = ids.filter((id) => /^gpt-\d+(?:\.\d+)?$/.test(id));
-  return c.sort((a, b) => version(b, /^gpt-(\d+(?:\.\d+)?)/) - version(a, /^gpt-(\d+(?:\.\d+)?)/))[0];
+/** Project pin file (committed), so a whole card set keeps using the same models across sessions. */
+function pinned(key) {
+  const file = process.env.GPT_DESIGN_CONFIG || join('design', 'gpt.json');
+  if (!existsSync(file)) return undefined;
+  try { return JSON.parse(readFileSync(file, 'utf8'))[key]; } catch { fail(`invalid JSON in ${file}`); }
 }
 
 async function imageModel(explicit) {
-  if (explicit || process.env.OPENAI_IMAGE_MODEL) return explicit || process.env.OPENAI_IMAGE_MODEL;
+  const m = explicit || process.env.OPENAI_IMAGE_MODEL || pinned('imageModel');
+  if (m) return m;
   try { return bestImageModel(await listModels()) || 'gpt-image-1'; } catch { return 'gpt-image-1'; }
 }
 
 async function textModel(explicit) {
-  if (explicit || process.env.OPENAI_TEXT_MODEL) return explicit || process.env.OPENAI_TEXT_MODEL;
+  const m = explicit || process.env.OPENAI_TEXT_MODEL || pinned('textModel');
+  if (m) return m;
   try { return bestTextModel(await listModels()) || 'gpt-5'; } catch { return 'gpt-5'; }
 }
 
@@ -245,7 +261,7 @@ function explain(e) {
   let hint = '';
   if (e.status === 401) hint = ' -> the API key is missing or invalid.';
   else if (e.status === 403 && /verif/i.test(e.message)) hint = ' -> gpt-image models require a verified organization: https://platform.openai.com/settings/organization/general';
-  else if (e.code === 'insufficient_quota' || e.code === 'billing_hard_limit_reached') hint = ' -> add API credit / raise the limit at https://platform.openai.com/settings/organization/billing';
+  else if (/quota|credit|billing/i.test(e.code || '')) hint = ' -> the API account has no credit (separate from a ChatGPT subscription): add some at https://platform.openai.com/settings/organization/billing';
   else if (e.code === 'moderation_blocked' || /safety|moderation/i.test(e.message)) hint = ' -> rephrase the prompt (no real brands, IP, gore).';
   else if (e.code === 'model_not_found') hint = ' -> run `models` and pass --model with an available id.';
   return `HTTP ${e.status}${e.code ? ` ${e.code}` : ''}: ${e.message}${hint}`;
@@ -256,11 +272,21 @@ function explain(e) {
 
 async function cmdCheck() {
   const ids = await listModels();
-  const img = process.env.OPENAI_IMAGE_MODEL || bestImageModel(ids);
-  const txt = process.env.OPENAI_TEXT_MODEL || bestTextModel(ids);
+  const show = (label, chosen, cands) => {
+    const src = chosen.src === 'auto' ? 'auto-picked' : `from ${chosen.src}`;
+    console.log(`${label} ${chosen.id || 'NONE visible to this key'} (${src})`);
+    const top = cands[0] && cands[0].match(/\d+(?:\.\d+)?/)[0];
+    const alts = cands.filter((c) => c !== chosen.id && c.match(/\d+(?:\.\d+)?/)[0] === top);
+    if (alts.length) console.log(`  same-version alternatives: ${alts.join(', ')} (pin one in design/gpt.json)`);
+  };
+  const pick = (explicitEnv, key, cands) =>
+    process.env[explicitEnv] ? { id: process.env[explicitEnv], src: explicitEnv }
+      : pinned(key) ? { id: pinned(key), src: 'design/gpt.json' } : { id: cands[0], src: 'auto' };
+  const ic = imageCandidates(ids), tc = textCandidates(ids);
   console.log(`ok: connected to ${BASE} (${ids.length} models visible)`);
-  console.log(`image model: ${img || 'NONE (no gpt-image-* model visible to this key)'}`);
-  console.log(`text model:  ${txt || 'none matched, pass --model'}`);
+  show('image model:', pick('OPENAI_IMAGE_MODEL', 'imageModel', ic), ic);
+  show('text model: ', pick('OPENAI_TEXT_MODEL', 'textModel', tc), tc);
+  console.log('note: listing models is free; billing problems only show up on a real generation.');
 }
 
 async function cmdModels() {

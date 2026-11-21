@@ -7,8 +7,7 @@ description: Generuje vizuální identitu a design karet pro karetní hru Posled
 
 Tenhle skill volá OpenAI API uživatelovým klíčem: obrázky přes `gpt-image-*`, texty přes `gpt-*`
 (Responses API). Všechno jde přes jeden skript bez závislostí, `scripts/gpt.mjs` vedle tohoto souboru
-(v repu: `.claude/skills/chatgpt-design/scripts/gpt.mjs`, Node 20+). Skript sám vybere nejnovější
-dostupný model (lze přebít `--model` nebo `OPENAI_IMAGE_MODEL` / `OPENAI_TEXT_MODEL`).
+(v repu: `.claude/skills/chatgpt-design/scripts/gpt.mjs`, Node 20+).
 
 Prompty a styl jsou v `references/art-direction.md`. **Přečti ho před prvním promptem** – je tam,
 co „à la Radlands“ znamená a co ne, paleta a písma hry, velikosti pro jednotlivé typy karet,
@@ -31,7 +30,15 @@ Vypíše vybraný obrázkový a textový model. Když selže:
   proxy ho pak vkládá do požadavků a host tím povolí; skript klíč v proměnné nepotřebuje.
 - **HTTP 403 „organization must be verified“:** modely gpt-image vyžadují ověřenou organizaci
   (platform.openai.com → Settings → Organization → Verify). Bez ní obrázky nepůjdou, text ano.
-- **insufficient_quota:** dobít kredit v Billing.
+- **`credit_balance_exhausted` / `insufficient_quota`:** API účet nemá kredit. Předplatné ChatGPT se
+  nepočítá; kredit se dobíjí zvlášť na https://platform.openai.com/settings/organization/billing
+  (na skici stačí pár dolarů). `check` tohle neodhalí, výpis modelů je zdarma.
+
+**Výběr modelu:** `--model` > `OPENAI_IMAGE_MODEL` / `OPENAI_TEXT_MODEL` > soubor `design/gpt.json`
+(`{"imageModel": "…", "textModel": "…"}`) > automaticky nejvyšší verze. Když `check` ukáže víc variant
+stejné verze (třeba `gpt-image-2.6-flare` a `gpt-image-2.6-sunburst`), udělej při prvním použití jednu
+`low` skicu se stejným promptem s každou, ukaž je uživateli a vybraný model zapiš do `design/gpt.json`
+(commitovat). Celá sada karet pak jede jedním modelem, jinak nebude stylově držet pohromadě.
 
 ## 2. Pracovní postup
 
