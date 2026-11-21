@@ -89,13 +89,14 @@ function WaitingRoom({ state }: { state: ConnState }) {
       <div className="panel">
         {!room ? (
           <>
-            <h2 className="stencil" style={{ margin: 0 }}>Připojuji…</h2>
-            <p className="muted">Hledám stůl na serveru.</p>
+            <h2 className="stencil" style={{ margin: 0 }}>{state.errors.length ? 'Nepodařilo se připojit' : 'Připojuji…'}</h2>
+            <p className="muted">{state.errors.length ? state.errors[state.errors.length - 1].msg : 'Hledám stůl na serveru.'}</p>
           </>
         ) : (
           <>
             <div className="muted" style={{ fontWeight: 700, letterSpacing: '.1em' }}>KÓD STOLU</div>
             <div className="room-code">{room.code}</div>
+            <div className="pill" style={{ alignSelf: 'center' }}>{room.options.deckMode === 'collection' ? 'Sběratelský stůl – každý hraje se svým balíčkem' : 'Klasika – společný balíček'}</div>
             <div className="copybox">
               <input className="field" readOnly value={link} onFocus={(e) => e.target.select()} />
               <button className="btn primary" onClick={copy}>{copied ? 'Zkopírováno ✓' : 'Kopírovat odkaz'}</button>

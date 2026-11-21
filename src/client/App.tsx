@@ -3,13 +3,20 @@ import { Gallery } from './pages/Gallery';
 import { Home } from './pages/Home';
 import { Rules } from './pages/Rules';
 import { GameRoute } from './pages/GameRoute';
+import { AccountPage } from './pages/AccountPage';
+import { Boosters } from './pages/Boosters';
+import { Decks } from './pages/Decks';
 
 export type Route =
   | { page: 'home' }
   | { page: 'rules' }
   | { page: 'cards' }
+  | { page: 'login' }
+  | { page: 'register' }
+  | { page: 'boosters' }
+  | { page: 'decks' }
   | { page: 'room'; code: string; spectate?: boolean }
-  | { page: 'new'; baseMode: 'draft' | 'random' }
+  | { page: 'new'; baseMode: 'draft' | 'random'; deckMode: 'classic' | 'collection' }
   | { page: 'bot'; baseMode: 'draft' | 'random'; level: 'easy' | 'normal' | 'hard' }
   | { page: 'hotseat'; baseMode: 'draft' | 'random' };
 
@@ -22,8 +29,12 @@ function parse(hash: string): Route {
   switch (parts[0]) {
     case 'rules': return { page: 'rules' };
     case 'cards': return { page: 'cards' };
+    case 'login': return { page: 'login' };
+    case 'register': return { page: 'register' };
+    case 'boosters': return { page: 'boosters' };
+    case 'decks': return { page: 'decks' };
     case 'room': return parts[1] ? { page: 'room', code: parts[1].toUpperCase(), spectate: q.get('watch') === '1' } : { page: 'home' };
-    case 'new': return { page: 'new', baseMode };
+    case 'new': return { page: 'new', baseMode, deckMode: q.get('decks') === 'collection' ? 'collection' : 'classic' };
     case 'bot': return { page: 'bot', baseMode, level: (q.get('level') as 'easy' | 'normal' | 'hard') || 'normal' };
     case 'hotseat': return { page: 'hotseat', baseMode };
     default: return { page: 'home' };
@@ -47,6 +58,9 @@ export function App() {
       {route.page === 'home' && <Home />}
       {route.page === 'rules' && <Rules />}
       {route.page === 'cards' && <Gallery />}
+      {(route.page === 'login' || route.page === 'register') && <AccountPage mode={route.page} />}
+      {route.page === 'boosters' && <Boosters />}
+      {route.page === 'decks' && <Decks />}
       {(route.page === 'room' || route.page === 'new' || route.page === 'bot' || route.page === 'hotseat') && (
         <GameRoute key={JSON.stringify(route)} route={route} />
       )}

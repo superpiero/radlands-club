@@ -12,6 +12,7 @@ import { Card, CardBack } from './Card';
 import { FxLayer } from './FxLayer';
 import { Icon, JUNK_ICON } from './Icon';
 import { Sidebar } from './Sidebar';
+import { confetti, Particles } from './Particles';
 
 type Sel =
   | { kind: 'hand'; uid: string; x: number; y: number }
@@ -529,6 +530,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         )}
         {water(pl, owner)}
         <span className="pill hide-sm" title="Přeživších ve hře (max 6)"><Icon name="hooded-figure" />{pl.peopleCount}/6</span>
+        {view.personal && !isMe && <span className="pill hide-sm" title={`Vlastní balíček soupeře: ${pl.deckCount} karet, odhozeno ${pl.discardCount}`}><Icon name="stockpiles" />{pl.deckCount}</span>}
         <div className="spacer" />
         {isMe && !spectator && (
           <div className="actions-bar">
@@ -622,6 +624,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       )}
       {banner && <div className="banner" key={banner.key}><div className={`inner ${banner.mine ? 'mine' : ''}`}>{banner.text}</div></div>}
       <FxLayer view={view} me={me} onTurn={onTurn} />
+      <Particles />
     </div>
   );
 }
@@ -655,6 +658,9 @@ function ChooseFirst({ view, me, act }: { view: GameView; me: PlayerIdx; act: (a
 
 function GameOver({ view, me, state, conn }: { view: GameView; me: PlayerIdx; state: ConnState; conn: Conn }) {
   const [hidden, setHidden] = useState(false);
+  useEffect(() => {
+    if (view.winner === me && view.you !== null) { confetti(); setTimeout(() => confetti(90), 700); }
+  }, [view.winner, me, view.you]);
   if (hidden) {
     return <div style={{ position: 'fixed', top: 70, left: '50%', transform: 'translateX(-50%)', zIndex: 61 }}><button className="btn primary" onClick={() => setHidden(false)}>Zobrazit výsledek</button></div>;
   }
@@ -671,6 +677,12 @@ function GameOver({ view, me, state, conn }: { view: GameView; me: PlayerIdx; st
         <h1 className={!win && !draw ? 'lose' : ''}>{draw ? 'REMÍZA' : spectator ? `${view.players[view.winner as PlayerIdx].name} vyhrává` : win ? 'VÍTĚZSTVÍ!' : 'PORÁŽKA'}</h1>
         <p className="muted" style={{ margin: 0 }}>{view.winReason}</p>
         <p className="muted" style={{ margin: 0 }}>Hra trvala {view.turn} tahů.</p>
+        {state.reward && (
+          <p style={{ margin: 0, color: 'var(--water-2)', fontWeight: 800, fontSize: 20 }}>
+            {state.reward.gain > 0 ? `+${state.reward.gain} kapek do kolekce` : 'Za tak krátkou hru se kapky nepřipisují.'}
+          </p>
+        )}
+        {state.reward && state.reward.gain > 0 && <button className="btn small" onClick={() => go('/boosters')}>Do obchodu s boostery</button>}
         {!spectator && (
           <div className="row" style={{ justifyContent: 'center' }}>
             <button className="btn primary" disabled={!!iWant} onClick={() => conn.rematch()}>{iWant ? 'Čekám na soupeře…' : theyWant ? 'Přijmout odvetu' : 'Odveta'}</button>

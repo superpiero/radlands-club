@@ -24,7 +24,13 @@ export interface CardProps {
   enter?: boolean;
   noZoom?: boolean;
   title?: string;
+  /** Premium rarity frame + foil shimmer (collection / booster screens). */
+  rarityFx?: boolean;
+  /** Owned / in-deck counter shown in the corner (collection screens). */
+  count?: ReactNode;
 }
+
+const RARITY_NAMES: Record<string, string> = { common: 'Běžná', uncommon: 'Neobvyklá', rare: 'Vzácná', legendary: 'Legendární' };
 
 const KIND_LABEL: Record<string, string> = {
   survivor: 'Přeživší',
@@ -50,6 +56,7 @@ export function Card(p: CardProps) {
     p.compact && 'compact', p.className, p.onClick && 'clickable', p.damaged && 'damaged', p.destroyed && 'destroyed',
     p.notReady && !p.destroyed && 'notready', p.usable && 'usable', p.selected && 'selected',
     p.target && 'target', p.target && p.target !== 'danger' && p.target, p.dimmed && 'dimmed', p.enter && 'enter',
+    def.rarity && def.collectible !== false && `r-${def.rarity}`, p.rarityFx && 'rfx',
   ].filter(Boolean).join(' ');
   const hp = p.hp ?? def.hp ?? 2;
   const hover = p.noZoom ? undefined : () => zoom.set({ id: p.id, uid: p.uid });
@@ -80,6 +87,9 @@ export function Card(p: CardProps) {
       {def.kind === 'base' && !p.destroyed && (p.damage ?? 0) > 0 && <div className="crack" />}
       {def.kind === 'base' && !p.destroyed && (p.damage ?? 0) > 0 && <div className="badge-stamp">POŠKOZENO</div>}
       {p.badges && <div className="badges">{p.badges}</div>}
+      {def.rarity && def.collectible !== false && <div className="gem" title={RARITY_NAMES[def.rarity]} />}
+      {p.rarityFx && (def.rarity === 'rare' || def.rarity === 'legendary') && <div className="foil" />}
+      {p.count !== undefined && <div className="count-badge">{p.count}</div>}
     </>
   );
 

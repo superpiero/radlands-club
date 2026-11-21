@@ -74,4 +74,11 @@ export const sfx = {
   win: () => { [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.35, 'triangle', 0.25, undefined, i * 0.13)); },
   lose: () => { [392, 330, 262].forEach((f, i) => tone(f, 0.45, 'sawtooth', 0.12, undefined, i * 0.2)); },
   chat: () => tone(880, 0.06, 'sine', 0.12),
+  rumble: () => { noise(1.0, 0.35, 160); tone(55, 1.0, 'sine', 0.25, 70); },
+  tear: () => { noise(0.35, 0.6, 3000, 'highpass'); noise(0.5, 0.4, 500); },
+  flip: () => { noise(0.12, 0.25, 2200, 'bandpass'); tone(600, 0.08, 'triangle', 0.12, 900); },
+  rare: () => { noise(0.12, 0.25, 2200, 'bandpass'); [660, 880, 1320].forEach((f, i) => tone(f, 0.25, 'triangle', 0.2, undefined, 0.05 + i * 0.08)); },
+  legendary: () => { tone(110, 0.9, 'sawtooth', 0.15, 55); [523, 659, 784, 1046, 1318].forEach((f, i) => tone(f, 0.5, 'triangle', 0.24, undefined, 0.1 + i * 0.1)); noise(0.6, 0.3, 800, 'lowpass', 0.05); },
+  whoosh: () => noise(0.22, 0.22, 1400, 'bandpass'),
+  impact: () => { noise(0.18, 0.45, 700); tone(90, 0.2, 'sine', 0.3, 45); },
 };

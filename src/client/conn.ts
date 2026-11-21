@@ -6,6 +6,7 @@ import { Game } from '../engine/game';
 import type { Action, PlayerIdx } from '../engine/types';
 import { buildView, type GameView } from '../engine/view';
 import type { ChatLine, ClientMsg, RoomInfo, RoomOptions, ServerMsg } from '../shared/protocol';
+import { account, refreshProfile } from './account';
 
 export interface EmoteEvent { seat: PlayerIdx | null; id: string; from: string; ts: number }
 
@@ -19,6 +20,7 @@ export interface ConnState {
   errors: { id: number; msg: string }[];
   botThinking: boolean;
   left?: boolean;
+  reward?: { gain: number; result: 'win' | 'loss' | 'draw' };
 }
 
 type Listener = (s: ConnState) => void;
@@ -70,7 +72,7 @@ export class NetConn extends Conn {
   private ws: WebSocket | null = null;
   private retry = 0;
   private closed = false;
-  private intent: { t: 'create'; options: RoomOptions } | { t: 'join'; code: string; spectate?: boolean };
+  private intent: { t: 'create'; options: RoomOptions; deckId?: string } | { t: 'join'; code: string; spectate?: boolean; deckId?: string };
   private pingTimer: ReturnType<typeof setInterval> | null = null;
 
   constructor(private name: string, private token: string, intent: NetConn['intent']) {
@@ -93,9 +95,9 @@ export class NetConn extends Conn {
     ws.onopen = () => {
       this.retry = 0;
       this.set({ status: 'connected' });
-      this.send({ t: 'hello', token: this.token, name: this.name });
-      if (this.intent.t === 'create') this.send({ t: 'create', options: this.intent.options });
-      else this.send({ t: 'join', code: this.intent.code, spectate: this.intent.spectate });
+      this.send({ t: 'hello', token: this.token, name: this.name, account: account.session() ?? undefined });
+      if (this.intent.t === 'create') this.send({ t: 'create', options: this.intent.options, deckId: this.intent.deckId });
+      else this.send({ t: 'join', code: this.intent.code, spectate: this.intent.spectate, deckId: this.intent.deckId });
       this.pingTimer = setInterval(() => this.send({ t: 'ping', ts: Date.now() }), 20000);
     };
     ws.onmessage = (ev) => {
@@ -124,7 +126,7 @@ export class NetConn extends Conn {
       case 'room':
         this.set({ room: msg.room });
         // after the room exists, reconnects should join it instead of creating a new one
-        this.intent = { t: 'join', code: msg.room.code };
+        this.intent = { t: 'join', code: msg.room.code, deckId: this.intent.deckId };
         if (history.replaceState && !location.hash.includes(msg.room.code)) history.replaceState(null, '', `#/room/${msg.room.code}`);
         break;
       case 'state':
@@ -144,6 +146,10 @@ export class NetConn extends Conn {
         break;
       case 'left':
         this.set({ left: true });
+        break;
+      case 'reward':
+        this.set({ reward: { gain: msg.gain, result: msg.result } });
+        void refreshProfile();
         break;
     }
   }

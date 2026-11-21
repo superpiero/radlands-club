@@ -6,3 +6,4 @@ test-results
 playwright-report
 /tmp
 data
+.dist-test
