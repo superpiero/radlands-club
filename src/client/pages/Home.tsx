@@ -35,8 +35,9 @@ export function Home() {
   return (
     <div className="home">
       <div className="logo">
+        <img className="emblem" src="/emblem.svg" alt="" width={48} height={56} />
         <h1>POSLEDNÍ<br />KAP<span className="drop">K</span>A</h1>
-        <div className="tag">Karetní duel o vodu v pustině · pro 2 hráče</div>
+        <div className="tag">Noční proud · karetní duel o vodu pro 2 hráče</div>
       </div>
 
       <div className="panel home-card" style={{ width: 'min(1000px, 100%)' }}>

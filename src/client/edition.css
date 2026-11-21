@@ -1,0 +1,258 @@
+/* ==========================================================================
+   EDICE „NOČNÍ PROUD“ – visual theme from the user's edition pack
+   (design/edition-nocni-proud). Loaded last: re-skins colours, type and the
+   card frame. Layout rules (sizes, name fitting, sheets) stay in polish.css.
+   Group colours: survivor pink, operation orange, base violet, special lime.
+   Water is mint, selection is lime.
+   ========================================================================== */
+:root {
+  --bg: #0d0b14;
+  --bg-2: #14111d;
+  --tarp: #1a1625;
+  --tarp-2: #221d30;
+  --plate: linear-gradient(180deg, #1b1727 0%, #14111e 100%);
+  --sand: #f2eefa;
+  --sand-2: #cbc3de;
+  --paper: #f2eefa;
+  --ink: #0d0b14;
+  --ink-2: #8f86a8;
+  --text: #ece8f6;
+  --muted: #a39bbd;
+  --line: rgba(190, 175, 255, 0.13);
+  --line-2: rgba(190, 175, 255, 0.26);
+  --rust: #ff4d6d;
+  --danger: #ff4d6d;
+  --ember: #ff9a3d;
+  --gold: #ffc25a;
+  --good: #8be36b;
+  --water: #5ff2d2;
+  --water-2: #a3fbe8;
+  --water-deep: #16907e;
+  --lime: #e2f36a;
+  --me: #5ff2d2;
+  --opp: #ff7a8a;
+  --c-surv: #ff5fb8;
+  --c-op: #ff9a3d;
+  --c-base: #a78bfa;
+  --c-spec: #c9f25c;
+  --glass: rgba(20, 17, 31, 0.72);
+  --glass-strong: rgba(16, 14, 25, 0.92);
+  --glass-line: rgba(190, 175, 255, 0.16);
+  --glass-hi: rgba(255, 255, 255, 0.05);
+  --hazard: linear-gradient(90deg, var(--c-surv), var(--c-op) 50%, var(--lime));
+
+  --f-title: 'Archivo', 'Barlow Condensed', 'Arial', sans-serif;
+  --f-stencil: 'Archivo', 'Arial Black', sans-serif;
+  --f-mono: 'JetBrains Mono', ui-monospace, 'Courier New', monospace;
+  --f-type: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+body { background: var(--bg); }
+.app-bg { background:
+  radial-gradient(1100px 600px at 50% -10%, rgba(167, 139, 250, .14), transparent 60%),
+  radial-gradient(900px 500px at 50% 110%, rgba(95, 242, 210, .07), transparent 60%),
+  var(--bg); }
+.grain::after { opacity: .035; }
+
+/* ---------- typography ---------- */
+.logo h1, .page h1, .banner .inner, .gameover h1, .handover h1, .welcome h2, .room-code, .draft h2, .pack-title {
+  font-family: var(--f-stencil); font-weight: 900; font-style: italic; letter-spacing: -.02em; text-transform: none;
+}
+.stencil, .home-card h2, .pop .ptitle, .modal h2, .page h2, .summary th, .recap-title, .recap-dock .recap-title, .rarity-name, .showcase .sc-label {
+  font-family: var(--f-title); font-weight: 800; letter-spacing: -.01em;
+}
+.logo h1 { color: #fff; font-size: clamp(56px, 10vw, 124px); line-height: .9;
+  text-shadow: 0 4px 0 rgba(0,0,0,.35), 0 18px 50px rgba(0,0,0,.6), 0 0 60px rgba(255, 95, 184, .25); }
+.logo h1 .drop { color: var(--water); text-shadow: 0 0 28px rgba(95, 242, 210, .6), 0 4px 0 rgba(0,0,0,.35); }
+.logo .emblem { display: block; width: clamp(44px, 6vw, 64px); height: auto; margin: 0 auto 10px; filter: drop-shadow(0 0 18px rgba(95, 242, 210, .55)); }
+.logo .tag { font-family: var(--f-mono); font-size: clamp(12px, 1.4vw, 15px); letter-spacing: .14em; text-transform: uppercase; color: var(--water); text-shadow: none; }
+.page h1 { color: #fff; text-shadow: none; }
+.page h1::before { content: 'NOČNÍ PROUD'; display: table; margin-bottom: 12px; padding: 3px 10px; font: 600 12px/1.4 var(--f-mono); letter-spacing: .16em;
+  font-style: normal; color: var(--c-surv); border: 1px solid rgba(255, 95, 184, .55); border-radius: 3px; }
+.page h1::after { height: 3px; width: 96px; background: var(--hazard); }
+.page h2 { color: #f2eefa; }
+.home-card h2 { color: #fff; }
+.home-card h2 .icon { color: var(--water); filter: none; }
+.home-card p, .page p, .page li { color: #cfc8e2; }
+.muted { color: var(--muted); }
+.draft h2 { color: #fff; text-shadow: none; }
+.banner .inner { color: #fff; text-shadow: 0 0 30px rgba(255, 95, 184, .35); background: linear-gradient(90deg, transparent, rgba(13, 11, 20, .92) 20%, rgba(13, 11, 20, .92) 80%, transparent); }
+.banner .inner.mine { color: var(--water); text-shadow: 0 0 30px rgba(95, 242, 210, .4); }
+.gameover h1 { color: var(--lime); }
+
+/* ---------- controls ---------- */
+.btn:not(.primary):not(.danger) { background: rgba(255, 255, 255, .045); border-color: var(--line-2); color: var(--text); }
+.btn:not(.primary):not(.danger):hover:not(:disabled) { background: rgba(255, 255, 255, .09); border-color: rgba(190, 175, 255, .45); }
+.btn.primary { background: var(--lime); border-color: #f2fba8; color: #14120a; text-shadow: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 6px 20px rgba(226, 243, 106, .22); }
+.btn.primary:hover:not(:disabled) { background: #ecfa86; box-shadow: inset 0 1px 0 rgba(255,255,255,.55), 0 8px 26px rgba(226, 243, 106, .35); }
+.btn.primary:disabled { background: rgba(226, 243, 106, .35); color: rgba(20, 18, 10, .7); }
+.btn.danger { background: linear-gradient(180deg, #ff6a85, #d23455); border-color: #ff9db0; }
+.btn.pulse { animation-name: pulse-lime; }
+@keyframes pulse-lime { 0% { box-shadow: 0 0 0 0 rgba(226,243,106,.55); } 70% { box-shadow: 0 0 0 12px rgba(226,243,106,0); } 100% { box-shadow: 0 0 0 0 rgba(226,243,106,0); } }
+.seg { background: rgba(0, 0, 0, .3); border-color: var(--line-2); }
+.seg button { color: var(--muted); }
+.seg button.on { background: rgba(255, 255, 255, .12); color: #fff; box-shadow: inset 0 -2px 0 var(--lime); }
+input.field, select.field { background-color: rgba(8, 7, 14, .7); border-color: var(--line-2); color: var(--text); }
+input.field:focus { outline-color: var(--lime); }
+.pill { background: rgba(8, 7, 14, .55); border-color: var(--line-2); }
+.pill.turn { background: rgba(226, 243, 106, .14); border-color: rgba(226, 243, 106, .5); color: var(--lime); }
+a { color: var(--water); }
+
+/* ---------- panels ---------- */
+.panel, .home .panel, .page .panel, .gate .panel, .waiting .panel {
+  background: linear-gradient(180deg, rgba(255,255,255,.04), transparent 40%), var(--glass);
+  border-color: var(--glass-line);
+  box-shadow: 0 18px 44px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.05);
+}
+.pop.panel, .modal.panel, .pop { background: rgba(18, 15, 28, .97); border-color: var(--line-2); }
+.pop .opt.primary small { color: rgba(20, 18, 10, .75); }
+
+/* ---------- edition backdrop (Backdrop.tsx renders the edition image) ---------- */
+.backdrop.has-img { background: var(--bg); }
+.backdrop .bd-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 40%; }
+.backdrop.has-img::after { background:
+  linear-gradient(180deg, rgba(13, 11, 20, .35) 0%, rgba(13, 11, 20, .55) 45%, rgba(13, 11, 20, .94) 82%, var(--bg) 100%); }
+.backdrop-page.has-img { opacity: 1; }
+.backdrop-page.has-img::after { background: linear-gradient(180deg, rgba(13, 11, 20, .72), rgba(13, 11, 20, .93) 45%, var(--bg)); }
+
+/* ==========================================================================
+   CARDS – edition frame: art on top, dark plate with group label + name below
+   ========================================================================== */
+.card { --cat: var(--c-surv); background: var(--plate); color: var(--text); border-radius: calc(var(--w) * .07); box-shadow: 0 4px 14px rgba(0,0,0,.55); }
+.card.k-operation { --cat: var(--c-op); background: var(--plate); color: var(--text); }
+.card.k-base { --cat: var(--c-base); background: var(--plate); }
+.card.k-raid, .card.k-cistern { --cat: var(--c-spec); background: var(--plate); color: var(--text); }
+.card .tex { display: none; }
+.card.k-operation::before { display: none; }
+.card .frame { background: none; box-shadow: inset 0 0 0 .1em var(--cat), inset 0 0 0 .18em rgba(0,0,0,.55); opacity: .95; z-index: 4; }
+.card.compact .frame { box-shadow: inset 0 0 0 .1em var(--cat); }
+.card.r-rare .frame { box-shadow: inset 0 0 0 .1em var(--cat), inset 0 0 0 .22em #7fb8ff, inset 0 0 1em rgba(127, 184, 255, .35); }
+.card.r-legendary .frame { box-shadow: inset 0 0 0 .1em var(--cat), inset 0 0 0 .22em var(--gold), inset 0 0 1.2em rgba(255, 194, 90, .4); }
+.card.compact.r-rare .frame, .card.compact.r-legendary .frame { box-shadow: inset 0 0 0 .1em var(--cat); }
+
+/* portrait cards with art: image on top, plate below */
+.card.has-art:not(.k-base) .art {
+  position: relative; inset: auto; order: 1; flex: 1 1 auto; min-height: 36%; margin: 0; z-index: 1;
+  border-radius: calc(var(--w) * .07) calc(var(--w) * .07) 0 0; box-shadow: inset 0 -.12em 0 var(--cat);
+}
+.card.has-art:not(.k-base) .art::after { background: linear-gradient(180deg, rgba(0,0,0,.28) 0%, transparent 22%, transparent 84%, rgba(13,11,20,.35) 100%); }
+.card.has-art:not(.k-base) .typeline { display: block; order: 2; margin: 0; position: relative; z-index: 3; }
+.card.has-art:not(.k-base) .head { order: 3; z-index: 3; }
+.card.has-art:not(.k-base) .text { order: 4; margin-top: 0; z-index: 3; }
+
+/* group label: mono caps with a shape per group */
+.card .typeline { padding: .5em .6em 0; font: 600 .62em/1.2 var(--f-mono); letter-spacing: .14em; color: var(--cat); text-transform: uppercase; }
+.card .typeline::before { content: ''; display: inline-block; width: .7em; height: .7em; margin-right: .45em; vertical-align: -.02em; background: var(--cat); border-radius: 50%; }
+.card.k-operation .typeline { color: var(--cat); }
+.card.k-operation .typeline::before { border-radius: 0; transform: skewX(-20deg); width: .95em; height: .6em; }
+.card.k-raid .typeline::before, .card.k-cistern .typeline::before { border-radius: 0; transform: rotate(45deg) scale(.8); }
+.card.k-cistern .typeline, .card.k-raid .typeline { display: block; }
+.card.compact .typeline { display: none; }
+
+/* name */
+.card.k-survivor .head, .card.k-operation .head, .card.k-raid .head, .card.k-cistern .head {
+  margin: 0; padding: .1em .6em .25em; min-height: 0; background: none; box-shadow: none; border-radius: 0;
+}
+.card.compact.k-survivor .head, .card.compact.k-operation .head, .card.compact .head { padding: .25em .4em .15em; }
+.card .name, .card.k-survivor .name, .card.k-operation .name { color: #fff; text-shadow: none; text-transform: none; font-family: var(--f-title); font-weight: 800; letter-spacing: -.01em; }
+.card.has-art:not(.k-base) .head { order: 3; }
+.card.compact.has-art:not(.k-base) .head { order: 2; }
+
+/* cost chip over the art, top-left */
+.card .head > .cost { position: absolute; top: .45em; left: .45em; z-index: 5; width: auto; height: auto; display: inline-flex; align-items: center; gap: .18em;
+  padding: .12em .4em .12em .3em; border-radius: .32em; background: rgba(10, 9, 16, .82); border: .09em solid var(--water); color: var(--water); font-size: .95em; }
+.card .head > .cost svg { position: static; width: .95em; height: .95em; color: var(--water); filter: none; }
+.card .head > .cost::before { display: none; }
+.card .head > .cost span { position: static; color: var(--water); text-shadow: none; font-size: 1em; top: 0; }
+
+/* rules text */
+.card .text { padding: .25em .45em .55em; gap: .28em; color: var(--text); }
+.card .ab { background: rgba(255, 255, 255, .055); border: 1px solid rgba(190, 175, 255, .12); box-shadow: none; color: #ece8f6; border-radius: .35em; }
+.card .ab .abc { color: var(--water); }
+.card .trait { color: #e2dcf2; border-left-color: var(--cat); background: rgba(255,255,255,.04); border-radius: .2em; padding: .15em .35em; font-style: italic; }
+.card .flavor { font-family: var(--f-ui); font-style: italic; color: #c9c1de; }
+.card .junk { background: rgba(10, 9, 16, .82); border: 1px solid var(--line-2); color: #e7e2f4; }
+.card .junk .icon { color: var(--cat); }
+.card .fuse { background: var(--c-op); color: #1a0f05; }
+.card .fuse.instant { background: var(--lime); }
+.card.has-art .junk { top: auto; bottom: .45em; right: .45em; }
+.card.has-art.k-operation .stamp, .card.k-operation .stamp { display: none; }
+
+/* procedural fallback keeps the same plate */
+.card:not(.has-art):not(.k-base) .art { margin: 0; border-radius: calc(var(--w) * .07) calc(var(--w) * .07) 0 0; box-shadow: inset 0 -.12em 0 var(--cat); }
+
+/* bases (landscape): art on the left, plate on the right */
+.card.k-base:not(.compact).has-art .art { position: absolute; inset: 0 auto 0 0; width: 46%; margin: 0; z-index: 1;
+  border-radius: calc(var(--h) * .08) 0 0 calc(var(--h) * .08); box-shadow: inset -.12em 0 0 var(--cat); }
+.card.k-base:not(.compact).has-art .art::after { background: linear-gradient(90deg, transparent 70%, rgba(13,11,20,.35)); }
+.card.k-base:not(.compact).has-art .bside { margin-left: 46%; padding: .45em .45em .45em .55em; color: var(--text); }
+.card.k-base:not(.compact) .bside::before { content: 'ZÁKLADNA'; display: block; font: 600 .6em/1.2 var(--f-mono); letter-spacing: .14em; color: var(--cat); margin: .1em 0 .2em .1em; }
+.card.k-base .name { color: #fff; text-shadow: none; }
+.card.k-base .draws { background: rgba(10, 9, 16, .8); border: 1px solid var(--line-2); color: #e7e2f4; }
+.card.k-base .ab { background: rgba(255, 255, 255, .055); }
+.card.k-base.compact .art::after { background: linear-gradient(90deg, transparent 18%, rgba(13,11,20,.7) 50%, rgba(13,11,20,.94) 100%) !important; }
+.card.k-base.compact .bside { color: var(--text); }
+.card.k-base.compact .name { text-shadow: 0 1px 2px #000; }
+
+/* states on the table */
+.card.usable, .cols .card.usable { box-shadow: 0 0 0 2px var(--lime), 0 0 18px rgba(226, 243, 106, .5), 0 6px 14px rgba(0,0,0,.55); }
+.card.selected { outline: 2px solid var(--lime); outline-offset: 2px; }
+.card .badge-stamp { color: var(--danger); border-color: var(--danger); background: rgba(13, 11, 20, .75); font-style: italic; }
+
+/* card back + drifter */
+.card.k-back { background: radial-gradient(circle at 50% 42%, rgba(95, 242, 210, .22) 0, transparent 42%), radial-gradient(circle at 50% 40%, #241d3a 0, #14111f 60%, #0d0b14 100%); color: var(--water); }
+.card.k-back::before { border-color: rgba(95, 242, 210, .28); }
+.card.k-back .backlogo { display: none; }
+.card.k-back::after { content: ''; position: absolute; left: 50%; top: 42%; width: 46%; aspect-ratio: 48 / 56; transform: translate(-50%, -50%);
+  background: url('/emblem.svg') center / contain no-repeat; filter: drop-shadow(0 0 .6em rgba(95, 242, 210, .55)); }
+.card.k-back .backtxt { font-family: var(--f-mono); font-weight: 600; font-size: .7em; letter-spacing: .22em; color: var(--water); margin-top: 58%; }
+.card.k-back .art-img:not(.back-full) { inset: 0; opacity: 1; border-radius: inherit; }
+.card.k-back:has(.art-img:not(.back-full))::after { display: none; }
+.card.k-back:has(.art-img:not(.back-full)) .backtxt { position: absolute; left: 0; right: 0; bottom: 0; margin: 0; padding: .45em 0 .5em; text-align: center;
+  background: linear-gradient(180deg, transparent, rgba(13, 11, 20, .92) 40%); color: var(--c-spec); z-index: 2; }
+
+/* ==========================================================================
+   TABLE
+   ========================================================================== */
+.game { background: radial-gradient(ellipse at 50% 30%, #1a1526, #0b0a10 70%); }
+.table, .table:not(.has-mat) { background-color: #14111d; outline-color: rgba(190, 175, 255, .16);
+  background-image: radial-gradient(ellipse 70% 55% at 50% 48%, rgba(167, 139, 250, .12), transparent 70%); }
+.table.has-mat { background-image: linear-gradient(rgba(13, 11, 20, .80), rgba(13, 11, 20, .86)), var(--mat); background-size: cover; background-position: center; }
+.table[data-active="me"] { box-shadow: 0 24px 50px rgba(0,0,0,.65), inset 0 -120px 140px -100px rgba(95, 242, 210, .28), inset 0 0 80px rgba(0,0,0,.4); }
+.table[data-active="opp"] { box-shadow: 0 24px 50px rgba(0,0,0,.65), inset 0 120px 140px -100px rgba(255, 95, 184, .24), inset 0 0 80px rgba(0,0,0,.4); }
+.col .slotp.empty::before { border-color: rgba(190, 175, 255, .2); background: rgba(255, 255, 255, .02); }
+.qwrap .qslot { border-color: rgba(190, 175, 255, .2); background: rgba(255, 255, 255, .025); }
+.status::before { background: repeating-linear-gradient(90deg, rgba(190, 175, 255, .2) 0 14px, transparent 14px 24px); }
+.sidebar { background: linear-gradient(180deg, #17142a, #100e19); }
+.pinfo { background: rgba(255, 255, 255, .035); border-color: var(--line); }
+.pinfo.active { border-color: rgba(226, 243, 106, .6); box-shadow: 0 0 0 1px rgba(226, 243, 106, .2), 0 0 26px rgba(226, 243, 106, .14); }
+.pinfo.active .who .avatar { border-color: var(--lime); box-shadow: 0 0 12px rgba(226, 243, 106, .5); }
+.pinfo .who .avatar { background: radial-gradient(circle at 35% 30%, #2c2542, #15121f); }
+.controls .btn.small { background: rgba(255, 255, 255, .05); }
+.wtok { background: radial-gradient(circle at 35% 30%, #f1fffb 0 12%, #a3fbe8 22%, #3fd9bb 55%, #0f6e60 100%); }
+.wtok.extra { background: radial-gradient(circle at 35% 30%, #fff 0 12%, #d6fff5 24%, #6ff5d9 58%, #179a85 100%); }
+.wtok.spent { background: radial-gradient(circle at 35% 30%, #4b4560 0 10%, #2a253a 40%, #15121f 100%); }
+.card .token-used { background: radial-gradient(circle at 35% 30%, #f1fffb 0 12%, #a3fbe8 22%, #3fd9bb 55%, #0f6e60 100%); }
+.piles .pile.deck { box-shadow: 1px 1px 0 #0b0a10, 2px 2px 0 #2a2340, 3px 3px 0 #0b0a10, 4px 4px 0 #2a2340, 5px 5px 0 #0b0a10, 8px 10px 16px rgba(0,0,0,.6); }
+
+/* phones: sheets use the night glass */
+@media (max-width: 860px), (max-height: 560px) {
+  .pop.panel { background: rgba(18, 15, 28, .97); }
+}
+@media (max-width: 900px) {
+  .deck-panel { background: var(--glass-strong); }
+}
+
+/* fixes: older layers (design.css v3) set a beige stock and a dark title band on art cards */
+.card.k-survivor, .card.has-art.k-survivor { background: var(--plate); }
+.card.has-art.k-survivor .head, .card.has-art.k-operation .head, .card.has-art.k-raid .head, .card.has-art.k-cistern .head { background: none; box-shadow: none; }
+/* the cost chip is placed against the card, not the name row */
+.card:not(.k-base) .head, .card.has-art:not(.k-base) .head { position: static; }
+.card:not(.k-base) .head .name { position: relative; z-index: 3; }
+.home-card h2 { font-size: 26px; }
+
+/* bases: violet edge (beats the older .card.k-base .frame rule) and text that starts under the name */
+.card.k-base .frame, .card.k-base.compact .frame { box-shadow: inset 0 0 0 .1em var(--cat), inset 0 0 0 .18em rgba(0,0,0,.55); background: none; }
+.card.k-base:not(.compact) .bside { overflow: hidden; }
+.card.k-base:not(.compact) .text { justify-content: flex-start; font-size: .8em; overflow: hidden; padding-top: .3em; }

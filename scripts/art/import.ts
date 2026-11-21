@@ -1,6 +1,7 @@
 // Imports AI-generated card illustrations into the game.
 //   npx tsx scripts/art/import.ts <folder-or-files...>
-// Files must be named after the card id (pumpar.png, bunkr.jpg, …). Zip files are extracted first.
+// Files must be named after the card id (pumpar.png, bunkr.jpg, …); png/jpg/webp/avif. Zip files are extracted first.
+// Images are never upscaled.
 // Output: public/art/<id>.webp (portrait 720x1080, landscape 1080x720) + src/client/gen/art.ts manifest.
 import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, statSync, writeFileSync } from 'node:fs';
@@ -21,7 +22,7 @@ function collect(p: string, acc: string[]) {
     const dir = mkdtempSync(join(tmpdir(), 'pk-art-'));
     execFileSync('unzip', ['-q', '-o', p, '-d', dir]);
     collect(dir, acc);
-  } else if (/\.(png|jpe?g|webp)$/i.test(p)) {
+  } else if (/\.(png|jpe?g|webp|avif)$/i.test(p)) {
     acc.push(p);
   }
 }
@@ -50,7 +51,7 @@ for (const f of files) {
   const land = !!ART[id].landscape;
   const big = id === 'playmat';
   await sharp(f)
-    .resize(big ? 1920 : land ? 1080 : 720, big ? 1080 : land ? 720 : 1080, { fit: 'cover', position: big ? 'centre' : sharp.strategy.attention })
+    .resize(big ? 1920 : land ? 1080 : 720, big ? 1080 : land ? 720 : 1080, { fit: 'cover', position: big ? 'centre' : sharp.strategy.attention, withoutEnlargement: true })
     .webp({ quality: 80, effort: 5 })
     .toFile(join(OUT, `${id}.webp`));
   ok++;

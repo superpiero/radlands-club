@@ -1,5 +1,7 @@
 // Original procedural wasteland panorama used behind the home page and other menus.
 // Pure SVG + CSS (no images), so it costs nothing to load and scales to any screen.
+// When the edition background is imported (public/art/playmat.webp) it is used instead.
+import { ART_IDS, ART_VERSION } from '../gen/art';
 
 function rng(seed: number) {
   let s = seed >>> 0;
@@ -46,6 +48,14 @@ function WindPump({ x, base, h, cls }: { x: number; base: number; h: number; cls
 }
 
 export function Panorama({ variant = 'home' }: { variant?: 'home' | 'page' }) {
+  if (ART_IDS.has('playmat')) {
+    return (
+      <div className={`backdrop backdrop-${variant} has-img`} aria-hidden>
+        <img className="bd-img" src={`/art/playmat.webp?v=${ART_VERSION}`} alt="" decoding="async" draggable={false} />
+        <div className="dust" />
+      </div>
+    );
+  }
   const stars = rng(7);
   return (
     <div className={`backdrop backdrop-${variant}`} aria-hidden>

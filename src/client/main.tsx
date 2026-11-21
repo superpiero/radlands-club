@@ -17,9 +17,16 @@ import '@fontsource/big-shoulders-display/latin-900';
 import '@fontsource/big-shoulders-display/latin-ext-900';
 import '@fontsource/big-shoulders-stencil-display/latin-900';
 import '@fontsource/big-shoulders-stencil-display/latin-ext-900';
+import '@fontsource/archivo/latin-800';
+import '@fontsource/archivo/latin-ext-800';
+import '@fontsource/archivo/latin-900-italic';
+import '@fontsource/archivo/latin-ext-900-italic';
+import '@fontsource/jetbrains-mono/latin-600';
+import '@fontsource/jetbrains-mono/latin-ext-600';
 import './styles.css';
 import './design.css';
 import './polish.css';
+import './edition.css';
 import { App } from './App';
 
 createRoot(document.getElementById('root')!).render(<App />);
