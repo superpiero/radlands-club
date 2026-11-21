@@ -65,6 +65,7 @@ export function Rules() {
           <li>Karta je <b>krytá</b>, když před ní stojí tvůj přeživší. Základna je krytá, když je v jejím sloupci aspoň jeden přeživší. Přeživší vzadu je krytý tím vepředu.</li>
           <li><b>Poškodit</b> lze, pokud karta neříká jinak, jen <b>nekrytou</b> soupeřovu kartu (přeživšího nebo základnu).</li>
           <li><b>Zranit</b> = poškodit nekrytého přeživšího (ne základnu).</li>
+          <li><b>Nepřítel</b> = soupeřův přeživší (včetně tuláků). Základna nepřítel není.</li>
           <li>Poškozená karta dostane prasklinu. <b>Druhé poškození ji zničí.</b> Poškozený přeživší není připravený a jeho vlastnost neplatí.</li>
           <li>Tulák je zničen už prvním poškozením a vrací se lícem dolů navrch balíčku.</li>
           <li>Když je zničen přeživší vzadu, ten vepředu se posune k základně.</li>

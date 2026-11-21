@@ -20,7 +20,12 @@ const HOST = process.env.HOST ?? '0.0.0.0';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const candidates = [join(here, 'client'), join(here, '../../dist/client'), join(process.cwd(), 'dist/client')];
-const STATIC_DIR = candidates.find((d) => existsSync(join(d, 'index.html'))) ?? candidates[0];
+let staticDir: string | null = null;
+function STATIC(): string {
+  if (staticDir && existsSync(join(staticDir, 'index.html'))) return staticDir;
+  staticDir = candidates.find((d) => existsSync(join(d, 'index.html'))) ?? candidates[0];
+  return staticDir;
+}
 
 const MIME: Record<string, string> = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -96,8 +101,8 @@ const server = createServer((req, res) => {
     res.end();
     return;
   }
-  let file = join(STATIC_DIR, path);
-  if (!path || !existsSync(file) || statSync(file).isDirectory()) file = join(STATIC_DIR, 'index.html');
+  let file = join(STATIC(), path);
+  if (!path || !existsSync(file) || statSync(file).isDirectory()) file = join(STATIC(), 'index.html');
   if (!existsSync(file)) {
     res.writeHead(404, { 'content-type': 'text/plain; charset=utf-8' });
     res.end('Klient není sestavený. Spusť "npm run build".');
@@ -249,5 +254,5 @@ server.listen(PORT, HOST, () => {
   console.log('\n  💧 POSLEDNÍ KAPKA – herní server běží');
   console.log(`     Lokálně:      http://localhost:${PORT}`);
   for (const a of addrs) console.log(`     V síti/LAN:   http://${a}:${PORT}`);
-  console.log(`     Statické soubory: ${STATIC_DIR}\n`);
+  console.log(`     Statické soubory: ${STATIC()}\n`);
 });

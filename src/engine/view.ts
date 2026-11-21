@@ -127,7 +127,13 @@ export function buildView(g: Game, viewer: PlayerIdx | null): GameView {
   let waitingFor: GameView['waitingFor'] = null;
   if (st.pending) {
     if (viewer === st.pending.player) pending = structuredClone(st.pending);
-    else waitingFor = { player: st.pending.player, title: st.pending.title };
+    else {
+      const pr = st.pending;
+      const what = pr.kind === 'order' ? 'řadí karty' : pr.kind === 'reveal' ? 'prohlíží si karty' : pr.kind === 'multi' ? 'vybírá karty'
+        : /NÁJEZD/.test(pr.title) ? 'vybírá, kterou základnu obětuje Nájezdu' : /Kam postavíš/.test(pr.title) ? 'vybírá místo'
+        : /Hlídkař/.test(pr.title) ? 'zvažuje odvetu Hlídkaře' : 'vybírá cíl';
+      waitingFor = { player: pr.player, title: what };
+    }
   }
 
   const log = st.log.slice(-150).map((e) => ({

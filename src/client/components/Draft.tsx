@@ -3,6 +3,7 @@ import { CARDS } from '../../engine/cards';
 import type { GameView } from '../../engine/view';
 import { sfx } from '../sound';
 import { Card } from './Card';
+import { plural } from '../../shared/plural';
 
 export function Draft({ view, onPick, mode }: { view: GameView; onPick: (bases: string[]) => void; mode: string }) {
   const me = view.you ?? 0;
@@ -46,7 +47,7 @@ export function Draft({ view, onPick, mode }: { view: GameView; onPick: (bases: 
         })}
       </div>
       <div className="row">
-        <span className="sum">Začáteční ruka: <b>{draws}</b> karet</span>
+        <span className="sum">Začáteční ruka: <b>{draws}</b> {plural(draws, 'karta', 'karty', 'karet')}</span>
         <button className="btn primary" disabled={picked.length !== 3} onClick={() => { sfx.play(); onPick(picked); }}>
           Potvrdit základny ({picked.length}/3)
         </button>

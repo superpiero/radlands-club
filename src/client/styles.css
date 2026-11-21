@@ -308,7 +308,7 @@ input.field:focus { outline: 2px solid var(--water); border-color: transparent; 
 /* hand */
 .hand-wrap { position: relative; z-index: 6; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 6px; container-type: inline-size; min-width: 0; }
 .hand { display: flex; align-items: flex-end; justify-content: center; padding: 0 20px; max-width: 100%; }
-.hand .card { --h: calc(var(--hand-h) * 1.42); --w: calc(var(--h) * 0.72); transform: translateY(26%); margin-left: clamp(calc(var(--w) * -0.6), calc((100cqw - 40px - var(--n, 6) * var(--w)) / max(1, var(--n, 6) - 1)), 8px); transform-origin: 50% 120%; }
+.hand .card { --h: calc(var(--hand-h) * 1.3); --w: calc(var(--h) * 0.72); transform: translateY(14%); margin-left: clamp(calc(var(--w) * -0.6), calc((100cqw - 40px - var(--n, 6) * var(--w)) / max(1, var(--n, 6) - 1)), 8px); transform-origin: 50% 120%; }
 .hand .card:first-child { margin-left: 0; }
 .hand .card:hover { transform: translateY(-10%) scale(1.08); z-index: 10; }
 .hand .card.selected { transform: translateY(-12%) scale(1.1); z-index: 11; }
@@ -876,3 +876,12 @@ select.field { padding: 7px 8px; font-size: 16px; }
 .overlay:has(.howto) { z-index: 85; }
 .ht-col .card.compact { --h: 86px; --w: 62px; }
 .ht-col .card.k-base { --w: 160px; --h: 86px; }
+.ghost-slot { flex-direction: column; gap: 4px; display: flex; align-items: center; justify-content: center; }
+.ghost-back { background: rgba(20,15,11,.9); border: 1px solid var(--gold); color: #ffe3a1; border-radius: 6px; font-weight: 800; font-size: 12px; padding: 2px 6px; cursor: pointer; font-family: inherit; }
+.ghost-back:hover { background: var(--gold); color: #2a1c08; }
+.banner.small .inner { font-size: clamp(22px, 3.5vw, 40px); padding: 6px 0; }
+.banner.small { top: 12%; }
+.chat-bubble { max-width: 260px; font-size: 14px; font-weight: 700; white-space: normal; animation-duration: 4s; }
+@media (max-height: 560px), (max-width: 600px) {
+  .pop { left: 50% !important; right: auto !important; top: auto !important; bottom: 8px !important; transform: translateX(-50%); max-height: 86vh; overflow: auto; }
+}

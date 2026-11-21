@@ -127,6 +127,8 @@ export function Home() {
         <div className="panel home-card">
           <h2><Icon name="tabletop-players" /> Jeden počítač</h2>
           <p>Dva hráči u jednoho zařízení. Před každým předáním se ruka schová.</p>
+          <input className="field" placeholder="Jméno 2. hráče" maxLength={20} defaultValue={(() => { try { return localStorage.getItem('pk.name2') ?? ''; } catch { return ''; } })()}
+            onChange={(e) => { try { localStorage.setItem('pk.name2', e.target.value.slice(0, 20)); } catch { /* ignore */ } }} />
           <button className="btn" onClick={() => { ensureName(); go(`/hotseat${q}`); }}>
             <Icon name="swap-bag" /> Hrát u jednoho PC
           </button>

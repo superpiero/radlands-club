@@ -12,6 +12,7 @@ import { Card, CardBack } from './Card';
 import { FxLayer } from './FxLayer';
 import { Icon, JUNK_ICON } from './Icon';
 import { Sidebar } from './Sidebar';
+import { plural } from '../../shared/plural';
 import { HowToPlay } from './HowToPlay';
 import { confetti, Particles } from './Particles';
 
@@ -144,6 +145,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   };
 
   const endTurn = (e: MouseEvent) => {
+    e.stopPropagation();
     if (!canAct) return;
     const usable = (legal?.playable.length ?? 0) + (legal?.abilities.length ?? 0) + (legal?.canDraw ? 1 : 0);
     if (P.water > 0 && usable > 0) {
@@ -182,7 +184,9 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
         if (log[i].kind === 'turn' && log[i].player === opp && log[i].text.startsWith('—')) { start = i; break; }
       }
       if (start >= 0) {
-        const lines = log.slice(start + 1)
+        let end = log.length;
+        for (let i = start + 1; i < log.length; i++) if (log[i].kind === 'turn' && log[i].player === me && log[i].text.startsWith('—')) { end = i; break; }
+        const lines = log.slice(start + 1, end)
           .filter((e) => ['play', 'event', 'damage', 'destroy', 'win'].includes(e.kind) || (e.kind === 'info' && /Sabotáž|nálož|vrací|odkryl|Radar/.test(e.text)))
           .filter((e) => !(e.kind === 'turn'))
           .map((e) => e.text)
@@ -254,16 +258,23 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     const ghosts = owner === me ? slotOpts.filter((o) => o.ref?.t === 'slot' && o.ref.col === col) : [];
     // build slot list from base outward: index 0 = back
     const items: ReactNode[] = [];
-    const ghost = (o: PromptOption) => (
-      <div key={o.id} className="slotp"><div className="ghost-slot" onClick={(e) => { e.stopPropagation(); answer([o.id]); }}>
-        {o.ref?.t === 'slot' && o.ref.pos === 'front' ? 'SEM\n(vepředu)' : o.ref?.t === 'slot' && o.ref.pos === 'back' ? 'SEM\n(vzadu)' : 'SEM'}
-      </div></div>
-    );
     const back = ghosts.find((g) => g.ref?.t === 'slot' && g.ref.pos === 'back');
     const front = ghosts.find((g) => g.ref?.t === 'slot' && (g.ref.pos === 'front' || g.ref.pos === 'only'));
-    if (back) items.push(ghost(back));
     people.forEach((x, idx) => items.push(<div key={x.uid} className="slotp">{personCard(x, owner, col, idx, people.length)}</div>));
-    if (front) items.push(ghost(front));
+    if (front || back) {
+      // one ghost in the free slot: main click = in front (covers), small button = behind (gets covered)
+      const main = front ?? back!;
+      items.push(
+        <div key="ghost" className="slotp">
+          <div className="ghost-slot" onClick={(e) => { e.stopPropagation(); answer([main.id]); }}>
+            <span>{main.ref?.t === 'slot' && main.ref.pos === 'front' ? 'SEM vepředu' : 'SEM'}</span>
+            {front && back && (
+              <button className="ghost-back" onClick={(e) => { e.stopPropagation(); answer([back.id]); }} title="Postavit za stávajícího přeživšího (bude krytý)">↧ vzadu</button>
+            )}
+          </div>
+        </div>,
+      );
+    }
     while (items.length < 2) items.push(<div key={`e${items.length}`} className="slotp empty" />);
     return (
       <div key={col} className={`col ${pl.exposed[col] ? 'exposed' : ''} ${colOpt ? 'col-target' : ''}`} onClick={colOpt ? (e) => { e.stopPropagation(); answer([colOpt.id]); } : undefined}>
@@ -334,15 +345,23 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
   const emoteFor = (seat: PlayerIdx) => {
     const now = Date.now();
     const e = [...state.emotes].reverse().find((x) => x.seat === seat && now - x.ts < 2600);
-    return e && isEmote(e.id) ? <div key={e.ts} className="emote-bubble" style={{ left: 60, top: seat === me ? -36 : 44 }}>{EMOTES[e.id]}</div> : null;
+    if (e && isEmote(e.id)) return <div key={e.ts} className="emote-bubble" style={{ left: 60, top: seat === me ? -36 : 44 }}>{EMOTES[e.id]}</div>;
+    const line = [...state.chat].reverse().find((l) => !l.system && l.seat === seat && now - l.ts < 4000);
+    return line ? <div key={`c${line.ts}`} className="emote-bubble chat-bubble" style={{ left: 60, top: seat === me ? -36 : 44 }}>{line.text.slice(0, 80)}</div> : null;
   };
-  // re-render to expire emote bubbles
+  // re-render to expire emote / chat bubbles
   const [, force] = useState(0);
   useEffect(() => {
-    if (!state.emotes.length) return;
-    const t = setTimeout(() => force((x) => x + 1), 2700);
+    if (!state.emotes.length && !state.chat.length) return;
+    const t = setTimeout(() => force((x) => x + 1), 4100);
     return () => clearTimeout(t);
-  }, [state.emotes]);
+  }, [state.emotes, state.chat]);
+  const lastChatLen = useRef(state.chat.length);
+  useEffect(() => {
+    const l = state.chat[state.chat.length - 1];
+    if (state.chat.length > lastChatLen.current && l && !l.system && l.seat !== me) sfx.chat();
+    lastChatLen.current = state.chat.length;
+  }, [state.chat, me]);
 
   // ---- prompt bar ----
   const promptBar = (tipNode?: ReactNode) => {
@@ -373,7 +392,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       return (
         <div className="prompt wait">
           <span className="ptitle" style={{ color: 'var(--water-2)' }}>
-            Tvůj tah · {P.water} {P.water === 1 ? 'voda' : P.water >= 2 && P.water <= 4 ? 'vody' : 'vod'} · klikni na kartu v ruce nebo na stole
+            Tvůj tah · {P.water} {plural(P.water, 'voda', 'vody', 'vod')} · klikni na kartu v ruce nebo na stole
           </span>
           {tipLine}
         </div>
@@ -397,7 +416,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
       body = (
         <>
           <div className="ptitle">Ukončit tah?</div>
-          <div className="muted">Zbývá ti {P.water} vody – nevyužitá voda na konci tahu propadá.</div>
+          <div className="muted">Zbývá ti {P.water} {plural(P.water, 'voda', 'vody', 'vod')} – nevyužitá voda na konci tahu propadá.</div>
           <button className="btn danger" onClick={() => { setSel(null); act({ t: 'endTurn' }); }}>Ano, ukončit tah</button>
           <button className="btn ghost" onClick={() => setSel(null)}>Ještě hraju</button>
         </>
@@ -434,7 +453,7 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           {!playable && why && def.kind !== 'cistern' && <div className="why">{why}</div>}
           <button className="btn opt" onClick={() => { setSel(null); act({ t: 'junk', uid: c.uid }); }}>
             <span><Icon name={JUNK_ICON[def.junk!]} /> Rozebrat: {def.kind === 'cistern' ? '+1 voda (Cisterna se vrátí)' : JUNK_LABEL[def.junk!]}</span>
-            <small>{def.kind === 'cistern' ? 'Získáš 1 vodu navíc.' : `Karta se odhodí. ${JUNK_TEXT[def.junk!]}`}</small>
+            <small>{def.kind === 'cistern' ? 'Získáš 1 vodu navíc.' : `Karta se odhodí. ${def.junk === 'raid' ? raidJunkText() : JUNK_TEXT[def.junk!]}`}</small>
           </button>
         </>
       );
@@ -466,7 +485,12 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     }
     const detailId = sel.kind === 'hand' || sel.kind === 'board' ? idOf(sel.uid) : sel.kind === 'cistern' ? 'cisterna' : null;
     return (
-      <div className="pop panel" style={style} onClick={(e) => e.stopPropagation()}>
+      <div className="pop panel" style={style} onClick={(e) => e.stopPropagation()} ref={(el) => {
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        if (r.top < 8) { el.style.bottom = 'auto'; el.style.top = '8px'; }
+        else if (r.bottom > innerHeight - 8) { el.style.top = `${Math.max(8, innerHeight - r.height - 8)}px`; el.style.bottom = 'auto'; }
+      }}>
         {body}
         {detailId && <button className="btn ghost small" onClick={() => { setSel(null); setInspect(detailId); }}><Icon name="magnifying-glass" /> Detail karty</button>}
       </div>
@@ -524,6 +548,13 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
     );
   };
 
+  const raidJunkText = () => {
+    if (P.raidHome) return 'Pošle tvůj Nájezd do fronty (místo 2).';
+    const k = P.queue.findIndex((e) => e?.id === 'najezd');
+    if (k === 0) return 'Nájezd ZAÚTOČÍ HNED – soupeř si vybere základnu, která to schytá!';
+    if (k > 0 && !P.queue[k - 1]) return `Posune tvůj Nájezd na místo ${k}.`;
+    return 'Nájezd teď nejde posunout (místo před ním je obsazené).';
+  };
   const hand = P.hand ?? [];
   const handTilt = (e: React.MouseEvent) => {
     const el = (e.target as HTMLElement).closest<HTMLElement>('.hand .card');
@@ -680,16 +711,16 @@ export function Board({ conn, state, view }: { conn: Conn; state: ConnState; vie
           </div>
         </div>
       )}
-      {view.phase === 'chooseFirst' && <ChooseFirst view={view} me={me} act={act} />}
+      {view.phase === 'chooseFirst' && <ChooseFirst view={view} me={me} act={act} state={state} />}
       {view.phase === 'over' && <GameOver view={view} me={me} state={state} conn={conn} />}
-      {banner && <div className="banner" key={`banner-${banner.key}`}><div className={`inner ${banner.mine ? 'mine' : ''}`}>{banner.text}</div></div>}
+      {banner && <div className={`banner ${pending ? 'small' : ''}`} key={`banner-${banner.key}`}><div className={`inner ${banner.mine ? 'mine' : ''}`}>{banner.text}</div></div>}
       <FxLayer view={view} me={me} onTurn={onTurn} />
       <Particles />
     </div>
   );
 }
 
-function ChooseFirst({ view, me, act }: { view: GameView; me: PlayerIdx; act: (a: Action) => void }) {
+function ChooseFirst({ view, me, act, state }: { view: GameView; me: PlayerIdx; act: (a: Action) => void; state: ConnState }) {
   const mine = view.coinWinner === me && view.you !== null;
   return (
     <div className="overlay">
@@ -697,7 +728,7 @@ function ChooseFirst({ view, me, act }: { view: GameView; me: PlayerIdx; act: (a
         <h2><Icon name="coinflip" /> Hod mincí</h2>
         {mine ? (
           <>
-            <p>Los padl na tebe! Kdo začne?</p>
+            <p>{state.mode === 'hotseat' ? `Los padl na hráče ${view.players[view.coinWinner].name}.` : 'Los padl na tebe!'} Kdo začne?</p>
             <p className="muted" style={{ margin: 0 }}>Začínající hráč dostane v prvním tahu jen <b>1 vodu</b> místo 3.</p>
             <div className="row" style={{ justifyContent: 'center' }}>
               <button className="btn primary" onClick={() => act({ t: 'chooseFirst', first: me })}>Začnu já</button>
@@ -710,7 +741,7 @@ function ChooseFirst({ view, me, act }: { view: GameView; me: PlayerIdx; act: (a
         {view.you !== null && (
           <>
             <div className="cardrow" style={{ marginTop: 6 }}>
-              {view.players[me].bases.map((b) => <Card key={b.uid} id={b.id} noZoom compact />)}
+              {view.players[me].bases.map((b) => <Card key={b.uid} id={b.id} noZoom />)}
             </div>
             <p className="muted" style={{ margin: 0 }}>Tvoje základny. Začáteční ruka: {view.players[me].handCount} karet.</p>
           </>
@@ -740,7 +771,7 @@ function GameOver({ view, me, state, conn }: { view: GameView; me: PlayerIdx; st
         <Icon name={draw ? 'sands-of-time' : win ? 'trophy-cup' : 'broken-skull'} className="" />
         <h1 className={!win && !draw ? 'lose' : ''}>{draw ? 'REMÍZA' : spectator ? `${view.players[view.winner as PlayerIdx].name} vyhrává` : win ? 'VÍTĚZSTVÍ!' : 'PORÁŽKA'}</h1>
         <p className="muted" style={{ margin: 0 }}>{view.winReason}</p>
-        <p className="muted" style={{ margin: 0 }}>Hra trvala {view.turn} tahů.</p>
+        <p className="muted" style={{ margin: 0 }}>Hra trvala {view.turn} {plural(view.turn, 'tah', 'tahy', 'tahů')}.</p>
         {state.reward && (
           <p style={{ margin: 0, color: 'var(--water-2)', fontWeight: 800, fontSize: 20 }}>
             {state.reward.gain > 0 ? `+${state.reward.gain} kapek do kolekce` : 'Za tak krátkou hru se kapky nepřipisují.'}
