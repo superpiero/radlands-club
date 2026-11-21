@@ -801,3 +801,56 @@ select.field { padding: 7px 8px; font-size: 16px; }
 @media (pointer: coarse) { .controls .btn, .btn.small { min-height: 36px; min-width: 36px; } }
 .card .art .scene { position: absolute; inset: 0; width: 100%; height: 100%; }
 .card .art svg.glyph { z-index: 1; }
+
+/* ==========================================================================
+   PREMIUM CARD PASS – original frames, plates, medallions, rim light
+   ========================================================================== */
+.card { border-radius: calc(var(--w) * 0.075); }
+.card .frame { position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2;
+  box-shadow: inset 0 0 0 .16em rgba(48,36,24,.92), inset 0 0 0 .3em rgba(255,238,205,.28), inset 0 0 1.2em rgba(70,45,20,.35);
+  background:
+    radial-gradient(circle at .55em .55em, #c9b28a 0 .16em, #5a4630 .17em .22em, transparent .23em),
+    radial-gradient(circle at calc(100% - .55em) .55em, #c9b28a 0 .16em, #5a4630 .17em .22em, transparent .23em),
+    radial-gradient(circle at .55em calc(100% - .55em), #c9b28a 0 .16em, #5a4630 .17em .22em, transparent .23em),
+    radial-gradient(circle at calc(100% - .55em) calc(100% - .55em), #c9b28a 0 .16em, #5a4630 .17em .22em, transparent .23em); }
+.card.compact .frame { background: none; box-shadow: inset 0 0 0 .14em rgba(48,36,24,.9); }
+.card.k-operation .frame { box-shadow: inset 0 0 0 .16em #15130c, inset 0 0 0 .32em rgba(255,207,90,.22), inset 0 0 1.4em rgba(0,0,0,.5); }
+.card.k-raid .frame, .card.k-cistern .frame { box-shadow: inset 0 0 0 .16em rgba(0,0,0,.7), inset 0 0 0 .3em rgba(255,255,255,.18); }
+.card.k-base .frame { box-shadow: inset 0 0 0 .16em #3b3630, inset 0 0 0 .3em rgba(255,255,255,.22), inset 0 -.5em 0 -.2em rgba(0,0,0,.25); }
+
+/* name plate: stamped metal strip */
+.card.k-survivor .head { margin: .32em .32em 0; padding: .3em .35em .25em; border-radius: .28em; z-index: 3;
+  background: linear-gradient(180deg, #e9dcbf, #c8b48c 55%, #b29c72); box-shadow: inset 0 1px 0 rgba(255,255,255,.6), inset 0 -1px 0 rgba(0,0,0,.25), 0 1px 2px rgba(0,0,0,.35); }
+.card.k-operation .head { margin: .32em .32em 0; padding: .3em .35em .25em; border-radius: .28em; z-index: 3;
+  background: linear-gradient(180deg, #3d3a27, #26241a); box-shadow: inset 0 1px 0 rgba(255,220,140,.25), 0 1px 2px rgba(0,0,0,.5); }
+.card.k-survivor .name { color: #2a1d12; text-shadow: 0 1px 0 rgba(255,255,255,.45); }
+
+/* cost medallion */
+.card .cost svg { color: #1c6f80; filter: drop-shadow(0 0 0 #000) drop-shadow(0 1px 1px rgba(0,0,0,.5)); }
+.card .cost::before { content: ''; position: absolute; inset: 8% 14% 0; border-radius: 50% 50% 46% 46%; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.55), transparent 45%); z-index: 1; pointer-events: none; }
+.card .cost span { z-index: 2; text-shadow: 0 1px 1px rgba(0,0,0,.6); }
+
+/* art window: deeper frame + rim-lit silhouette */
+.card .art { box-shadow: inset 0 0 0 .12em rgba(30,20,12,.85), inset 0 0 0 .22em rgba(255,240,210,.25), inset 0 -1.2em 1.6em rgba(0,0,0,.35); }
+.card .art .halftone { opacity: .14; mix-blend-mode: multiply; }
+.card .art svg.glyph { width: 58%; height: 58%; margin-top: 6%; color: #17110c;
+  filter: drop-shadow(0 0 .08em rgba(255,236,190,.95)) drop-shadow(0 0 .35em rgba(255,214,140,.55)) drop-shadow(0 .25em .2em rgba(0,0,0,.45)); }
+.card.k-operation .art svg.glyph { color: #0d0c08; filter: drop-shadow(0 0 .1em rgba(190,230,255,.9)) drop-shadow(0 0 .4em rgba(140,200,255,.45)) drop-shadow(0 .25em .2em rgba(0,0,0,.5)); }
+.card .art::after { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 40%, transparent 55%, rgba(0,0,0,.35) 100%); }
+.card.k-base .art svg.glyph { width: 64%; height: 64%; margin-top: 0; }
+
+/* text box: inked panels */
+.card .ab { background: linear-gradient(180deg, rgba(40,31,23,.94), rgba(28,21,15,.96)); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 1px 0 rgba(255,255,255,.25); }
+.card .typeline { letter-spacing: .14em; }
+
+/* card back: stamped emblem */
+.card.k-back { background:
+  radial-gradient(circle at 50% 42%, rgba(63,184,201,.45) 0, transparent 38%),
+  repeating-linear-gradient(45deg, rgba(255,255,255,.03) 0 3px, transparent 3px 9px),
+  radial-gradient(circle at 50% 42%, #2a6470 0, #173840 40%, #120e0b 78%); }
+.card.k-back .backlogo { filter: drop-shadow(0 0 .5em rgba(63,184,201,.8)); }
+
+/* legendary: gold filigree frame */
+.card.r-legendary .frame { box-shadow: inset 0 0 0 .16em #6b4510, inset 0 0 0 .32em #e3b64e, inset 0 0 0 .4em rgba(110,70,10,.8), inset 0 0 1.4em rgba(255,190,70,.4); }
+.card.r-rare .frame { box-shadow: inset 0 0 0 .16em #1d3c5c, inset 0 0 0 .3em rgba(120,190,255,.55), inset 0 0 1.2em rgba(80,160,255,.25); }
+.card.compact.r-legendary .frame, .card.compact.r-rare .frame { box-shadow: inset 0 0 0 .14em rgba(48,36,24,.9); }
