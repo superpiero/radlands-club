@@ -805,11 +805,15 @@ export class Game {
     return op.bases.filter((b, col) => !b.destroyed && b.charge === null && (op.columns[col].length === 0 || this.isExposed(o, col))).map((b) => b.uid);
   }
 
-  restoreTargets(p: PlayerIdx, o: { basesOnly?: boolean; exclude?: string }): string[] {
+  restoreTargets(p: PlayerIdx, o: { basesOnly?: boolean; exclude?: string; peopleOnly?: boolean }): string[] {
     const pl = this.state.players[p];
     const out: string[] = [];
     if (!o.basesOnly) for (const x of pl.columns.flat()) if (x.damaged && !x.faceDown && x.uid !== o.exclude) out.push(x.uid);
-    for (const b of pl.bases) if (!b.destroyed && (b.damage > 0 || (b.charge !== null && b.charge !== p)) && b.uid !== o.exclude) out.push(b.uid);
+    for (const b of pl.bases) {
+      if (b.destroyed || b.uid === o.exclude) continue;
+      const charged = b.charge !== null && b.charge !== p;
+      if (o.peopleOnly ? charged : b.damage > 0 || charged) out.push(b.uid);
+    }
     return out;
   }
 
@@ -989,6 +993,26 @@ export class Game {
     return `${prefix}${++this.state.seq}`;
   }
 
+  /** Classic deck-out: more standing bases wins, then less damage on them, else draw. */
+  private deckOutResult(why: string): GameOver {
+    const score = (p: PlayerIdx) => {
+      const bs = this.state.players[p].bases;
+      const alive = bs.filter((b) => !b.destroyed);
+      return { alive: alive.length, dmg: alive.reduce((s, b) => s + b.damage, 0) };
+    };
+    const a = score(0);
+    const b = score(1);
+    if (a.alive !== b.alive) {
+      const w: PlayerIdx = a.alive > b.alive ? 0 : 1;
+      return new GameOver(w, `${why} Rozhodl počet stojících základen (${Math.max(a.alive, b.alive)}:${Math.min(a.alive, b.alive)}).`);
+    }
+    if (a.dmg !== b.dmg) {
+      const w: PlayerIdx = a.dmg < b.dmg ? 0 : 1;
+      return new GameOver(w, `${why} Stejně základen – rozhodlo menší poškození.`);
+    }
+    return new GameOver('draw', `${why} Stejný počet i stav základen.`);
+  }
+
   /** Draw pile used by player p (shared in classic mode). */
   deckOf(p: PlayerIdx): CardInst[] {
     return this.state.opts.personal ? this.state.players[p].deck! : this.state.deck;
@@ -1026,7 +1050,7 @@ export class Game {
       } else if (personal) {
         throw new GameOver(this.opp(p), `${this.pn(p)} došly karty (vyčerpání).`);
       } else {
-        throw new GameOver('draw', resh === 0 ? 'Došly všechny karty v balíčku i v odhazovacím balíčku.' : 'Balíček došel podruhé.');
+        throw this.deckOutResult(resh === 0 ? 'Došly všechny karty.' : 'Balíček došel podruhé.');
       }
     }
     return deck.shift()!;
@@ -1070,7 +1094,7 @@ export class Game {
     switch (kind) {
       case 'raid': yield* this.raid(p); break;
       case 'injure': yield* this.damageChoose(ctx, { kind: 'injure' }); break;
-      case 'restore': yield* this.restoreChoose(ctx, {}); break;
+      case 'restore': yield* this.restoreChoose(ctx, { peopleOnly: true }); break;
       case 'draw': this.draw(p, 1); break;
       case 'drifter': yield* this.gainDrifter(p); break;
       case 'water': this.gainWater(p, 1); break;
@@ -1199,17 +1223,17 @@ export class Game {
     }
   }
 
-  *restoreChoose(c: Ctx, o: { keepReady?: boolean; basesOnly?: boolean; exclude?: string; optional?: boolean }): Gen {
+  *restoreChoose(c: Ctx, o: { keepReady?: boolean; basesOnly?: boolean; exclude?: string; optional?: boolean; peopleOnly?: boolean }): Gen {
     const targets = this.restoreTargets(c.p, o);
     if (targets.length === 0) {
       this.log(c.p, 'info', 'Není co opravit.');
       return;
     }
     const uid = yield* this.pick(c.p, o.optional ? 'Můžeš opravit ještě jednu kartu' : 'Vyber svou kartu k opravě', this.cardOptions(targets, 'good'), { sourceUid: c.uid, optional: o.optional });
-    if (uid) this.restoreCard(uid, !!o.keepReady);
+    if (uid) this.restoreCard(uid, !!o.keepReady, !!o.peopleOnly);
   }
 
-  restoreCard(uid: string, keepReady: boolean) {
+  restoreCard(uid: string, keepReady: boolean, defuseOnly = false) {
     const st = this.state;
     const pp = this.findPerson(uid);
     if (pp) {
@@ -1225,7 +1249,7 @@ export class Game {
         bb.base.charge = null;
         this.log(bb.owner, 'info', `Nálož na základně ${this.nm(bb.base.id)} zneškodněna.`);
       }
-      if (bb.base.damage > 0) {
+      if (bb.base.damage > 0 && !defuseOnly) {
         bb.base.damage--;
         this.log(bb.owner, 'info', `Základna ${this.nm(bb.base.id)} je opravena.`, [bb.base.id]);
       }

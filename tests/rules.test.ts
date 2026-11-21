@@ -8,8 +8,8 @@ describe('setup & turn flow', () => {
     const st = g.state;
     // P0 bases: krater(3) vodarna(1) zbrojnice(0) = 4, plus 1 draw on turn 1
     expect(st.players[0].hand.length).toBe(5);
-    // P1 bases: krater(3) elektrarna(0) hnizdo(1) = 4
-    expect(st.players[1].hand.length).toBe(4);
+    // P1 bases: krater(3) elektrarna(0) hnizdo(2) = 5
+    expect(st.players[1].hand.length).toBe(5);
     expect(st.turn).toBe(1);
     expect(st.active).toBe(0);
     expect(st.players[0].water).toBe(1);
@@ -21,7 +21,7 @@ describe('setup & turn flow', () => {
     ok(g.act(0, { t: 'endTurn' }));
     expect(g.state.active).toBe(1);
     expect(g.state.players[1].water).toBe(3);
-    expect(g.state.players[1].hand.length).toBe(5);
+    expect(g.state.players[1].hand.length).toBe(6);
     expect(g.state.players[0].water).toBe(0);
   });
 

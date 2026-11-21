@@ -9,12 +9,12 @@ Základen: **29** (každý hráč dostane 6, vybere 3).
 
 | Karta | Cena | Rozebrání | Schopnosti / vlastnosti |
 |---|---|---|---|
-| **Pumpař** `pumpar` | 1💧 | Voda navíc | **[1💧]** Lízni kartu. Pokud pak máš v ruce 2 nebo méně karet, lízni další. |
+| **Pumpař** `pumpar` | 1💧 | Voda navíc | **[1💧]** Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu, lízni další. |
 | **Brokovnice Bára** `bara` | 2💧 | Zranit | **[2💧]** Poškoď. Pokud tím zničíš přeživšího, lízni kartu. |
 | **Kluk s prakem** `prak` | 1💧 | Tulák | **[1💧]** Zraň. Lze použít, jen když tato karta stojí nekrytá. |
 | **Zvěd** `zved` | 1💧 | Líznout | **[1💧]** Vyber soupeřův sloupec. Do konce tahu jsou všechny karty v něm nekryté. |
 | **Ženistka Hana** `hana` | 2💧 | Nájezd | **[1💧]** Polož nálož na nekrytou soupeřovu základnu (bez nálože). Na začátku tvého příštího tahu vybuchne a základnu poškodí, i když bude krytá. |
-| **Felčar** `felcar` | 1💧 | Opravit | **[1💧]** Oprav svou poškozenou kartu. Opravený přeživší zůstává připravený. |
+| **Felčar** `felcar` | 1💧 | Opravit | **[1💧]** Oprav svého poškozeného přeživšího (nebo zneškodni nálož). Opravený přeživší zůstává připravený. |
 | **Kovářka Rez** `rez` | 2💧 | Opravit | **[2💧]** Oprav svou poškozenou základnu (nebo zneškodni nálož). Pak lízni kartu. |
 | **Pašerák** `paserak` | 1💧 | Voda navíc | **[1💧]** Prohlédni si vrchní 2 karty balíčku. Jednu si vezmi do ruky, druhou dej dospod balíčku. |
 | **Náborář** `naborar` | 1💧 | Tulák | **[1💧]** Naverbuj tuláka. Lze použít, jen když máš ve hře méně přeživších než soupeř. |
@@ -30,7 +30,7 @@ Základen: **29** (každý hráč dostane 6, vybere 3).
 | **Radista** `radista` | 1💧 | Nájezd | **[1💧]** Posuň svou operaci ve frontě o 1 místo vpřed (na volné místo). Z místa 1 se operace hned vyhodnotí. |
 | **Lasař** `lasar` | 2💧 | Nájezd | **[1💧]** Vyber soupeřův sloupec se dvěma přeživšími a prohoď jejich pořadí. |
 | **Starostka Ludmila** `ludmila` | 2💧 | Líznout | _Vlastnost:_ Na začátku tvého tahu: pokud nemáš ve frontě žádnou operaci, lízni kartu. |
-| **Prospektorka** `prospektorka` | 1💧 | Voda navíc | **[1💧]** Lízni 2 karty, pak 1 kartu z ruky odhoď. |
+| **Prospektorka** `prospektorka` | 1💧 | Voda navíc | **[2💧]** Lízni 2 karty, pak 1 kartu z ruky odhoď. |
 | **Minometčík** `minometcik` | 3💧 | Nájezd | **[2💧]** Zraň krytého přeživšího, který stojí vzadu v soupeřově sloupci. |
 | **Kat** `kat` | 3💧 | Zranit | **[2💧]** Znič poškozeného nepřítele (i krytého). |
 | **Honák Vítek** `honak` | 2💧 | Nájezd | **[1💧]** Nájezd: zahraj nebo posuň svůj Nájezd. |
@@ -67,8 +67,8 @@ Základen: **29** (každý hráč dostane 6, vybere 3).
 |---|---|---|---|
 | **Vodárna** `vodarna` | 1 | 2 | **[1💧]** Získej 2 vody navíc. |
 | **Radiostanice** `radiostanice` | 2 | 2 | **[1💧]** Prohlédni si vrchní 3 karty balíčku a vrať je v libovolném pořadí. |
-| **Kulometné hnízdo** `hnizdo` | 1 | 2 | **[2💧]** Zraň. |
-| **Dílna** `dilna` | 2 | 2 | **[1💧]** Oprav jinou svou poškozenou kartu (nebo zneškodni nálož). |
+| **Kulometné hnízdo** `hnizdo` | 2 | 2 | **[2💧]** Zraň. |
+| **Dílna** `dilna` | 2 | 2 | **[1💧]** Oprav svého poškozeného přeživšího, nebo zneškodni nálož na své základně. |
 | **Tržiště** `trziste` | 1 | 2 | **[1💧]** Odhoď kartu z ruky, pak lízni 2 karty. |
 | **Sklad trhavin** `trhaviny` | 1 | 2 | **[1💧]** Polož nálož na nekrytou soupeřovu základnu (bez nálože). Na začátku tvého příštího tahu vybuchne a základnu poškodí, i když bude krytá. |
 | **Ubikace** `ubikace` | 1 | 2 | **[2💧]** Naverbuj tuláka. |
@@ -78,14 +78,14 @@ Základen: **29** (každý hráč dostane 6, vybere 3).
 | **Zbrojnice** `zbrojnice` | 0 | 2 | **[2💧]** Poškoď. |
 | **Přehrada** `prehrada` | 2 | 2 | **[0💧]** Ulož 1 nebo 2 své vody do Přehrady. Na začátku tvého příštího tahu je získáš zpět jako vodu navíc. |
 | **Pašerácká stezka** `stezka` | 1 | 2 | _Vlastnost:_ Tvoje první akce Lízni kartu v každém tahu stojí 1 vodu místo 2. |
-| **Signální oheň** `signal` | 1 | 2 | **[1💧]** Nájezd: zahraj nebo posuň svůj Nájezd. |
-| **Pevnost** `pevnost` | 0 | 3 | _Vlastnost:_ Pevnost je zničena až třetím poškozením. |
+| **Signální oheň** `signal` | 1 | 2 | **[2💧]** Nájezd: zahraj nebo posuň svůj Nájezd. |
+| **Pevnost** `pevnost` | 1 | 3 | _Vlastnost:_ Pevnost je zničena až třetím poškozením. |
 | **Vrakoviště** `vrakoviste` | 1 | 2 | **[0💧]** Odhoď kartu z ruky: naverbuj tuláka. |
-| **Rušička** `rusicka` | 1 | 2 | **[2💧]** Soupeř náhodně odhodí kartu z ruky. (Cisterna se mu vrátí do zóny.) |
+| **Rušička** `rusicka` | 1 | 2 | **[1💧]** Soupeř náhodně odhodí kartu z ruky. (Cisterna se mu vrátí do zóny.) |
 | **Hangár** `hangar` | 2 | 2 | **[1💧]** Prohoď přeživší ve dvou svých sloupcích (všichni se přesunou k druhé základně). |
 | **Vysílač** `vysilac` | 1 | 2 | _Vlastnost:_ Tvoje operace (i Nájezd) se ve frontě umisťují o 1 místo blíž (nejméně na místo 1). |
 | **Kráter** `krater` | 3 | 2 | — |
-| **Ruiny nemocnice** `nemocnice` | 1 | 2 | **[2💧]** Oprav svou poškozenou kartu (i tuto základnu), nebo zneškodni nálož. |
+| **Ruiny nemocnice** `nemocnice` | 1 | 2 | **[3💧]** Oprav jinou svou poškozenou kartu (přeživšího i základnu), nebo zneškodni nálož. |
 | **Vězení** `vezeni` | 1 | 2 | **[2💧]** Omrač nekrytého nepřítele: během soupeřova příštího tahu nebude připravený. |
 | **Radar** `radar` | 1 | 2 | **[1💧]** Prohlédni si soupeřovu ruku. Pak lízni kartu. |
 | **Minové pole** `minovepole` | 2 | 2 | _Vlastnost:_ Když tuto základnu poškodí schopnost soupeřova přeživšího, ten přeživší je zraněn (i když je krytý). |

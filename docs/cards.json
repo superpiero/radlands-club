@@ -8,7 +8,7 @@
     "abilities": [
       {
         "cost": 1,
-        "text": "Lízni kartu. Pokud pak máš v ruce 2 nebo méně karet, lízni další."
+        "text": "Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu, lízni další."
       }
     ],
     "copies": 2,
@@ -83,7 +83,7 @@
     "abilities": [
       {
         "cost": 1,
-        "text": "Oprav svou poškozenou kartu. Opravený přeživší zůstává připravený."
+        "text": "Oprav svého poškozeného přeživšího (nebo zneškodni nálož). Opravený přeživší zůstává připravený."
       }
     ],
     "copies": 2,
@@ -311,7 +311,7 @@
     "junk": "water",
     "abilities": [
       {
-        "cost": 1,
+        "cost": 2,
         "text": "Lízni 2 karty, pak 1 kartu z ruky odhoď."
       }
     ],
@@ -664,7 +664,7 @@
     "id": "hnizdo",
     "name": "Kulometné hnízdo",
     "kind": "base",
-    "draw": 1,
+    "draw": 2,
     "abilities": [
       {
         "cost": 2,
@@ -682,7 +682,7 @@
     "abilities": [
       {
         "cost": 1,
-        "text": "Oprav jinou svou poškozenou kartu (nebo zneškodni nálož)."
+        "text": "Oprav svého poškozeného přeživšího, nebo zneškodni nálož na své základně."
       }
     ],
     "copies": 1,
@@ -809,7 +809,7 @@
     "draw": 1,
     "abilities": [
       {
-        "cost": 1,
+        "cost": 2,
         "text": "Nájezd: zahraj nebo posuň svůj Nájezd."
       }
     ],
@@ -820,7 +820,7 @@
     "id": "pevnost",
     "name": "Pevnost",
     "kind": "base",
-    "draw": 0,
+    "draw": 1,
     "hp": 3,
     "abilities": [],
     "trait": "Pevnost je zničena až třetím poškozením.",
@@ -848,7 +848,7 @@
     "draw": 1,
     "abilities": [
       {
-        "cost": 2,
+        "cost": 1,
         "text": "Soupeř náhodně odhodí kartu z ruky. (Cisterna se mu vrátí do zóny.)"
       }
     ],
@@ -895,8 +895,8 @@
     "draw": 1,
     "abilities": [
       {
-        "cost": 2,
-        "text": "Oprav svou poškozenou kartu (i tuto základnu), nebo zneškodni nálož."
+        "cost": 3,
+        "text": "Oprav jinou svou poškozenou kartu (přeživšího i základnu), nebo zneškodni nálož."
       }
     ],
     "copies": 1,

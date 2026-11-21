@@ -79,6 +79,23 @@ export function randomMove(g: Game, p: PlayerIdx, r: Rand, endTurnBias = 0.12): 
 
 const BASE_ALIVE_VALUE = [0, 40, 70, 92];
 
+/** Value of a queued operation by its effect (not cost). */
+function eventValue(g: Game, owner: PlayerIdx, id: string): number {
+  const o = (1 - owner) as PlayerIdx;
+  switch (id) {
+    case 'poslednikapka': return 14;
+    case 'podkop': case 'delostrelectvo': case 'kyselydest': return 8;
+    case 'karavana': return 6;
+    case 'pramen': case 'oaza': return 5;
+    case 'sanitka': return 2 + 3 * g.restoreTargets(owner, {}).length;
+    case 'boure': return 1 + 1.5 * g.ownFaceUpPeople(o).length;
+    case 'prepad': return 3 + (g.peopleCount(o) >= 4 ? 2 : 0);
+    case 'sucho': return 3.5;
+    case 'vysadek': return 5;
+    default: return 3.5 + (cardDef(id).cost ?? 0) * 0.8;
+  }
+}
+
 function sideScore(g: Game, p: PlayerIdx, perspective: PlayerIdx): number {
   const st = g.state;
   const pl = st.players[p];
@@ -99,14 +116,19 @@ function sideScore(g: Game, p: PlayerIdx, perspective: PlayerIdx): number {
       const cost = cardDef(x.id).cost ?? 1;
       s += x.damaged ? 2 + cost * 0.6 : 5 + cost * 1.6;
       s += x.stash * 1.8;
-      if (x.stunnedTurn > st.turn) s -= 1.5;
+      if (x.stunnedTurn > st.turn) s -= 2 + (cardDef(x.id).cost ?? 1);
     }
   });
-  for (const h of pl.hand) s += h.id === 'cisterna' ? 1.2 : 2.6;
+  for (const h of pl.hand) {
+    if (h.id === 'cisterna') { s += 1.2; continue; }
+    if (p !== perspective) { s += 2.6; continue; } // never peek at the real opponent hand
+    const d = cardDef(h.id);
+    s += d.kind === 'survivor' ? 2.0 + 0.5 * (d.cost ?? 1) : 2.2 + 0.6 * (d.cost ?? 1);
+  }
   pl.queue.forEach((e, i) => {
     if (!e) return;
     if (e.id === 'najezd') s += 7 - i * 1.5;
-    else s += 3.5 + (cardDef(e.id).cost ?? 0) * 0.8 - i * 0.3;
+    else s += eventValue(g, p, e.id) - i * 0.5;
   });
   if (!pl.raidHome && pl.queue.every((e) => e?.id !== 'najezd')) s += 0; // safety
   if (!pl.cisternHome) s += 0.5;
@@ -122,7 +144,13 @@ export function evaluate(g: Game, p: PlayerIdx): number {
   if (st.winner === 'draw') return 0;
   if (st.winner !== null) return -1e6;
   const o = (1 - p) as PlayerIdx;
-  return sideScore(g, p, p) - sideScore(g, o, p) * 1.05;
+  let v = sideScore(g, p, p) - sideScore(g, o, p) * 1.05;
+  // deck-out pressure: when the deck is nearly gone, standing bases decide the game
+  if (!st.opts.personal && st.reshuffles > 0 && st.deck.length < 15) {
+    const alive = (x: PlayerIdx) => st.players[x].bases.filter((b) => !b.destroyed).length;
+    v += 0.8 * (alive(p) - alive(o)) * (15 - st.deck.length);
+  }
+  return v;
 }
 
 // ---------------------------------------------------------------------------
@@ -185,7 +213,8 @@ function finishRandomly(g: Game, r: Rand, maxSteps = 40) {
 }
 
 function simulate(g: Game, p: PlayerIdx, apply: (c: Game) => void, r: Rand, rollouts: number): number {
-  let best = -Infinity;
+  let sum = 0;
+  let n = 0;
   for (let i = 0; i < rollouts; i++) {
     const c = simClone(g);
     determinize(c, p, r);
@@ -195,11 +224,11 @@ function simulate(g: Game, p: PlayerIdx, apply: (c: Game) => void, r: Rand, roll
     } catch {
       continue;
     }
-    // If the action ended our turn, value the position from the opponent's start (rough).
-    const v = evaluate(c, p);
-    if (v > best) best = v;
+    sum += evaluate(c, p);
+    n++;
   }
-  return best;
+  // average over rollouts (max-over-rollouts overrates lucky random follow-ups)
+  return n ? sum / n : -Infinity;
 }
 
 function answerCandidates(pr: Prompt, r: Rand): Answer[] {
@@ -228,18 +257,22 @@ function answerCandidates(pr: Prompt, r: Rand): Answer[] {
 }
 
 const BASE_PREF: Record<string, number> = Object.fromEntries(BASES.map((b) => [b.id, (b.draw ?? 0) * 1.2 + (b.abilities.length ? 1.5 : 0.6)]));
-Object.assign(BASE_PREF, { zbrojnice: 4.5, vodarna: 3.6, studna: 3.4, hnizdo: 3.3, pevnost: 3.2, krater: 3.6, bunkr: 3.2, trhaviny: 3.0, signal: 3.2, elektrarna: 3.0 });
+Object.assign(BASE_PREF, {
+  dilna: 4.2, nemocnice: 3.6, signal: 4.2, trhaviny: 4, studna: 3.8, trziste: 3.6, elektrarna: 3.4, zbrojnice: 3.6, benzinka: 3.2,
+  vodarna: 3.0, krater: 3.0, pevnost: 3.0, radiostanice: 2.4, hangar: 2.4, skrys: 2.4, hnizdo: 3.0, rusicka: 2.6, stezka: 2.8, vysilac: 2.8, kantyna: 2.8,
+});
 
 export function botMove(g: Game, p: PlayerIdx, opts: BotOptions = {}): Action | null {
   const st = g.state;
   const r = opts.rand ?? Math.random;
   const level = opts.level ?? 'normal';
-  const noise = level === 'easy' ? 6 : level === 'normal' ? 0.6 : 0.1;
-  const rollouts = level === 'hard' ? 4 : 2;
+  const noise = level === 'easy' ? 3.5 : level === 'normal' ? 0.6 : 0.1;
+  const rollouts = level === 'hard' ? 5 : 2;
   if (st.phase === 'over') return null;
   if (st.phase === 'draft') {
     if (st.players[p].draftPicked) return null;
-    const ranked = [...st.players[p].draftOptions].sort((a, b) => (BASE_PREF[b] ?? 2) + r() * 1.5 - ((BASE_PREF[a] ?? 2) + r() * 1.5));
+    const noisy = new Map(st.players[p].draftOptions.map((id) => [id, (BASE_PREF[id] ?? 2) + r() * 1.2]));
+    const ranked = [...st.players[p].draftOptions].sort((a, b) => noisy.get(b)! - noisy.get(a)!);
     return { t: 'draftPick', bases: ranked.slice(0, 3) };
   }
   if (st.phase === 'chooseFirst') {
@@ -261,7 +294,7 @@ export function botMove(g: Game, p: PlayerIdx, opts: BotOptions = {}): Action | 
   }
   if (st.active !== p) return null;
   const acts = g.legalActions(p).filter((a) => a.t !== 'endTurn');
-  if (level === 'easy' && r() < 0.25 && acts.length) return pickRand(acts, r);
+  if (level === 'easy' && r() < 0.35 && acts.length) return pickRand(acts, r);
   // Baseline: water left is wasted at end of turn
   const baseline = evaluate(g, p) - g.state.players[p].water * 0.55;
   let best: Action = { t: 'endTurn' };

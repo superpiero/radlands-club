@@ -69,8 +69,8 @@ export const SURVIVORS: CardDef[] = [
     id: 'pumpar', name: 'Pumpař', cost: 1, junk: 'water', icon: 'water-tower', hue: 195,
     flavor: 'Každá pumpa vrže jinak. On zná všechny.',
     abilities: [{
-      cost: 1, text: 'Lízni kartu. Pokud pak máš v ruce 2 nebo méně karet, lízni další.',
-      *run(g, c) { g.draw(c.p, 1); if (g.handSize(c.p) <= 2) g.draw(c.p, 1); },
+      cost: 1, text: 'Lízni kartu. Pokud pak máš v ruce nejvýš 1 kartu, lízni další.',
+      *run(g, c) { g.draw(c.p, 1); if (g.handSize(c.p) <= 1) g.draw(c.p, 1); },
     }],
     tags: ['economy'],
   }),
@@ -122,9 +122,10 @@ export const SURVIVORS: CardDef[] = [
     id: 'felcar', name: 'Felčar', cost: 1, junk: 'restore', icon: 'medical-pack', hue: 140,
     flavor: 'Šije nití z padáků. Drží to.',
     abilities: [{
-      cost: 1, text: 'Oprav svou poškozenou kartu. Opravený přeživší zůstává připravený.',
-      canUse: (g, c) => g.restoreTargets(c.p, {}).length > 0,
-      *run(g, c) { yield* g.restoreChoose(c, { keepReady: true }); },
+      cost: 1, text: 'Oprav svého poškozeného přeživšího (nebo zneškodni nálož). Opravený přeživší zůstává připravený.',
+      canUse: (g, c) => g.restoreTargets(c.p, { peopleOnly: true }).length > 0,
+      needs: 'Nemáš poškozeného přeživšího ani nálož k zneškodnění.',
+      *run(g, c) { yield* g.restoreChoose(c, { keepReady: true, peopleOnly: true }); },
     }],
     tags: ['support'],
   }),
@@ -278,7 +279,7 @@ export const SURVIVORS: CardDef[] = [
     id: 'prospektorka', name: 'Prospektorka', cost: 1, junk: 'water', icon: 'mining', hue: 70,
     flavor: 'Kope tam, kde ostatní jen plivou.',
     abilities: [{
-      cost: 1, text: 'Lízni 2 karty, pak 1 kartu z ruky odhoď.',
+      cost: 2, text: 'Lízni 2 karty, pak 1 kartu z ruky odhoď.',
       *run(g, c) { g.draw(c.p, 2); yield* g.discardChoose(c.p, 1, 'Prospektorka: odhoď 1 kartu z ruky'); },
     }],
     tags: ['economy'],
@@ -520,7 +521,7 @@ export const BASES: CardDef[] = [
     }],
   }),
   B({
-    id: 'hnizdo', name: 'Kulometné hnízdo', draw: 1, icon: 'machine-gun', hue: 20,
+    id: 'hnizdo', name: 'Kulometné hnízdo', draw: 2, icon: 'machine-gun', hue: 20,
     flavor: 'Pytle s pískem a nekonečná trpělivost.',
     abilities: [{
       cost: 2, text: 'Zraň.',
@@ -532,9 +533,10 @@ export const BASES: CardDef[] = [
     id: 'dilna', name: 'Dílna', draw: 2, icon: 'spanner', hue: 35,
     flavor: 'Tady se z šrotu dělají zázraky.',
     abilities: [{
-      cost: 1, text: 'Oprav jinou svou poškozenou kartu (nebo zneškodni nálož).',
-      canUse: (g, c) => g.restoreTargets(c.p, { exclude: c.uid }).length > 0,
-      *run(g, c) { yield* g.restoreChoose(c, { exclude: c.uid }); },
+      cost: 1, text: 'Oprav svého poškozeného přeživšího, nebo zneškodni nálož na své základně.',
+      canUse: (g, c) => g.restoreTargets(c.p, { peopleOnly: true }).length > 0,
+      needs: 'Nemáš poškozeného přeživšího ani nálož k zneškodnění.',
+      *run(g, c) { yield* g.restoreChoose(c, { peopleOnly: true }); },
     }],
   }),
   B({
@@ -616,10 +618,10 @@ export const BASES: CardDef[] = [
   B({
     id: 'signal', name: 'Signální oheň', draw: 1, icon: 'campfire', hue: 18,
     flavor: 'Kouř je vidět na kilometry. Přesně o to jde.',
-    abilities: [{ cost: 1, text: 'Nájezd: zahraj nebo posuň svůj Nájezd.', canUse: (g, c) => g.canRaid(c.p), needs: 'Nájezd nejde posunout.', *run(g, c) { yield* g.raid(c.p); } }],
+    abilities: [{ cost: 2, text: 'Nájezd: zahraj nebo posuň svůj Nájezd.', canUse: (g, c) => g.canRaid(c.p), needs: 'Nájezd nejde posunout.', *run(g, c) { yield* g.raid(c.p); } }],
   }),
   B({
-    id: 'pevnost', name: 'Pevnost', draw: 0, hp: 3, icon: 'castle', hue: 230,
+    id: 'pevnost', name: 'Pevnost', draw: 1, hp: 3, icon: 'castle', hue: 230,
     flavor: 'Tři zdi. Tři šance.',
     trait: 'Pevnost je zničena až třetím poškozením.',
     abilities: [],
@@ -638,7 +640,7 @@ export const BASES: CardDef[] = [
     id: 'rusicka', name: 'Rušička', draw: 1, icon: 'static-waves', hue: 290,
     flavor: 'Bzzzzzz.',
     abilities: [{
-      cost: 2, text: 'Soupeř náhodně odhodí kartu z ruky. (Cisterna se mu vrátí do zóny.)',
+      cost: 1, text: 'Soupeř náhodně odhodí kartu z ruky. (Cisterna se mu vrátí do zóny.)',
       canUse: (g, c) => g.handSize(g.opp(c.p)) > 0,
       needs: 'Soupeř nemá v ruce žádnou kartu.',
       *run(g, c) { g.randomDiscard(g.opp(c.p)); },
@@ -669,9 +671,9 @@ export const BASES: CardDef[] = [
     id: 'nemocnice', name: 'Ruiny nemocnice', draw: 1, icon: 'hospital-cross', hue: 135,
     flavor: 'Prázdné postele, plné sklady obvazů.',
     abilities: [{
-      cost: 2, text: 'Oprav svou poškozenou kartu (i tuto základnu), nebo zneškodni nálož.',
-      canUse: (g, c) => g.restoreTargets(c.p, {}).length > 0,
-      *run(g, c) { yield* g.restoreChoose(c, {}); },
+      cost: 3, text: 'Oprav jinou svou poškozenou kartu (přeživšího i základnu), nebo zneškodni nálož.',
+      canUse: (g, c) => g.restoreTargets(c.p, { exclude: c.uid }).length > 0,
+      *run(g, c) { yield* g.restoreChoose(c, { exclude: c.uid }); },
     }],
   }),
   B({
@@ -776,7 +778,7 @@ export const JUNK_LABEL: Record<JunkKind, string> = {
 export const JUNK_TEXT: Record<JunkKind, string> = {
   raid: 'Zahraj svůj Nájezd do fronty, nebo ho posuň o 1 místo vpřed.',
   injure: 'Poškoď nekrytého nepřítele (jen přeživší).',
-  restore: 'Oprav svou poškozenou kartu.',
+  restore: 'Oprav svého poškozeného přeživšího, nebo zneškodni nálož na své základně.',
   draw: 'Lízni kartu.',
   drifter: 'Naverbuj tuláka (vrchní karta balíčku lícem dolů).',
   water: 'Získej 1 vodu navíc.',
